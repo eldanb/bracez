@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'JsonMockup' target in the 'JsonMockup' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif

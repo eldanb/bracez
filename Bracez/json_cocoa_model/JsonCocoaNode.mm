@@ -1,0 +1,318 @@
+//
+//  JsonCocoaNode.m
+//  JsonMockup
+//
+//  Created by Eldan on 6/5/10.
+//  Copyright 2010 Eldan Ben-Haim. All rights reserved.
+//
+
+#import "JsonCocoaNode.h"
+#include "reader.h"
+
+using namespace json;
+
+@implementation JsonCocoaNode
+
+
++(JsonCocoaNode*) nodeForElement:(json::Node*)aProxiedElement withName:(NSString*)aName
+{
+    if(!aProxiedElement) {
+        return nil;
+    }
+    
+   return [[JsonCocoaNode alloc] initWithName:aName element:aProxiedElement];
+}
+
+-(id)initWithName:(NSString*)aName element:(json::Node*)aProxiedElement
+{
+   self = [super init];
+   
+   if(self)
+   {
+      name = aName;
+      proxiedElement = aProxiedElement;
+   }
+   
+   return self;
+}
+
+-(void)setNodeValue:(NSValue*)aValue
+{
+   [self willChangeValueForKey:@"nodeType"];
+   
+   NSString *lValString = [aValue description];
+   
+   int lIdx = proxiedElement->GetParent()->GetIndexOfChild(proxiedElement);
+   
+   Node *lNewNode;
+   if([lValString isEqualToString:@"true"])
+   {
+      lNewNode = new BooleanNode(true);
+   } else
+   if([lValString isEqualToString:@"false"])
+   {
+      lNewNode = new BooleanNode(false);
+   } else
+   if([lValString isEqualToString:@"null"])
+   {
+      lNewNode = new NullNode();
+   } else
+   if([lValString characterAtIndex:0]=='"')
+   {
+      stringstream str([lValString UTF8String]);
+      StringNode *lNode;
+      Reader::Read(lNode, str);
+      
+      lNewNode = lNode;
+   } else
+   {
+      const char *cstr = [lValString UTF8String];
+      const char *cstr_end;
+      double lDoubleVal = strtod(cstr, (char**)&cstr_end);
+      
+      if(!*cstr_end)
+      {
+         lNewNode = new NumberNode(lDoubleVal);
+      } else
+      {
+         lNewNode = new StringNode(cstr);
+      }
+   }
+   
+   proxiedElement->GetParent()->SetChildAt(lIdx, lNewNode);
+   proxiedElement = lNewNode;
+   
+   [self didChangeValueForKey:@"nodeType"];
+}
+
+-(id) nodeValue
+{
+   if(!proxiedElement)
+      return nil;
+      
+   switch(proxiedElement->GetNodeTypeId())
+   {
+      case ntNull:
+         return @"null";
+
+      case ntBoolean:
+         return ((BooleanNode*)proxiedElement)->GetValue()?@"true":@"false";
+
+      case ntObject:
+         return @"[object]";
+
+      case ntArray:
+         return @"[array]";
+
+      default:
+         {
+            std::string lTxt;
+            proxiedElement->CalculateJsonTextRepresentation(lTxt);
+            return [NSString stringWithCString:lTxt.c_str() encoding:NSUTF8StringEncoding];
+         }
+   }
+}
+
+-(int)nodeType
+{
+   return proxiedElement->GetNodeTypeId();
+}
+
+-(json::Node*)proxiedElement
+{
+   return proxiedElement;
+}
+
+
+-(NSString*) nodeName
+{
+   return name;
+}
+
+-(int)countOfChildren
+{
+   [self _prepChildren];   
+   return [children count];
+}
+
+-(JsonCocoaNode*)objectInChildrenAtIndex:(int)aIdx
+{
+   [self _prepChildren];   
+   return [children objectAtIndex:aIdx];
+}
+
+-(void)removeObjectFromChildrenAtIndex:(int)aIdx
+{
+   json::ContainerNode *lContainerNode = dynamic_cast<json::ContainerNode*>(proxiedElement);
+   if(lContainerNode)
+   {
+      lContainerNode->RemoveChildAt(aIdx);
+      [self _internalRemoveChildAtIndex:aIdx];
+   }
+}
+
+-(void)moveToNode:(JsonCocoaNode*)aNewContainer atIndex:(int)aIndex fromParent:(JsonCocoaNode*)aParent;
+{
+   ContainerNode *lParentNode = proxiedElement->GetParent();
+   int lIdxInParent = lParentNode->GetIndexOfChild(proxiedElement);
+   
+   // Adjust underlying document: (a) detach child from current position
+   string lTxt = proxiedElement->GetDocumentText();
+   Node *lThis;
+   lParentNode->DetachChildAt(lIdxInParent, &lThis);
+   
+   // (b) Import to new position:
+   Node *lNewParent = [aNewContainer proxiedElement];
+   
+   // Fixup index if we're sliding an entry of the same object.
+   if(lNewParent == lParentNode && aIndex > lIdxInParent)
+   {
+      aIndex--;
+   }
+   
+   // (b.1) New container is an object?
+   ObjectNode *lObjNode = dynamic_cast<ObjectNode*> (lNewParent);
+   if(lObjNode)
+   {
+      lObjNode->InsertMemberAt(aIndex, [name UTF8String], lThis, &lTxt);
+   } else 
+   {
+      // (b.2) New container is an array?
+      ArrayNode *lArrNode = dynamic_cast<ArrayNode*> (lNewParent);
+      lArrNode->InsertMemberAt(aIndex, lThis, &lTxt);      
+   }
+   
+   [aParent _internalRemoveChildAtIndex:lIdxInParent];
+   [aNewContainer _internalInsertChild:[JsonCocoaNode nodeForElement:lThis withName:name] atIndex:aIndex];
+}
+
+-(void)_internalInsertChild:(JsonCocoaNode*)aChild atIndex:(int)aIdx
+{
+   [self willChangeValueForKey:@"children"];
+   
+   json::ContainerNode *lContainerNode = dynamic_cast<json::ContainerNode*>(proxiedElement);
+   
+   [children insertObject:aChild atIndex:aIdx];
+   
+   if(lContainerNode->GetNodeTypeId() == ntArray)
+   {
+      for(int lIdx=aIdx; lIdx<[self countOfChildren]; lIdx++)
+      {
+         JsonCocoaNode *lNode = [self objectInChildrenAtIndex:lIdx];
+         [lNode _updateNameFromIndex:lIdx];
+      }
+   }
+   
+   [self didChangeValueForKey:@"children"];
+}
+
+-(void)_internalRemoveChildAtIndex:(int)aIdx
+{
+   [self willChangeValueForKey:@"children"];
+
+   json::ContainerNode *lContainerNode = dynamic_cast<json::ContainerNode*>(proxiedElement);
+
+   [children removeObjectAtIndex:aIdx];
+
+   if(lContainerNode->GetNodeTypeId() == ntArray)
+   {
+      for(int lIdx=aIdx; lIdx<[self countOfChildren]; lIdx++)
+      {
+         JsonCocoaNode *lNode = [self objectInChildrenAtIndex:lIdx];
+         [lNode _updateNameFromIndex:lIdx];
+      }
+   }
+
+   [self didChangeValueForKey:@"children"];
+}
+
+-(void)insertObject:(id)aObject inChildrenAtIndex:(int)aIdx
+{
+}
+
+-(void)replaceObjectInChildrenAtIndex:(int)aIdx withObject:(id)aObject
+{
+}
+
+-(BOOL) isContainer
+{
+   return dynamic_cast<ContainerNode*>(proxiedElement)!=NULL;
+}
+
+-(void)_updateNameFromIndex:(int)aIdx
+{
+   [self willChangeValueForKey:@"nodeName"];
+   name = [NSString stringWithFormat:@"%d", aIdx];
+   [self didChangeValueForKey:@"nodeName"];
+}
+
+-(void)_prepChildren
+{
+   if(children)
+   {
+      return;
+   }
+   
+   NSMutableArray *lArray = [NSMutableArray array]; 
+   
+   if(proxiedElement)
+   {
+      switch(proxiedElement->GetNodeTypeId())
+      {
+         case ntObject:
+         {
+            ObjectNode *lObject = (ObjectNode *)proxiedElement;
+            for(ObjectNode::iterator lIter = lObject->Begin();
+               lIter != lObject->End();
+               lIter++)
+            {
+               [lArray addObject:[JsonCocoaNode nodeForElement:lIter->node withName:[NSString stringWithCString:lIter->name.c_str() encoding:NSUTF8StringEncoding]]];
+            }         
+            break;
+         }
+           
+         case ntArray:
+         {
+            ArrayNode *lJsonArray = (ArrayNode*)proxiedElement;
+            int lIdx = 0;
+            for(ArrayNode::iterator lIter = lJsonArray->Begin();
+               lIter != lJsonArray->End();
+               lIter++, lIdx++)
+            {
+               [lArray addObject:[JsonCocoaNode nodeForElement:*lIter withName:[NSString stringWithFormat:@"%d", lIdx]]];
+            }         
+            break;
+         }  
+         default:
+            lArray = nil;
+            break;
+      }
+   }
+   children = lArray;
+}
+
+-(json::TextRange)textRange
+{
+   return proxiedElement->GetAbsTextRange();
+}
+
+-(int)indexOfChildWithName:(NSString*)aName
+{
+   [self _prepChildren];
+   
+   int lRet = 0;
+   
+   NSEnumerator *lEnum = [children objectEnumerator];
+   while(JsonCocoaNode *lChildNode = [lEnum nextObject])
+   {
+      if([[lChildNode nodeName] isEqual:aName])
+      {
+         return lRet;
+      }
+      lRet++;
+   }
+   
+   return -1;
+}
+
+@end
