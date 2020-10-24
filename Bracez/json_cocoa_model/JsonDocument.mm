@@ -222,6 +222,7 @@ private:
 -(void)updateSemanticModel:(JsonFile*)aFile
 {
   [self willChangeValueForKey:@"rootNode"];
+  [self willChangeValueForKey:@"problems"];
     
     if(file) {
         delete file;
@@ -233,7 +234,9 @@ private:
     if(file) {
         file->addListener(jsonSemanticListenerBridge);
     }
-
+  
+    problemWrappers = nil;
+  [self didChangeValueForKey:@"problems"];
   [self didChangeValueForKey:@"rootNode"];
   
   _isSemanticModelDirty = NO;
@@ -327,7 +330,8 @@ private:
     
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
         JsonFile *tfile = new JsonFile();
-        std::string lstr((const char*)self.textStorage.string.UTF8String, self.textStorage.string.length);
+                
+        std::string lstr((const char*)self.textStorage.string.UTF8String);
         tfile->setText(lstr);
 
         //sleep(3);

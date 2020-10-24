@@ -16,21 +16,25 @@
    BOOL problemsList;
    BOOL bookmarksList;
    BOOL findPanel;
-   
-   
+   BOOL showNavPanel;
+
    BOOL verticalSplit;
 
    IBOutlet NSTabView *visualEditorTabView;
    IBOutlet NSScrollView *textEditorView;
    IBOutlet NSSplitView *editorSplit;
-   
+    
    IBOutlet NSTabView *navTabView;
+   IBOutlet NSView *navContainer;
    IBOutlet NSSplitView *navSplit;
 }
 
 -(id)init;
 
 -(void)awakeFromNib;
+
+-(void)setShowNavPanel:(BOOL)value;
+-(BOOL)showNavPanel;
 
 -(void)setShowTree:(NSNumber*)aValue;
 -(NSNumber*)showTree;

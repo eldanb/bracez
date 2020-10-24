@@ -315,8 +315,13 @@ inline void Reader::TokenStream::MatchString()
       }
    }
 
-   // eat the last '"' that we just peeked
-   inputStream.Get();
+    if(inputStream.EOS() == false) {
+        // eat the last '"' that we just peeked
+        inputStream.Get();
+    } else {
+        std::string sMessage = "Unterminated string constant.";
+        listener->Error(inputStream.GetLocation(), PARSER_ERROR_UNEXPECTED_CHARACTER, sMessage);
+    }
 }
 
 inline void Reader::TokenStream::MatchBareWordToken()
@@ -484,22 +489,26 @@ inline void Reader::Parse(ObjectNode*& object, Reader::TokenStream& tokenStream,
       MatchExpectedToken(Token::TOKEN_MEMBER_ASSIGN, tokenStream);
 
       // ...then the value itself (can be anything).
-      Node *nodeVal;
+      Node *nodeVal = NULL;
       Parse(nodeVal, tokenStream, lBegin);
 
-      // try adding it to the object (this could throw)
-      try
-      {
-         ObjectNode::Member &member = object->DomAddMemberNode(tokenName.sValue, nodeVal);
-         member.nameRange = TextRange(tokenName.locBegin-lBegin, tokenName.locEnd-lBegin);
-      }
-      catch (Exception&)
-      {
-         // must be a duplicate name
-         std::string sMessage = "Duplicate object member: " + tokenName.sValue; 
-         listener->Error(tokenName.locBegin, PARSER_ERROR_DUPLICATE_MEMBER, sMessage);
-      }
-
+       // try adding it to the object (this could throw)
+       if(nodeVal) {
+           try
+           {
+              ObjectNode::Member &member = object->DomAddMemberNode(tokenName.sValue, nodeVal);
+              member.nameRange = TextRange(tokenName.locBegin-lBegin, tokenName.locEnd-lBegin);
+           }
+           catch (Exception&)
+           {
+              // must be a duplicate name
+              std::string sMessage = "Duplicate object member: " + tokenName.sValue;
+              listener->Error(tokenName.locBegin, PARSER_ERROR_DUPLICATE_MEMBER, sMessage);
+           }
+       } else {
+           std::string sMessage = "Could not parse member value '" + tokenName.sValue + "'";
+           listener->Error(tokenName.locBegin, PARSER_ERROR_INVALID_MEMBER, sMessage);
+       }
       Token lTok;
       while(!tokenStream.EOS() &&
             (lTok = tokenStream.Peek(), lTok.nType != Token::TOKEN_NEXT_ELEMENT && lTok.nType != Token::TOKEN_OBJECT_END))
@@ -555,6 +564,11 @@ inline void Reader::Parse(ArrayNode*& array, Reader::TokenStream& tokenStream, T
          MatchExpectedToken(Token::TOKEN_NEXT_ELEMENT, tokenStream);
    }
 
+   if(tokenStream.EOS()) {
+       listener->Error(0, PARSER_ERROR_UNEXPECTED_EOS, "Expecting \",\" or \"]\"");
+       return;
+   }
+    
    TextCoordinate lEnd(tokenStream.Peek().locEnd);   
    array->textRange = TextRange(lBegin-aBaseOfs, lEnd-aBaseOfs);
    

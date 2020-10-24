@@ -46,6 +46,7 @@
 		B99B5ED611CD5D2800A33231 /* PreferencesWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B99B5ED411CD5D2800A33231 /* PreferencesWindow.m */; };
 		B9AADFFD253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9AADFFC253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm */; };
 		B9BBFDF0120D2CBE00E4E9AE /* LinesAndBookmarks.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9BBFDEE120D2CBE00E4E9AE /* LinesAndBookmarks.cpp */; };
+		B9D510B92540B13400B2286B /* NumberNonZeroValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = B9D510B82540B13400B2286B /* NumberNonZeroValueTransformer.m */; };
 		B9F4AD4B12E8DA8C00BF8233 /* ToolbarBookmarksTemplate.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B9F4AD4A12E8DA8C00BF8233 /* ToolbarBookmarksTemplate.pdf */; };
 		B9F4AD5612E8DB7C00BF8233 /* SearchPaneView.m in Sources */ = {isa = PBXBuildFile; fileRef = B9F4AD5512E8DB7C00BF8233 /* SearchPaneView.m */; };
 		B9F4AECD1303376000BF8233 /* DarkDiviterSplitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B9F4AECC1303376000BF8233 /* DarkDiviterSplitter.m */; };
@@ -124,6 +125,8 @@
 		B9AAE003253AB2FA00DE2559 /* marker_list.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = marker_list.h; sourceTree = "<group>"; };
 		B9BBFDEE120D2CBE00E4E9AE /* LinesAndBookmarks.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LinesAndBookmarks.cpp; path = json_model/LinesAndBookmarks.cpp; sourceTree = "<group>"; };
 		B9BBFDEF120D2CBE00E4E9AE /* LinesAndBookmarks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LinesAndBookmarks.h; path = json_model/LinesAndBookmarks.h; sourceTree = "<group>"; };
+		B9D510B72540B13400B2286B /* NumberNonZeroValueTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NumberNonZeroValueTransformer.h; sourceTree = "<group>"; };
+		B9D510B82540B13400B2286B /* NumberNonZeroValueTransformer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NumberNonZeroValueTransformer.m; sourceTree = "<group>"; };
 		B9F4AD4A12E8DA8C00BF8233 /* ToolbarBookmarksTemplate.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = ToolbarBookmarksTemplate.pdf; sourceTree = "<group>"; };
 		B9F4AD5412E8DB7C00BF8233 /* SearchPaneView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchPaneView.h; sourceTree = "<group>"; };
 		B9F4AD5512E8DB7C00BF8233 /* SearchPaneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchPaneView.m; sourceTree = "<group>"; };
@@ -310,6 +313,8 @@
 				B97B3C4B253B257000D19FF0 /* ButtonToolbarItem.m */,
 				B97B3C54253B2E9C00D19FF0 /* ViewModelEditor.h */,
 				B97B3C55253B2E9C00D19FF0 /* ViewModelEditor.m */,
+				B9D510B72540B13400B2286B /* NumberNonZeroValueTransformer.h */,
+				B9D510B82540B13400B2286B /* NumberNonZeroValueTransformer.m */,
 			);
 			name = Gui;
 			sourceTree = "<group>";
@@ -426,6 +431,7 @@
 				B934B53B122EF40F005B06D6 /* NodeTypeToColorTransformer.mm in Sources */,
 				B9264D9812A2D7C00037AD39 /* JsonFileListenerObjCBridge.mm in Sources */,
 				B94D2A0112B2C316007B9DA2 /* JsonMarker.mm in Sources */,
+				B9D510B92540B13400B2286B /* NumberNonZeroValueTransformer.m in Sources */,
 				B9F4AD5612E8DB7C00BF8233 /* SearchPaneView.m in Sources */,
 				B9F4AECD1303376000BF8233 /* DarkDiviterSplitter.m in Sources */,
 			);

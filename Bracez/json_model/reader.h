@@ -21,6 +21,7 @@ namespace json
 #define PARSER_ERROR_EXPECTED_EOS         4
 #define PARSER_ERROR_DUPLICATE_MEMBER     5
 #define PARSER_ERROR_MALFORMED_NUMBER     6
+#define PARSER_ERROR_INVALID_MEMBER       7
 
 class Reader
 {

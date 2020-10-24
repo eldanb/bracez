@@ -126,7 +126,12 @@
    
    NSTableView *lSelectingTable = aSender;
    NSArrayController *lArrayCtler = [[lSelectingTable infoForBinding:@"content"] valueForKey:NSObservedObjectKey];
-   JsonMarker *lSelMarker = [[lArrayCtler selectedObjects] objectAtIndex:0];
+    
+    JsonMarker *lSelMarker = NULL;
+    if(lArrayCtler.selectedObjects.count) {
+        lSelMarker = [[lArrayCtler selectedObjects] objectAtIndex:0];
+
+    }
    
    if(lSelMarker)
    {

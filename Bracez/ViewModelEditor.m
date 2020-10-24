@@ -24,8 +24,6 @@
     NSArray* topLevelObjects = nil;
     [nib instantiateWithOwner:self
               topLevelObjects:&topLevelObjects];
-    
-    self.view = topLevelObjects[1];
 }
 
 

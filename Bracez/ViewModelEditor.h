@@ -9,9 +9,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ViewModelEditor : NSToolbarItem
+@interface ViewModelEditor : NSToolbarItem {
+    NSView *view;
+}
+
 
 @property IBOutlet NSObjectController *viewModel;
+@property IBOutlet NSView *view;
 
 @end
 

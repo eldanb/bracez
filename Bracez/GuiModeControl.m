@@ -16,9 +16,10 @@
    self = [super init];
    if(self)
    {
-      textEditor=YES;
-      treeEditor = YES;
+      textEditor    = YES;
+      treeEditor    = YES;
       verticalSplit = YES;
+       bookmarksList = YES;
    }
    
    return self;
@@ -102,9 +103,11 @@
    [self willChangeValueForKey:@"showBookmarksList"];
    [self willChangeValueForKey:@"showFindPanel"];
    
-   problemsList = (aIdx==0) * aVal;
-   bookmarksList = (aIdx==1) * aVal;
-   findPanel = (aIdx==2) * aVal;
+    if(aVal) {
+        problemsList = (aIdx==0);
+        bookmarksList = (aIdx==1);
+        findPanel = (aIdx==2);
+    }
    
    [self didChangeValueForKey:@"showProblemsList"];
    [self didChangeValueForKey:@"showBookmarksList"];
@@ -112,8 +115,6 @@
    
    [self updateGui];   
 }
-
-
 
 -(void)setShowBookmarksList:(NSNumber*)aValue
 {
@@ -159,6 +160,14 @@
    return [NSNumber numberWithBool:verticalSplit];
 }
 
+-(void)setShowNavPanel:(BOOL)value {
+    showNavPanel = value;
+    [self updateGui];
+}
+
+-(BOOL)showNavPanel {
+    return showNavPanel;
+}
 
 static void animateSplitterPane(NSSplitView *aView, int aSize)
 {
@@ -178,8 +187,8 @@ static void animateSplitterPane(NSSplitView *aView, int aSize)
    BOOL lVisualShown = (lFrame.size.height * lFrame.size.width) > 0;
    lFrame = [textEditorView frame];
    BOOL lTextEditorShown = (lFrame.size.height * lFrame.size.width) > 0;
-   lFrame = [navTabView frame];
-   BOOL lNavPaneShown = (lFrame.size.height * lFrame.size.width) > 0;
+       
+   
       
    // Hide components as needed
    bool lHideVisual = (!treeEditor && !browserEditor);
@@ -215,29 +224,44 @@ static void animateSplitterPane(NSSplitView *aView, int aSize)
       animateSplitterPane(editorSplit, verticalSplit?[editorSplit frame].size.width:[editorSplit frame].size.height);
    } else if(textEditor && !lHideVisual && !(lTextEditorShown && lVisualShown))
    {
-      animateSplitterPane(editorSplit, (verticalSplit?[editorSplit frame].size.width:[editorSplit frame].size.height)/2);
+      animateSplitterPane(editorSplit, (verticalSplit?[editorSplit frame].size.width:[editorSplit frame].size.height)/4);
    }
    
    
-   // Update nav pane: first the tab
-   if(problemsList)
+    // Update nav pane: first the tab
+    if(showNavPanel) {
+       if(problemsList)
+       {
+          [navTabView selectTabViewItemWithIdentifier:@"problemsList"];
+       } else
+       if(bookmarksList)
+       {
+          [navTabView selectTabViewItemWithIdentifier:@"bookmarksList"];
+       } else
+       if(findPanel)
+       {
+          [navTabView selectTabViewItemWithIdentifier:@"findPanel"];
+       }
+    } else {
+        [navTabView selectTabViewItemWithIdentifier:@"blankTab"];
+    }
+    
+   if((!navContainer.hidden) != showNavPanel)
    {
-      [navTabView selectTabViewItemWithIdentifier:@"problemsList"];
-   } else 
-   if(bookmarksList)
-   {
-      [navTabView selectTabViewItemWithIdentifier:@"bookmarksList"];     
-   } else 
-   if(findPanel)
-   {
-      [navTabView selectTabViewItemWithIdentifier:@"findPanel"];           
-   }
-  
-   bool lNavPaneRequired = problemsList || bookmarksList || findPanel;
-   if(lNavPaneShown != lNavPaneRequired)
-   {
+       if(showNavPanel && [navSplit.arrangedSubviews indexOfObject:navContainer]==NSNotFound) {
+           [navSplit addArrangedSubview:navContainer];
+           navContainer.hidden = NO;
+       }
        CGFloat frameWidth = [navSplit frame].size.width;
-       animateSplitterPane(navSplit, frameWidth - (lNavPaneRequired?frameWidth/3:-[navSplit dividerThickness]));
+       animateSplitterPane(navSplit, frameWidth - (showNavPanel?frameWidth/3:-[navSplit dividerThickness]));
+       if(!showNavPanel) {
+           if([navSplit.arrangedSubviews indexOfObject:navContainer]!=NSNotFound) {
+               [navSplit removeArrangedSubview:navContainer];
+           }
+           
+           navContainer.hidden = YES;
+       }
+
    }
 }
 
@@ -248,11 +272,8 @@ static void animateSplitterPane(NSSplitView *aView, int aSize)
    {      
       return !textEditor || !(treeEditor || browserEditor);
    } else {
-      return (aIdx==0) && !problemsList;
+      return (aIdx==0) && showNavPanel;
    } 
 }
-
-
-
       
 @end
