@@ -9,7 +9,7 @@
 #import "JsonDocument.h"
 #import "JsonMarker.h"
 #import "SyntaxHilightJsonVisitor.h"
-
+#import "NSString+WStringUtils.h"
 #include "marker_list.h"
 
 
@@ -202,7 +202,7 @@ private:
 
 -(NSIndexPath*)pathFromJsonPathString:(NSString*)jsonPathString {
     JsonPath lPath;
-    if(file->FindPathForJsonPathString([jsonPathString UTF8String], lPath)) {
+    if(file->FindPathForJsonPathString(jsonPathString.cStringWchar, lPath)) {
         return [self indexPathFromJsonPath:lPath];
     } else {
         return nil;
@@ -247,8 +247,9 @@ private:
 -(void)notifyJsonTextSpliced:(JsonFile*)aSender from:(TextCoordinate)aOldOffset length:(TextLength)aOldLength newLength:(TextLength)aNewLength
 {
    _isSemanticModelTextChangeInProgress = YES;
-   NSString *lNewText = [NSString stringWithCString:aSender->getText().substr(aOldOffset, aNewLength).c_str()
-                                           encoding:NSUTF8StringEncoding];
+
+    
+    NSString *lNewText = [NSString stringWithWstring:aSender->getText().substr(aOldOffset, aNewLength)];
     [self.textStorage replaceCharactersInRange:NSMakeRange(aOldOffset, aOldLength)
                                     withString:lNewText];
    
@@ -331,7 +332,7 @@ private:
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
         JsonFile *tfile = new JsonFile();
                 
-        std::string lstr((const char*)self.textStorage.string.UTF8String);
+        std::wstring lstr(self.textStorage.string.cStringWchar);
         tfile->setText(lstr);
 
         //sleep(3);

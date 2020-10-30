@@ -8,6 +8,7 @@
 
 #import "JsonCocoaNode.h"
 #include "reader.h"
+#include "NSString+WStringUtils.h"
 
 using namespace json;
 
@@ -59,16 +60,17 @@ using namespace json;
    } else
    if([lValString characterAtIndex:0]=='"')
    {
-      stringstream str([lValString UTF8String]);
+       
+      wstringstream str(lValString.cStringWchar);
       StringNode *lNode;
       Reader::Read(lNode, str);
       
       lNewNode = lNode;
    } else
    {
-      const char *cstr = [lValString UTF8String];
-      const char *cstr_end;
-      double lDoubleVal = strtod(cstr, (char**)&cstr_end);
+      const wchar_t *cstr = lValString.cStringWchar;
+      const wchar_t *cstr_end;
+      double lDoubleVal = wcstod(cstr, (wchar_t**)&cstr_end);
       
       if(!*cstr_end)
       {
@@ -106,9 +108,9 @@ using namespace json;
 
       default:
          {
-            std::string lTxt;
+            std::wstring lTxt;
             proxiedElement->CalculateJsonTextRepresentation(lTxt);
-            return [NSString stringWithCString:lTxt.c_str() encoding:NSUTF8StringEncoding];
+             return [NSString stringWithWstring:lTxt];
          }
    }
 }
@@ -157,7 +159,7 @@ using namespace json;
    int lIdxInParent = lParentNode->GetIndexOfChild(proxiedElement);
    
    // Adjust underlying document: (a) detach child from current position
-   string lTxt = proxiedElement->GetDocumentText();
+   wstring lTxt = proxiedElement->GetDocumentText();
    Node *lThis;
    lParentNode->DetachChildAt(lIdxInParent, &lThis);
    
@@ -174,7 +176,7 @@ using namespace json;
    ObjectNode *lObjNode = dynamic_cast<ObjectNode*> (lNewParent);
    if(lObjNode)
    {
-      lObjNode->InsertMemberAt(aIndex, [name UTF8String], lThis, &lTxt);
+      lObjNode->InsertMemberAt(aIndex, name.cStringWchar, lThis, &lTxt);
    } else 
    {
       // (b.2) New container is an array?
@@ -266,7 +268,10 @@ using namespace json;
                lIter != lObject->End();
                lIter++)
             {
-               [lArray addObject:[JsonCocoaNode nodeForElement:lIter->node withName:[NSString stringWithCString:lIter->name.c_str() encoding:NSUTF8StringEncoding]]];
+                NSString *nodeName = [NSString stringWithWstring:lIter->name];
+
+               [lArray addObject:[JsonCocoaNode nodeForElement:lIter->node
+                                                      withName:nodeName]];
             }         
             break;
          }

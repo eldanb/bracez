@@ -28,6 +28,7 @@
 		B945FD57119E832B00DCFAAE /* JsonDocument.mm in Sources */ = {isa = PBXBuildFile; fileRef = B945FD56119E832B00DCFAAE /* JsonDocument.mm */; };
 		B945FDC6119E899D00DCFAAE /* NodeSelectionController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B945FDC5119E899D00DCFAAE /* NodeSelectionController.mm */; };
 		B94D2A0112B2C316007B9DA2 /* JsonMarker.mm in Sources */ = {isa = PBXBuildFile; fileRef = B94D2A0012B2C316007B9DA2 /* JsonMarker.mm */; };
+		B952A460254C0010005BFB1C /* NSString+WStringUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = B952A45F254BFEA7005BFB1C /* NSString+WStringUtils.mm */; };
 		B97B3C4C253B257000D19FF0 /* ButtonToolbarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B97B3C4B253B257000D19FF0 /* ButtonToolbarItem.m */; };
 		B97B3C56253B2E9C00D19FF0 /* ViewModelEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = B97B3C55253B2E9C00D19FF0 /* ViewModelEditor.m */; };
 		B97B3C59253B2EAF00D19FF0 /* ViewModelEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = B97B3C58253B2EAF00D19FF0 /* ViewModelEditor.xib */; };
@@ -96,6 +97,8 @@
 		B945FDC5119E899D00DCFAAE /* NodeSelectionController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NodeSelectionController.mm; sourceTree = "<group>"; };
 		B94D29FF12B2C316007B9DA2 /* JsonMarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsonMarker.h; path = json_cocoa_model/JsonMarker.h; sourceTree = "<group>"; };
 		B94D2A0012B2C316007B9DA2 /* JsonMarker.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = JsonMarker.mm; path = json_cocoa_model/JsonMarker.mm; sourceTree = "<group>"; };
+		B952A45E254BFEA7005BFB1C /* NSString+WStringUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+WStringUtils.h"; sourceTree = "<group>"; };
+		B952A45F254BFEA7005BFB1C /* NSString+WStringUtils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSString+WStringUtils.mm"; sourceTree = "<group>"; };
 		B97B3C4A253B257000D19FF0 /* ButtonToolbarItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ButtonToolbarItem.h; sourceTree = "<group>"; };
 		B97B3C4B253B257000D19FF0 /* ButtonToolbarItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ButtonToolbarItem.m; sourceTree = "<group>"; };
 		B97B3C54253B2E9C00D19FF0 /* ViewModelEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewModelEditor.h; sourceTree = "<group>"; };
@@ -243,6 +246,8 @@
 				B934ADFF12205F6C005B06D6 /* SplitterAnimation.h */,
 				B934AE0012205F6C005B06D6 /* SplitterAnimation.m */,
 				B9F4ADED12E96E1400BF8233 /* stopwatch.h */,
+				B952A45E254BFEA7005BFB1C /* NSString+WStringUtils.h */,
+				B952A45F254BFEA7005BFB1C /* NSString+WStringUtils.mm */,
 			);
 			name = Util;
 			sourceTree = "<group>";
@@ -419,6 +424,7 @@
 				B987820A11C4DE9600435107 /* PreferencesDialogController.mm in Sources */,
 				B987825911C535D800435107 /* JsonPreferencesDialogController.mm in Sources */,
 				B99B5A5D11C6CB7E00A33231 /* AnimatingTabView.m in Sources */,
+				B952A460254C0010005BFB1C /* NSString+WStringUtils.mm in Sources */,
 				B99B5C4111CBCC2F00A33231 /* TextEditorGutterView.mm in Sources */,
 				B99B5ED611CD5D2800A33231 /* PreferencesWindow.m in Sources */,
 				B97B3C4C253B257000D19FF0 /* ButtonToolbarItem.m in Sources */,

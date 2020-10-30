@@ -60,15 +60,15 @@ public:
 
 
    // if you know what the document looks like, call one of these...
-   static void Read(ObjectNode *& object, std::istream& istr);
-   static void Read(ArrayNode *& array, std::istream& istr);
-   static void Read(StringNode *& string, std::istream& istr);
-   static void Read(NumberNode *& number, std::istream& istr);
-   static void Read(BooleanNode *& boolean, std::istream& istr);
-   static void Read(NullNode *& null, std::istream& istr);
+   static void Read(ObjectNode *& object, std::wistream& istr);
+   static void Read(ArrayNode *& array, std::wistream& istr);
+   static void Read(StringNode *& string, std::wistream& istr);
+   static void Read(NumberNode *& number, std::wistream& istr);
+   static void Read(BooleanNode *& boolean, std::wistream& istr);
+   static void Read(NullNode *& null, std::wistream& istr);
 
    // ...otherwise, if you don't know, call this & visit it
-   static void Read(Node *& elementRoot, std::istream& istr, ParseListener *aParseListener=NULL);
+   static void Read(Node *& elementRoot, std::wistream& istr, ParseListener *aParseListener=NULL);
 
 private:
    Reader(ParseListener *aParseListener);
@@ -97,7 +97,7 @@ private:
       };
        
       Type nType;
-      std::string sValue;
+      std::wstring sValue;
 
       // for malformed file debugging
       TextCoordinate locBegin;
@@ -109,7 +109,7 @@ private:
    class TokenStream;
 
    template <typename ElementTypeT>   
-   static void Read_i(ElementTypeT& element, std::istream& istr, ParseListener *aListener=NULL);
+   static void Read_i(ElementTypeT& element, std::wistream& istr, ParseListener *aListener=NULL);
 
 public:
    // parsing token sequence into element structure
@@ -121,7 +121,7 @@ public:
    void Parse(BooleanNode *& boolean, TokenStream& tokenStream, TextCoordinate aBaseOfs=0);
    void Parse(NullNode *& null, TokenStream& tokenStream, TextCoordinate aBaseOfs=0);
 
-   const std::string& MatchExpectedToken(Token::Type nExpected, TokenStream& tokenStream);
+   const std::wstring& MatchExpectedToken(Token::Type nExpected, TokenStream& tokenStream);
     
 private:
     ParseListener *listener;

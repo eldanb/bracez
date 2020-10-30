@@ -64,14 +64,14 @@ namespace json
       const TextRange &GetTextRange() const;
       TextRange GetAbsTextRange() const;
       
-      string GetDocumentText() const;
+      wstring GetDocumentText() const;
       
       virtual void accept(NodeVisitor *aVisitor) const = 0;
       virtual void accept(NodeVisitor *aVisitor) = 0;
       
       virtual NodeTypeId GetNodeTypeId() const = 0;
    
-      virtual void CalculateJsonTextRepresentation(std::string &aDest) const = 0;
+      virtual void CalculateJsonTextRepresentation(std::wstring &aDest) const = 0;
        
    private:
       friend class Reader;
@@ -139,14 +139,14 @@ namespace json
       int FindChildEndingAfter(const TextCoordinate &aDocOffset) const;
 
       void InsertMemberAt(int aIdx, Node *aElement, 
-                          const string *aElementText=NULL);
+                          const wstring *aElementText=NULL);
       
       void accept(NodeVisitor *aVisitor) const;
       void accept(NodeVisitor *aVisitor);
          
       NodeTypeId GetNodeTypeId() const;
 
-      void CalculateJsonTextRepresentation(std::string &aDest) const;
+      void CalculateJsonTextRepresentation(std::wstring &aDest) const;
       
       // DOM-only modifiers
       void DomAddElementNode(Node *aElement);
@@ -161,10 +161,10 @@ namespace json
    
       struct Member
       {
-         Member(const string &aName, Node *aNode) : node(aNode), name(aName) {}
+         Member(const wstring &aName, Node *aNode) : node(aNode), name(aName) {}
          Member() : node(NULL) {}
 
-         string name;
+         wstring name;
          TextRange nameRange;
          
          Node *node;
@@ -188,23 +188,23 @@ namespace json
 
       void SetChildAt(int aIdx, Node *aNode);
       void DetachChildAt(int aIdx, Node **aNode);
-      ObjectNode::Member &InsertMemberAt(int aIdx, const string &aName, 
-                           Node *aElement, const string *aElementText=NULL);
+      ObjectNode::Member &InsertMemberAt(int aIdx, const wstring &aName,
+                           Node *aElement, const wstring *aElementText=NULL);
 
       int FindChildEndingAfter(const TextCoordinate &aDocOffset) const;
 
-      const string &GetMemberNameAt(int aIdx) const;
-      int GetIndexOfMemberWithName(const string &name) const;
+      const wstring &GetMemberNameAt(int aIdx) const;
+      int GetIndexOfMemberWithName(const wstring &name) const;
 
       void accept(NodeVisitor *aVisitor) const;
       void accept(NodeVisitor *aVisitor);
 
       NodeTypeId GetNodeTypeId() const;
 
-      void CalculateJsonTextRepresentation(std::string &aDest) const;
+      void CalculateJsonTextRepresentation(std::wstring &aDest) const;
 
       // DOM-only modifiers
-      Member &DomAddMemberNode(const string &aName, Node *aElement);
+      Member &DomAddMemberNode(const wstring &aName, Node *aElement);
 
    protected:
       void AdjustChildRangeAt(int aIdx, int aDiff);
@@ -236,7 +236,7 @@ namespace json
       
       JsonFile *GetOwner() const { return owner; }
       
-      void CalculateJsonTextRepresentation(std::string &aDest) const;
+      void CalculateJsonTextRepresentation(std::wstring &aDest) const;
 
    private:
       Node *rootNode;
@@ -256,7 +256,7 @@ namespace json
    public:
       NodeTypeId GetNodeTypeId() const;
 
-      void CalculateJsonTextRepresentation(std::string &aDest) const;
+      void CalculateJsonTextRepresentation(std::wstring &aDest) const;
 
    protected:  
 
@@ -274,7 +274,7 @@ namespace json
             
       operator ValueType() const { return value; }
 
-      void CalculateJsonTextRepresentation(std::string &aDest) const;
+      void CalculateJsonTextRepresentation(std::wstring &aDest) const;
       
    protected:
 
@@ -282,7 +282,7 @@ namespace json
       ValueType value;
    } ;
 
-   typedef ValueNode<std::string, ntString> StringNode;
+   typedef ValueNode<std::wstring, ntString> StringNode;
    typedef ValueNode<double, ntNumber> NumberNode;
    typedef ValueNode<bool, ntBoolean> BooleanNode;
 
@@ -298,9 +298,7 @@ namespace json
    struct JsonFileChangeListener
    {
       virtual void notifyTextSpliced(JsonFile *aSender, TextCoordinate aOldOffset, 
-                                     TextLength aOldLength, TextLength aNewLength) {} 
-      //virtual void notifyLinesSpliced(JsonFile *aSender, TextCoordinate aOldLine,
-        //                             TextLength aOldLineCount, TextLength aNewLineCount) {} 
+                                     TextLength aOldLength, TextLength aNewLength) {}
       virtual void notifyErrorsChanged(JsonFile *aSender) {}
    };
    
@@ -342,14 +340,14 @@ namespace json
    public:
       JsonFile();
       
-      void setText(const std::string &aText);
-      const std::string &getText() const;
+      void setText(const std::wstring &aText);
+      const std::wstring &getText() const;
       
       DocumentNode *getDom();
       const DocumentNode *getDom() const;
         
       bool FindPathContaining(unsigned int aDocOffset, JsonPath &aRet) const;
-      bool FindPathForJsonPathString(std::string aPathString, JsonPath &aRet);
+      bool FindPathForJsonPathString(std::wstring aPathString, JsonPath &aRet);
              
       void addListener(JsonFileChangeListener *aListener);
       void removeListener(JsonFileChangeListener *aListener);
@@ -357,7 +355,7 @@ namespace json
       const MarkerList<ParseErrorMarker> &getErrors() { return errors; }
       
    private:
-      void spliceJsonTextByDomChange(TextCoordinate aOffsetStart, TextLength aLen, const std::string &aNewText);
+      void spliceJsonTextByDomChange(TextCoordinate aOffsetStart, TextLength aLen, const std::wstring &aNewText);
       
       void updateTreeOffsetsAfterSplice(TextCoordinate aOffsetStart, TextLength aLen, TextLength aNewLen);
       void updateErrorsAfterSplice(TextCoordinate aOffsetStart, TextLength aLen, TextLength aNewLen);
@@ -380,7 +378,7 @@ namespace json
       
       DocumentNode *jsonDom;      
 
-      std::string jsonText;      
+      std::wstring jsonText;      
 
       MarkerList<ParseErrorMarker> errors;
       

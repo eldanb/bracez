@@ -21,7 +21,7 @@
 namespace json 
 {
    
-static string jsonize(const string &aSrc);
+static wstring jsonize(const wstring &aSrc);
 
    
 namespace priv
@@ -99,7 +99,7 @@ const TextRange &Node::GetTextRange() const
 }
    
    
-string Node::GetDocumentText() const
+wstring Node::GetDocumentText() const
 {
    TextRange lAbsRange = GetAbsTextRange();
    return GetDocument()->GetOwner()->getText().substr(lAbsRange.start, lAbsRange.length());
@@ -212,7 +212,7 @@ void ArrayNode::SetChildAt(int aIdx, Node *aNode)
    Node *lOldNode = elements[aIdx];
 
    // Get new node text and range
-   std::string lNewNodeText;
+   std::wstring lNewNodeText;
    aNode->CalculateJsonTextRepresentation(lNewNodeText);
 
    int lNewStart = lOldNode->textRange.start;
@@ -252,10 +252,10 @@ void ArrayNode::DetachChildAt(int aIdx, Node **aNode)
    
    elements.erase(lIter);   
    
-   GetDocument()->GetOwner()->spliceJsonTextByDomChange(lSpliceRange.start, lSpliceRange.length(), string(""));
+   GetDocument()->GetOwner()->spliceJsonTextByDomChange(lSpliceRange.start, lSpliceRange.length(), wstring(L""));
 }
    
-void ArrayNode::InsertMemberAt(int aIdx, Node *aElement, const string *aElementText)
+void ArrayNode::InsertMemberAt(int aIdx, Node *aElement, const wstring *aElementText)
 {
    // Don't send notifications till we're thru
    DeferNotificationsInBlock lDnib(GetDocument()->GetOwner());
@@ -285,10 +285,10 @@ void ArrayNode::InsertMemberAt(int aIdx, Node *aElement, const string *aElementT
    aElement->parent = this;
    
    // Calculate element text: start with name
-   string lCalculatedText;   
+   wstring lCalculatedText;
    if(lIsLast && aIdx)
    {
-      lCalculatedText = ", ";
+      lCalculatedText = L", ";
       lElemAddr+=2;
    }
   
@@ -299,7 +299,7 @@ void ArrayNode::InsertMemberAt(int aIdx, Node *aElement, const string *aElementT
       lCalculatedText += *aElementText;
       lElementTextLen = aElementText->length();
    } else {
-      string lTxt;
+      wstring lTxt;
       aElement->CalculateJsonTextRepresentation(lTxt);
       lElementTextLen = lTxt.length();
       lCalculatedText += lTxt;
@@ -308,7 +308,7 @@ void ArrayNode::InsertMemberAt(int aIdx, Node *aElement, const string *aElementT
    // Add comma if not last element
    if(!lIsLast)
    {
-      lCalculatedText += ", ";
+      lCalculatedText += L", ";
    } 
    
    // Update document text
@@ -358,7 +358,7 @@ NodeTypeId ArrayNode::GetNodeTypeId() const
    return ntArray;
 }
 
-void ArrayNode::CalculateJsonTextRepresentation(std::string &aDest) const
+void ArrayNode::CalculateJsonTextRepresentation(std::wstring &aDest) const
 {
    // TODO
 }
@@ -418,7 +418,7 @@ const Node *ObjectNode::GetChildAt(int aIdx) const
    return members[aIdx].node;
 }
  
-int ObjectNode::GetIndexOfMemberWithName(const string &name) const {
+int ObjectNode::GetIndexOfMemberWithName(const wstring &name) const {
     for(Members::const_iterator iter = members.begin();
         iter != members.end();
         iter++) {
@@ -446,7 +446,7 @@ void ObjectNode::SetChildAt(int aIdx, Node *aNode)
 
    
    // Get new node text and range
-   std::string lNewNodeText;
+   std::wstring lNewNodeText;
    aNode->CalculateJsonTextRepresentation(lNewNodeText);
    
    int lNewStart = lOldNode->textRange.start;
@@ -502,12 +502,12 @@ int ObjectNode::FindChildEndingAfter(const TextCoordinate &aDocOffset) const
    return lContainingElement - members.begin();
 }
 
-const string &ObjectNode::GetMemberNameAt(int aIdx) const
+const wstring &ObjectNode::GetMemberNameAt(int aIdx) const
 {
    return members[aIdx].name;
 }
    
-ObjectNode::Member &ObjectNode::InsertMemberAt(int aIdx, const string &aName, Node *aElement, const string *aElementText)
+ObjectNode::Member &ObjectNode::InsertMemberAt(int aIdx, const wstring &aName, Node *aElement, const wstring *aElementText)
 {
    // Don't send notifications till we're thru
    DeferNotificationsInBlock lDnib(GetDocument()->GetOwner());
@@ -540,7 +540,7 @@ ObjectNode::Member &ObjectNode::InsertMemberAt(int aIdx, const string &aName, No
    aElement->parent = this;
    
    // Calculate element text: start with name
-   string lCalculatedText;
+   wstring lCalculatedText;
    int lNameLen;
 
    lCalculatedText = jsonize(lMember.name);
@@ -548,11 +548,11 @@ ObjectNode::Member &ObjectNode::InsertMemberAt(int aIdx, const string &aName, No
    
    if(lIsLast && aIdx)
    {
-      lCalculatedText = ", " + lCalculatedText;
+      lCalculatedText = L", " + lCalculatedText;
       lNameAddr+=2;
    }
    
-   lCalculatedText += ": ";
+   lCalculatedText += L": ";
    
    // (Update node start address to skip name)
    int lElemAddr = lChangeAddr + lCalculatedText.length();
@@ -564,7 +564,7 @@ ObjectNode::Member &ObjectNode::InsertMemberAt(int aIdx, const string &aName, No
       lCalculatedText += *aElementText;
       lElementTextLen = aElementText->length();
    } else {
-      string lTxt;
+      wstring lTxt;
       aElement->CalculateJsonTextRepresentation(lTxt);
       lCalculatedText += lTxt;
       lElementTextLen = lTxt.length();
@@ -572,7 +572,7 @@ ObjectNode::Member &ObjectNode::InsertMemberAt(int aIdx, const string &aName, No
 
    if(!lIsLast)
    {
-      lCalculatedText += ", ";
+      lCalculatedText += L", ";
    } 
   
    // Update document text
@@ -589,7 +589,7 @@ ObjectNode::Member &ObjectNode::InsertMemberAt(int aIdx, const string &aName, No
    return *lIter;
 }
    
-ObjectNode::Member &ObjectNode::DomAddMemberNode(const string &aName, Node *aElement)
+ObjectNode::Member &ObjectNode::DomAddMemberNode(const wstring &aName, Node *aElement)
 {
    Member lMemberInfo;
    lMemberInfo.name = aName;
@@ -629,7 +629,7 @@ void ObjectNode::DetachChildAt(int aIdx, Node **aNode)
 
    members.erase(lIter);   
 
-   GetDocument()->GetOwner()->spliceJsonTextByDomChange(lSpliceRange.start, lSpliceRange.length(), "");
+   GetDocument()->GetOwner()->spliceJsonTextByDomChange(lSpliceRange.start, lSpliceRange.length(), L"");
 }
 
 NodeTypeId ObjectNode::GetNodeTypeId() const
@@ -656,7 +656,7 @@ void ObjectNode::accept(NodeVisitor *aVisitor)
 }
    
 
-void ObjectNode::CalculateJsonTextRepresentation(std::string &aDest) const
+void ObjectNode::CalculateJsonTextRepresentation(std::wstring &aDest) const
 {
    // TODO
 }
@@ -720,7 +720,7 @@ void DocumentNode::accept(NodeVisitor *aVisitor)
     }
 }
 
-void DocumentNode::CalculateJsonTextRepresentation(std::string &aDest) const
+void DocumentNode::CalculateJsonTextRepresentation(std::wstring &aDest) const
 {
    // TODO
 }
@@ -749,9 +749,9 @@ NodeTypeId NullNode::GetNodeTypeId() const
    return ntNull;
 }
 
-void NullNode::CalculateJsonTextRepresentation(std::string &aDest) const
+void NullNode::CalculateJsonTextRepresentation(std::wstring &aDest) const
 {
-   aDest = "null";
+   aDest = L"null";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -759,63 +759,31 @@ void NullNode::CalculateJsonTextRepresentation(std::string &aDest) const
 
 
 template<> 
-void ValueNode<std::string, ntString>::CalculateJsonTextRepresentation(std::string &aDest) const
+void ValueNode<std::wstring, ntString>::CalculateJsonTextRepresentation(std::wstring &aDest) const
 {
-   stringstream lStream;
+   wstringstream lStream;
    
-   lStream << '"';
+   lStream << L'"';
 
-   std::string::const_iterator it(value.begin()),
+   std::wstring::const_iterator it(value.begin()),
                                itEnd(value.end());
    for (; it != itEnd; ++it)
    {
       switch (*it)
       {
-         case '"':         lStream << "\\\"";   break;
-         case '\\':        lStream << "\\\\";   break;
-         case '\b':        lStream << "\\b";    break;
-         case '\f':        lStream << "\\f";    break;
-         case '\n':        lStream << "\\n";    break;
-         case '\r':        lStream << "\\r";    break;
-         case '\t':        lStream << "\\t";    break;
+         case L'"':         lStream << L"\\\"";   break;
+         case L'\\':        lStream << L"\\\\";   break;
+         case L'\b':        lStream << L"\\b";    break;
+         case L'\f':        lStream << L"\\f";    break;
+         case L'\n':        lStream << L"\\n";    break;
+         case L'\r':        lStream << L"\\r";    break;
+         case L'\t':        lStream << L"\\t";    break;
          default:
-            if (*it >= 0x20) {
+            if (*it >= 0x20 && *it < 128) {
                lStream << *it;
             }
             else {
-                // UTF8
-                unsigned int uc[4] = { (unsigned char)(*it) };
-                int length = 0, i;
-				  
-                if (uc[0] < 0x80)              length = 1;
-                else if ((uc[0] >> 5) == 0x6)  length = 2;
-                else if ((uc[0] >> 4) == 0xe)  length = 3;
-                else if ((uc[0] >> 3) == 0x1e) length = 4;
-				  
-                for (i = 1; (i < length) && (++it != itEnd); ++i)
-                    uc[i] = (unsigned char)(*it);
-				  
-                if (i == length) {
-                    unsigned int codepoint = 0;
-                    if (length == 1) codepoint = uc[0];
-                    else if (length == 2) codepoint = ((uc[0] << 6) & 0x7ff) + (uc[1] & 0x3f);
-                    else if (length == 3) codepoint = ((uc[0] << 12) & 0xffff) + ((uc[1] << 6) & 0xfff) + (uc[2] & 0x3f);
-                    else if (length == 4) codepoint = ((uc[0] << 18) & 0x1fffff) + ((uc[1] << 12) & 0x3ffff) + ((uc[2] << 6) & 0xfff) + (uc[3] & 0x3f);
-                    lStream << std::hex << std::setfill('0');
-                    if (codepoint > 0xffff) {
-                        lStream << "\\u" << std::setw(4) << (0xd800 + ((codepoint - 0x10000) >> 10));
-                        lStream << "\\u" << std::setw(4) << (0xDC00 + ((codepoint - 0x10000) & 0x3ff));
-                    }
-                    else {
-                        lStream << "\\u" << std::setw(4) << (codepoint & 0xffff);
-                    }
-                }
-                else {
-                    lStream << '?';
-                    if (it == itEnd) {
-                        --it; // We have a uncode error and it was advanced too much
-                    }
-                }
+                lStream << "\\u" << std::setw(4) << (*it & 0xffff);
             }
       }
    }
@@ -827,9 +795,9 @@ void ValueNode<std::string, ntString>::CalculateJsonTextRepresentation(std::stri
 
 
 template<> 
-void ValueNode<double, ntNumber>::CalculateJsonTextRepresentation(std::string &aDest) const
+void ValueNode<double, ntNumber>::CalculateJsonTextRepresentation(std::wstring &aDest) const
 {
-   stringstream lStream;
+   wstringstream lStream;
 
    lStream << std::setprecision(20) << value;
 
@@ -837,9 +805,9 @@ void ValueNode<double, ntNumber>::CalculateJsonTextRepresentation(std::string &a
 }
 
 template<> 
-void ValueNode<bool, ntBoolean>::CalculateJsonTextRepresentation(std::string &aDest) const
+void ValueNode<bool, ntBoolean>::CalculateJsonTextRepresentation(std::wstring &aDest) const
 {
-   aDest = value ? "true" : "false";
+   aDest = value ? L"true" : L"false";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -878,12 +846,12 @@ JsonFile::JsonFile()
    jsonDom = new DocumentNode(this, new NullNode());
 }
       
-void JsonFile::setText(const string &aText)
+void JsonFile::setText(const wstring &aText)
 {
    JsonFileParseListener listener(this);
    
    jsonText = aText;
-   stringstream lStream(aText);
+   wstringstream lStream(aText);
    
    stopwatch lStopWatch("Read Json");
    Node *lNode = NULL;
@@ -893,7 +861,7 @@ void JsonFile::setText(const string &aText)
    jsonDom = new DocumentNode(this, lNode);
 }
 
-const string &JsonFile::getText() const
+const wstring &JsonFile::getText() const
 {
    return jsonText;
 }
@@ -908,11 +876,11 @@ const DocumentNode *JsonFile::getDom() const
    return jsonDom;
 }
 
-bool JsonFile::FindPathForJsonPathString(std::string aPathString, JsonPath &aRet) {
+bool JsonFile::FindPathForJsonPathString(std::wstring aPathString, JsonPath &aRet) {
     Node *lCurNode = jsonDom->GetChildAt(0);
-    istringstream lPathStream(aPathString.c_str());
-    string lPathComponent;
-    while(getline(lPathStream, lPathComponent, '.')) {
+    wstringstream lPathStream(aPathString.c_str());
+    wstring lPathComponent;
+    while(getline(lPathStream, lPathComponent, L'.')) {
         if(ObjectNode *lCurObjectNode = dynamic_cast<ObjectNode*>(lCurNode)) {
             int lMemberIdx = lCurObjectNode->GetIndexOfMemberWithName(lPathComponent);
             if(lMemberIdx < 0) {
@@ -922,8 +890,8 @@ bool JsonFile::FindPathForJsonPathString(std::string aPathString, JsonPath &aRet
             lCurNode = lCurObjectNode->GetChildAt(lMemberIdx);
         } else
         if(ArrayNode *lCurArrayNode = dynamic_cast<ArrayNode*>(lCurNode)) {
-            char * p;
-            int lArrayIndex = strtol(lPathComponent.c_str(), &p, 10);
+            wchar_t * p;
+            int lArrayIndex = wcstol(lPathComponent.c_str(), &p, 10);
             if(*p != 0) {
                return false;
             }
@@ -961,7 +929,7 @@ bool JsonFile::FindPathContaining(unsigned int aDocOffset, JsonPath &path) const
 
 
 
-void JsonFile::spliceJsonTextByDomChange(TextCoordinate aOffsetStart, TextLength aLen, const std::string &aNewText)
+void JsonFile::spliceJsonTextByDomChange(TextCoordinate aOffsetStart, TextLength aLen, const std::wstring &aNewText)
 {
    // Don't send notifications till we're thru
    DeferNotificationsInBlock lDnib(this);
@@ -1103,10 +1071,10 @@ void JsonFile::notify(const Notification &aNotification)
    }
 }
    
-static string jsonize(const string &aSrc)
+static wstring jsonize(const wstring &aSrc)
 {
    StringNode lNode(aSrc);
-   string lRet;
+   wstring lRet;
    lNode.CalculateJsonTextRepresentation(lRet);
    return lRet;
 }

@@ -9,6 +9,7 @@ Author: Terry Caton
 #include <cassert>
 #include <set>
 #include <sstream>
+#include <codecvt>
 
 /*  
 
@@ -17,6 +18,14 @@ TODO:
 * unicode character decoding
 
 */
+
+
+// convert wstring to UTF-8 string
+static std::string wstring_to_utf8 (const std::wstring& str)
+{
+    std::wstring_convert< std::codecvt_utf8<wchar_t> > myconv;
+    return myconv.to_bytes(str);
+}
 
 namespace json
 {
@@ -28,12 +37,12 @@ namespace json
 class Reader::InputStream // would be cool if we could inherit from std::istream & override "get"
 {
 public:
-   InputStream(std::istream& iStr, ParseListener *aListener = NULL) :
+   InputStream(std::wistream& iStr, ParseListener *aListener = NULL) :
       m_iStr(iStr), m_Location(0), m_parseListener(aListener) {}
 
    // protect access to the input stream, so we can keeep track of document/line offsets
-   char Get(); // big, define outside
-   char Peek() {
+   wchar_t Get(); // big, define outside
+   wchar_t Peek() {
       assert(m_iStr.eof() == false); // enforce reading of only valid stream data 
       return m_iStr.peek();
    }
@@ -43,12 +52,12 @@ public:
       return m_iStr.eof();
    }
 
-   bool VerifyString(const std::string &sExpected)
+   bool VerifyString(const std::wstring &sExpected)
    {
       bool lRet=true;
       int lPerformedGetCount  = 0;
-      std::string::const_iterator it(sExpected.begin()),
-                                 itEnd(sExpected.end());
+      std::wstring::const_iterator it(sExpected.begin()),
+                                   itEnd(sExpected.end());
       for ( ; lRet && it != itEnd; ++it) {
           if (EOS() ||      // did we reach the end before finding what we're looking for...
               (lPerformedGetCount++, m_iStr.get()) != *it) // ...or did we find something different?
@@ -68,19 +77,19 @@ public:
    const TextCoordinate& GetLocation() const { return m_Location; }
 
 private:
-   std::istream& m_iStr;
+   std::wistream& m_iStr;
    TextCoordinate m_Location;
    ParseListener *m_parseListener;
 };
 
 
-inline char Reader::InputStream::Get()
+inline wchar_t Reader::InputStream::Get()
 {
    assert(m_iStr.eof() == false); // enforce reading of only valid stream data 
-   char c = m_iStr.get();
+   wchar_t c = m_iStr.get();
    
    ++m_Location;
-   if (c == '\n') {
+   if (c == L'\n') {
       if(m_parseListener)
       {
          m_parseListener->EndOfLine(m_Location-1);
@@ -188,7 +197,7 @@ inline void Reader::TokenStream::pumpToken()
   currentToken.locBegin = inputStream.GetLocation();
   
   // Get current token type (good guess...)
-  char sChar = inputStream.Peek();
+  wchar_t sChar = inputStream.Peek();
   currentToken.nType = (Token::Type)tokenTypeLookup[sChar];
 
   switch (currentToken.nType)
@@ -222,7 +231,7 @@ inline void Reader::TokenStream::EatWhiteSpace()
 }
 
 inline void Reader::TokenStream::Match4Hex(unsigned int& integer) {
-   std::stringstream ss;
+   std::wstringstream ss;
    int i;
    for (i = 0; (i < 4) && (inputStream.EOS() == false) && isxdigit(inputStream.Peek()); ++i)
       ss << inputStream.Get();
@@ -242,33 +251,33 @@ inline void Reader::TokenStream::MatchString()
    currentToken.sValue.clear();
    
    while (inputStream.EOS() == false &&
-          inputStream.Peek() != '"')
+          inputStream.Peek() != L'"')
    {
-      char c = inputStream.Get();
+      wchar_t c = inputStream.Get();
 
       // escape?
-      if (c == '\\' &&
+      if (c == L'\\' &&
           inputStream.EOS() == false) // shouldn't have reached the end yet
       {
          c = inputStream.Get();
          switch (c) {
-            case '/':      currentToken.sValue.push_back('/');     break;
-            case '"':      currentToken.sValue.push_back('"');     break;
-            case '\\':     currentToken.sValue.push_back('\\');    break;
-            case 'b':      currentToken.sValue.push_back('\b');    break;
-            case 'f':      currentToken.sValue.push_back('\f');    break;
-            case 'n':      currentToken.sValue.push_back('\n');    break;
-            case 'r':      currentToken.sValue.push_back('\r');    break;
-            case 't':      currentToken.sValue.push_back('\t');    break;
-            case 'u':
+            case L'/':      currentToken.sValue.push_back(L'/');     break;
+            case L'"':      currentToken.sValue.push_back(L'"');     break;
+            case L'\\':     currentToken.sValue.push_back(L'\\');    break;
+            case L'b':      currentToken.sValue.push_back(L'\b');    break;
+            case L'f':      currentToken.sValue.push_back(L'\f');    break;
+            case L'n':      currentToken.sValue.push_back(L'\n');    break;
+            case L'r':      currentToken.sValue.push_back(L'\r');    break;
+            case L't':      currentToken.sValue.push_back(L'\t');    break;
+            case L'u':
                 {
                     unsigned int codepoint = 0, surrogate = 0;
                     Match4Hex(codepoint);
                     if ((codepoint & 0xFC00) == 0xD800) { // Surrogate?
-                        if(inputStream.Peek() == '\\')
+                        if(inputStream.Peek() == L'\\')
                         {
                             inputStream.Get(); 
-                            if(inputStream.Peek() == 'u')
+                            if(inputStream.Peek() == L'u')
                             {
                                 Match4Hex(surrogate);
                                 codepoint = (((codepoint & 0x3F) << 10) | 
@@ -284,6 +293,8 @@ inline void Reader::TokenStream::MatchString()
                         }                                
                     }
 
+                    currentToken.sValue.push_back(codepoint);
+                    /*
                     // To UTF8
                     if (codepoint < 0x80) {
                         currentToken.sValue.push_back((char)codepoint);
@@ -301,11 +312,11 @@ inline void Reader::TokenStream::MatchString()
                         currentToken.sValue.push_back((char)((codepoint & 0x3F) | 0x80));
                     } else {
                         currentToken.sValue.push_back('?');
-                    }
+                    }*/
                     break;
                 }
             default: {
-               std::string sMessage = "Unrecognized escape sequence found in string: \\" + c;
+               std::string sMessage = "Unrecognized escape sequence found in string: \\" + wstring_to_utf8(wstring(&c, 1));
                listener->Error(inputStream.GetLocation(), PARSER_ERROR_UNEXPECTED_CHARACTER, sMessage);
             }
          }
@@ -328,25 +339,26 @@ inline void Reader::TokenStream::MatchBareWordToken()
 {
     currentToken.sValue.clear();
     
-    char c;
+    wchar_t c;
     while(!inputStream.EOS() &&     
           !::isspace(c=inputStream.Peek()) &&
-          c != ']' && c != '}' && c != ',' && c != ':'  // Pretty ugly hack         
+          c != L']' && c != L'}' && c != L',' && c != L':'  // Pretty ugly hack
             )
     {
         currentToken.sValue.push_back(inputStream.Get());
     }
     
-    if(currentToken.sValue == "true" || currentToken.sValue == "false")
+    if(currentToken.sValue == L"true" || currentToken.sValue == L"false")
     {
         currentToken.nType = Token::TOKEN_BOOLEAN;
     } else
-    if(currentToken.sValue == "null")
+    if(currentToken.sValue == L"null")
     {
         currentToken.nType = Token::TOKEN_NULL;
     } else
     {
-        std::string sErrorMessage = "Unknown token in stream: " + currentToken.sValue;
+        
+        std::string sErrorMessage = "Unknown token in stream: " + wstring_to_utf8(currentToken.sValue);
         listener->Error(currentToken.locBegin, PARSER_ERROR_UNEXPECTED_CHARACTER, sErrorMessage);
     }
 }
@@ -369,17 +381,17 @@ inline Reader::Reader(ParseListener *aParseListener) : listener(aParseListener)
 {
 }
 
-inline void Reader::Read(ObjectNode*& object, std::istream& istr)                { Read_i(object, istr); }
-inline void Reader::Read(ArrayNode*& array, std::istream& istr)                  { Read_i(array, istr); }
-inline void Reader::Read(StringNode*& string, std::istream& istr)                { Read_i(string, istr); }
-inline void Reader::Read(NumberNode*& number, std::istream& istr)                { Read_i(number, istr); }
-inline void Reader::Read(BooleanNode*& boolean, std::istream& istr)              { Read_i(boolean, istr); }
-inline void Reader::Read(NullNode*& null, std::istream& istr)                    { Read_i(null, istr); }
-inline void Reader::Read(Node*& unknown, std::istream& istr, ParseListener *aParseListener)       { Read_i(unknown, istr, aParseListener); }
+inline void Reader::Read(ObjectNode*& object, std::wistream& istr)                { Read_i(object, istr); }
+inline void Reader::Read(ArrayNode*& array, std::wistream& istr)                  { Read_i(array, istr); }
+inline void Reader::Read(StringNode*& string, std::wistream& istr)                { Read_i(string, istr); }
+inline void Reader::Read(NumberNode*& number, std::wistream& istr)                { Read_i(number, istr); }
+inline void Reader::Read(BooleanNode*& boolean, std::wistream& istr)              { Read_i(boolean, istr); }
+inline void Reader::Read(NullNode*& null, std::wistream& istr)                    { Read_i(null, istr); }
+inline void Reader::Read(Node*& unknown, std::wistream& istr, ParseListener *aParseListener)       { Read_i(unknown, istr, aParseListener); }
 
 
 template <typename ElementTypeT>   
-void Reader::Read_i(ElementTypeT& element, std::istream& istr, ParseListener *aParseListener)
+void Reader::Read_i(ElementTypeT& element, std::wistream& istr, ParseListener *aParseListener)
 {
    Reader reader(aParseListener);
 
@@ -390,7 +402,7 @@ void Reader::Read_i(ElementTypeT& element, std::istream& istr, ParseListener *aP
    if (tokenStream.EOS() == false)
    {
       const Token& token = tokenStream.Peek();
-      std::string sMessage = "Expected End of token stream; found " + token.sValue;
+      std::string sMessage = "Expected End of token stream; found " + wstring_to_utf8(token.sValue);
       aParseListener->Error(token.locBegin, PARSER_ERROR_EXPECTED_EOS, sMessage);
    }
 }
@@ -459,7 +471,7 @@ inline void Reader::Parse(Node*& element, Reader::TokenStream& tokenStream, Text
 
       default:
       {
-         std::string sMessage = "Unexpected token: " + token.sValue;
+         std::string sMessage = "Unexpected token: " + wstring_to_utf8(token.sValue);
          listener->Error(token.locBegin, PARSER_ERROR_UNEXPECTED_TOKEN, sMessage);
          tokenStream.Get(); 
       }
@@ -502,11 +514,11 @@ inline void Reader::Parse(ObjectNode*& object, Reader::TokenStream& tokenStream,
            catch (Exception&)
            {
               // must be a duplicate name
-              std::string sMessage = "Duplicate object member: " + tokenName.sValue;
+              std::string sMessage = "Duplicate object member: " + wstring_to_utf8(tokenName.sValue);
               listener->Error(tokenName.locBegin, PARSER_ERROR_DUPLICATE_MEMBER, sMessage);
            }
        } else {
-           std::string sMessage = "Could not parse member value '" + tokenName.sValue + "'";
+           std::string sMessage = "Could not parse member value '" + wstring_to_utf8(tokenName.sValue) + "'";
            listener->Error(tokenName.locBegin, PARSER_ERROR_INVALID_MEMBER, sMessage);
        }
       Token lTok;
@@ -589,9 +601,9 @@ inline void Reader::Parse(NumberNode*& number, Reader::TokenStream& tokenStream,
    const Token& currentToken = tokenStream.Peek(); // might need this later for throwing exception
    TextRange lTokRange(currentToken.locBegin-aBaseOfs, currentToken.locEnd-aBaseOfs);
     
-   const std::string& sValue = MatchExpectedToken(Token::TOKEN_NUMBER, tokenStream);
+   const std::wstring& sValue = MatchExpectedToken(Token::TOKEN_NUMBER, tokenStream);
 
-   std::istringstream iStr(sValue);
+   std::wistringstream iStr(sValue);
    double dValue;
    iStr >> dValue;
 
@@ -610,9 +622,9 @@ inline void Reader::Parse(NumberNode*& number, Reader::TokenStream& tokenStream,
 inline void Reader::Parse(BooleanNode*& boolean, Reader::TokenStream& tokenStream, TextCoordinate aBaseOfs)
 {
    TextRange lTokRange(tokenStream.Peek().locBegin-aBaseOfs, tokenStream.Peek().locEnd-aBaseOfs);
-   const std::string& sValue = MatchExpectedToken(Token::TOKEN_BOOLEAN, tokenStream);
+   const std::wstring& sValue = MatchExpectedToken(Token::TOKEN_BOOLEAN, tokenStream);
    
-   boolean = new BooleanNode(sValue == "true");
+   boolean = new BooleanNode(sValue == L"true");
    boolean->textRange = lTokRange;
 }
 
@@ -626,9 +638,9 @@ inline void Reader::Parse(NullNode*& aNull, Reader::TokenStream& tokenStream, Te
 }
 
 
-inline const std::string& Reader::MatchExpectedToken(Token::Type nExpected, Reader::TokenStream& tokenStream)
+inline const std::wstring& Reader::MatchExpectedToken(Token::Type nExpected, Reader::TokenStream& tokenStream)
 {
-   static string lEmptyStr;
+   static wstring lEmptyStr;
    
    if (tokenStream.EOS())
    {
@@ -653,7 +665,7 @@ inline const std::string& Reader::MatchExpectedToken(Token::Type nExpected, Read
           "'null'"          
       };
 
-      std::string sMessage = "Unexpected token: " + token.sValue + "; expecting " + lTypeNames[nExpected];
+      std::string sMessage = "Unexpected token: " + wstring_to_utf8(token.sValue) + "; expecting " + lTypeNames[nExpected];
       listener->Error(token.locBegin-1, PARSER_ERROR_UNEXPECTED_TOKEN, sMessage);
    } else
    {   
