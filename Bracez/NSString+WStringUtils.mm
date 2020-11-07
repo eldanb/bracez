@@ -21,8 +21,21 @@
                                   encoding:NSUTF32LittleEndianStringEncoding];
 }
 
--(wchar_t*)cStringWchar {
-    return (wchar_t*)[self cStringUsingEncoding:NSUTF32LittleEndianStringEncoding];
+-(std::wstring)cStringWstring {
+    unsigned int len = self.length;
+    std::wstring ret(len, 0);
+    
+    NSUInteger usedLen;
+    [self getBytes:ret.begin().base()
+         maxLength:len*sizeof(wchar_t)
+        usedLength:&usedLen
+          encoding:NSUTF32LittleEndianStringEncoding
+           options:0
+             range:NSMakeRange(0, self.length)
+    remainingRange:0];
+
+    return ret;
+    //return (wchar_t*)[self cStringUsingEncoding:NSUTF32LittleEndianStringEncoding];
 }
 
 @end

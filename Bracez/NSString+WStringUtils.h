@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 +(NSString*)stringWithWchar:(wchar_t*)input;
 +(NSString*)stringWithWstring:(const std::wstring &)input;
 
--(wchar_t*)cStringWchar;
+-(std::wstring)cStringWstring;
 
 @end
 

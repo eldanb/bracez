@@ -926,9 +926,6 @@ bool JsonFile::FindPathContaining(unsigned int aDocOffset, JsonPath &path) const
    return true;
 }
 
-
-
-
 void JsonFile::spliceJsonTextByDomChange(TextCoordinate aOffsetStart, TextLength aLen, const std::wstring &aNewText)
 {
    // Don't send notifications till we're thru

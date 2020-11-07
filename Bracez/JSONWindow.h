@@ -28,4 +28,6 @@
 
 -(id)_getActionForwardingTarget:(SEL)aSelector;
 
+-(IBAction)indentSelectionAction:(id)sender;
+
 @end

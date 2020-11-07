@@ -44,7 +44,7 @@ public:
 
     void getCoordinateRowCol(TextCoordinate aCoord, unsigned long &aRow, unsigned long &aCol) const;
     inline TextCoordinate getLineStart(unsigned long aRow) const { return (aRow-1)<lineStarts.size() ?
-                                                                              (TextCoordinate)lineStarts[aRow-1] :
+                                                                              (TextCoordinate)lineStarts[aRow-1]+1 :
                                                                               -1; }
     inline TextCoordinate getLineEnd(unsigned long aRow) const { return (aRow)<lineStarts.size() ?
                                                                             (TextCoordinate)lineStarts[aRow] :

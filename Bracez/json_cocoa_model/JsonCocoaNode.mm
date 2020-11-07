@@ -61,14 +61,15 @@ using namespace json;
    if([lValString characterAtIndex:0]=='"')
    {
        
-      wstringstream str(lValString.cStringWchar);
+      wstringstream str(lValString.cStringWstring);
       StringNode *lNode;
       Reader::Read(lNode, str);
       
       lNewNode = lNode;
    } else
    {
-      const wchar_t *cstr = lValString.cStringWchar;
+      std::wstring str = lValString.cStringWstring;
+      const wchar_t *cstr = str.c_str();
       const wchar_t *cstr_end;
       double lDoubleVal = wcstod(cstr, (wchar_t**)&cstr_end);
       
@@ -176,7 +177,7 @@ using namespace json;
    ObjectNode *lObjNode = dynamic_cast<ObjectNode*> (lNewParent);
    if(lObjNode)
    {
-      lObjNode->InsertMemberAt(aIndex, name.cStringWchar, lThis, &lTxt);
+      lObjNode->InsertMemberAt(aIndex, name.cStringWstring.c_str(), lThis, &lTxt);
    } else 
    {
       // (b.2) New container is an array?

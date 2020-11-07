@@ -190,4 +190,12 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
    }
 }
 
+-(void)indentSelectionAction:(id)sender {
+    NSRange selectionRange = textEditor.selectedRange;
+    if(selectionRange.length <= 0) {
+        selectionRange = NSMakeRange(0, textEditor.textStorage.length);
+    }
+    
+    [((JsonDocument*)self.delegate) reindentStartingAt:selectionRange.location len:selectionRange.length];
+}
 @end

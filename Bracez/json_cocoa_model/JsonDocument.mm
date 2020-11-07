@@ -125,8 +125,19 @@ private:
           lIter != linesAndBookmarks.end();
           lIter++)
       {
-         [lMarkerArray addObject:[[JsonMarker alloc] initWithLine:(TextCoordinate)*lIter
-                                                             parentDoc:self]];
+          TextCoordinate lineStart = linesAndBookmarks.getLineStart( (*lIter) - 1);
+          NSString *textStorageString = self.textStorage.string;
+          
+          NSString *lineContent = [textStorageString substringWithRange:NSIntersectionRange(NSMakeRange(0, textStorageString.length),
+                                                                                            NSMakeRange(lineStart+1, 150))];
+          NSString *trimmedLineContent = [lineContent stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+          NSString *lineDesc = [trimmedLineContent substringWithRange:NSIntersectionRange(NSMakeRange(0, trimmedLineContent.length),
+                                                                                          NSMakeRange(0, 50))];
+          
+          [lMarkerArray addObject:[[JsonMarker alloc] initWithLine:(TextCoordinate)*lIter
+                                                       description:lineDesc
+                                                        markerType:JsonMarkerTypeBookmark
+                                                         parentDoc:self]];
       }
       
       bookmarkWrappers = lMarkerArray;
@@ -146,10 +157,11 @@ private:
           lIter != lParseErrors.end();
           lIter++)
       {
-         [lProbArray addObject:[[JsonMarker alloc] initWithDescription:[NSString stringWithUTF8String:lIter->getErrorText().c_str()] 
-                                                                                                         code:0 
-                                                                                                 coordinate:(TextCoordinate)*lIter
-                                                                   parentDoc:self]];
+         [lProbArray addObject:[[JsonMarker alloc] initWithDescription:[NSString stringWithUTF8String:lIter->getErrorText().c_str()]
+                                                            markerType:JsonMarkerTypeError
+                                                                  code:0
+                                                            coordinate:(TextCoordinate)*lIter
+                                                             parentDoc:self]];
       }
       
       problemWrappers = lProbArray;
@@ -202,7 +214,7 @@ private:
 
 -(NSIndexPath*)pathFromJsonPathString:(NSString*)jsonPathString {
     JsonPath lPath;
-    if(file->FindPathForJsonPathString(jsonPathString.cStringWchar, lPath)) {
+    if(file->FindPathForJsonPathString(jsonPathString.cStringWstring.c_str(), lPath)) {
         return [self indexPathFromJsonPath:lPath];
     } else {
         return nil;
@@ -309,6 +321,272 @@ private:
     }
 }
 
+class JsonIndentationFixer {
+public:
+    JsonIndentationFixer(const std::wstring &text, TextCoordinate aOffsetStart, TextLength aLen)
+        : jsonText(text) {
+        int textLen = jsonText.length();
+        startOffset = aOffsetStart;
+
+        if(startOffset+aLen > textLen) {
+            aLen = textLen - startOffset;
+        }
+        endOffset = startOffset + aLen;
+    }
+    
+    const std::wstring &getIndented() {
+        if(!output.length()) {
+            reindent();
+        }
+        
+        return output;
+    }
+    
+private:
+    void detectIndentLevelsAtStart() {
+        bool inIndent = true;
+        int lineIndentLen = 0;
+        while(inputOffset < startOffset) {
+            const wchar_t curChar = readCharacter();
+            
+            if(curChar == '\n') {
+                inIndent = true;
+                continue;
+            }
+            
+            if(!inString)
+            {
+                if(inIndent && !isspace(curChar)) {
+                    inIndent = false;
+                    lineIndentLen = inputCol;
+                }
+                
+                switch(curChar) {
+                    case L'"':
+                        inString = true;
+                        break;
+                        
+                    case L'{':
+                    case L'[':
+                        indentLevelStack.push_back(lineIndentLen + 3);
+                        break;
+                        
+                    case L'}':
+                    case L']':
+                        if(!indentLevelStack.empty()) {
+                            indentLevelStack.pop_back();
+                        }
+                        break;
+                }
+            } else {
+                switch(curChar) {
+                    case L'\\':
+                        inEscape = true;
+                        break;
+                    
+                    case L'"':
+                        if(!inEscape) {
+                            inString = false;
+                        } else {
+                            inEscape = false;
+                        }
+                        break;
+                        
+                    default:
+                        inEscape = false;
+                        break;
+                }
+            }
+        }
+    }
+        
+    void reindent() {
+        if(startOffset > jsonText.length()) {
+            return;
+        }
+        
+        inputCol = 0;
+        inputOffset = 0;
+        outputCol = 0;
+        
+        prevNewLine = false;
+        inEscape = false;
+        inString = false;
+
+        detectIndentLevelsAtStart();
+
+        int peekedInputCol = peekInputColumn();
+        outputCol = peekedInputCol;
+        if(peekedInputCol == 0) {
+            skipInputWhitespace();
+        }
+                
+        while(inputOffset < endOffset) {
+            wchar_t curCharacter = readCharacter();
+            if(curCharacter == '\n') {
+                outputCharacter(curCharacter);
+                skipInputWhitespace();
+            } else
+            if(!inString) {
+                switch(curCharacter) {
+                    case L'{':
+                    case L'[': {
+                        outputCharacter(curCharacter);
+                        indentLevelStack.push_back((indentLevelStack.empty() ? 0 : indentLevelStack.back()) + 3);
+                        copyAndEnsureNewLine();
+                        break;
+                    }
+                    
+                    case L'}':
+                    case L']': {
+                        if(!indentLevelStack.empty()) {
+                            indentLevelStack.pop_back();
+                        }
+                        
+                        if(outputCol != 0) {
+                            outputCharacter(L'\n');
+                        }
+                        
+                        outputCharacter(curCharacter);
+                        break;
+                    }
+                        
+                    case L',':
+                        outputCharacter(curCharacter);
+                        copyAndEnsureNewLine();
+                        break;
+                        
+                    default:
+                        outputCharacter(curCharacter);
+                        break;
+                }
+            }
+            else {
+                if(curCharacter == L'\\') {
+                    inEscape = true;
+                } else
+                if(curCharacter == L'"' && !inEscape) {
+                    inString = false;
+                } else {
+                    inEscape = false;
+                }
+                
+                outputCharacter(curCharacter);
+            }
+        }
+    }
+       
+    // Read a character and update the
+    // input col to reflect the col of the last read character
+    wchar_t readCharacter() {
+        const wchar_t ret = jsonText[inputOffset];
+        
+        if(prevNewLine) {
+            inputCol = 0;
+        } else {
+            inputCol++;
+        }
+        
+        prevNewLine = ret == L'\n';
+        inputOffset++;
+        
+        return ret;
+    }
+    
+    // Return the next character that will be read by
+    // readCharacter
+    wchar_t peekCharacter() {
+        return jsonText[inputOffset];
+    }
+
+    // Return the column of the next character that will be read by a call to peekCharacter
+    // This will be the 'current column' after a call to readCharacter.
+    wchar_t peekInputColumn() {
+        if(prevNewLine) {
+            return 0;
+        } else {
+            return inputCol+1;
+        }
+    }
+
+    void skipInputWhitespace() {
+        wchar_t cchar = peekCharacter();
+        while(cchar == ' ' || cchar == '\t') {
+            readCharacter();
+            cchar = peekCharacter();
+        }
+    }
+    
+    void outputIndent() {
+        int indentSize = indentLevelStack.empty() ? 0 : indentLevelStack.back();
+        outputCol += indentSize;
+        
+        while(indentSize--) {
+            output.push_back(L' ');
+        }
+    }
+    
+    void copyAndEnsureNewLine() {
+        while(inputOffset < endOffset) {
+            wchar_t curChar = peekCharacter();
+            
+            if(curChar == L'\n') {
+                outputCharacter(L'\n');
+                readCharacter();
+                skipInputWhitespace();
+                return;
+            } else
+            if(isspace(curChar)) {
+                readCharacter();
+            } else {
+                break;
+            }
+        }
+        
+        outputCharacter(L'\n');
+    }
+
+    void outputCharacter(wchar_t character) {
+        if(!outputCol) {
+            outputIndent();
+        }
+        
+        output.push_back(character);
+        
+        outputCol++;
+        
+        if(character == L'\n') {
+            outputCol = 0;
+        }
+    }
+private:
+    const std::wstring &jsonText;
+    TextCoordinate startOffset;
+    TextCoordinate endOffset;
+    
+    std::vector<int> indentLevelStack;
+    TextCoordinate inputOffset;
+    TextCoordinate inputCol;
+
+    TextCoordinate outputCol;
+    
+    bool prevNewLine;
+    bool inEscape;
+    bool inString;
+    
+    std::wstring output;
+};
+
+-(void)reindentStartingAt:(TextCoordinate)aOffsetStart len:(TextLength)aLen {
+    std::wstring jsonText = _textStorage.string.cStringWstring;
+    JsonIndentationFixer fixer(jsonText, aOffsetStart, aLen);
+    const std::wstring &indent = fixer.getIndented();
+        
+    [_textStorage replaceCharactersInRange:NSMakeRange(aOffsetStart, aLen) withString:[NSString stringWithWstring:indent]];
+}
+
+
+
 -(void)updateSyntaxInRange:(NSRange)editedRange {
     NSData *lFontData =[[NSUserDefaults standardUserDefaults] valueForKey:@"TextEditorFont"];
     NSFont *lFont = [NSUnarchiver unarchiveObjectWithData:lFontData];
@@ -329,10 +607,9 @@ private:
     NSObject *modelRefreshTag = [[NSObject alloc] init];
     _lastRequestedSemanticModelRefresh = modelRefreshTag;
     
+    std::wstring lstr = self.textStorage.string.cStringWstring;
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
         JsonFile *tfile = new JsonFile();
-                
-        std::wstring lstr(self.textStorage.string.cStringWchar);
         tfile->setText(lstr);
 
         //sleep(3);

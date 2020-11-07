@@ -45,6 +45,8 @@ class BookmarksListenerBridge;
 -(JsonFile*)jsonFile;
 -(NSIndexPath*)pathFromJsonPathString:(NSString*)jsonPathString;
 
+-(void)reindentStartingAt:(TextCoordinate)aOffsetStart len:(TextLength)aLen;
+
 -(void)notifyErrorsChanged:(json::JsonFile*)aSender;
 -(void)notifyBookmarksUpdated;
 @end

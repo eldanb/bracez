@@ -82,11 +82,13 @@ SimpleMarkerList::const_iterator LinesAndBookmarks::end() const
    
 void LinesAndBookmarks::updateBookmarksByLineSplice(TextCoordinate aStartLine, TextLength aLineCount, TextLength aNewLineCount)
 {
-   if(bookmarks.spliceCoordinatesList(aStartLine, aLineCount, aNewLineCount))
-   {
-      // Notify bookmarks listeners
-      notifyListeners();
-   }
+    if(aLineCount != aNewLineCount) {
+       if(bookmarks.spliceCoordinatesList(aStartLine, aLineCount, aNewLineCount))
+       {
+          // Notify bookmarks listeners
+          notifyListeners();
+       }
+    }
 }
 
 void LinesAndBookmarks::notifyListeners()

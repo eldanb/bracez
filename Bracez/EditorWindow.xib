@@ -223,7 +223,7 @@
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <middleViews>
                                             <button horizontalHuggingPriority="1000" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5cG-3K-rvG">
-                                                <rect key="frame" x="103" y="0.0" width="14" height="30"/>
+                                                <rect key="frame" x="102" y="0.0" width="14" height="30"/>
                                                 <buttonCell key="cell" type="bevel" title="Button" bezelStyle="regularSquare" image="NSRevealFreestandingTemplate" imagePosition="only" inset="2" id="yde-Qw-AzK">
                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                     <font key="font" metaFont="system"/>
@@ -233,7 +233,7 @@
                                                 </connections>
                                             </button>
                                             <button horizontalHuggingPriority="1000" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DaZ-CR-lgM">
-                                                <rect key="frame" x="137" y="0.0" width="16" height="30"/>
+                                                <rect key="frame" x="136" y="0.0" width="16" height="30"/>
                                                 <buttonCell key="cell" type="bevel" title="Button" bezelStyle="regularSquare" image="ToolbarBookmarksTemplate" imagePosition="only" inset="2" id="LdE-M3-oXR">
                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                     <font key="font" metaFont="system"/>
@@ -243,8 +243,8 @@
                                                 </connections>
                                             </button>
                                             <button horizontalHuggingPriority="1000" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Aw-8b-rob">
-                                                <rect key="frame" x="173" y="0.0" width="11" height="30"/>
-                                                <buttonCell key="cell" type="bevel" title="Button" bezelStyle="regularSquare" image="NSStopProgressTemplate" imagePosition="only" inset="2" id="VT0-uw-feR">
+                                                <rect key="frame" x="172" y="0.0" width="11" height="30"/>
+                                                <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="NSStopProgressTemplate" imagePosition="only" inset="2" id="VT0-uw-feR">
                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
@@ -282,49 +282,37 @@
                                                             <rect key="frame" x="0.0" y="0.0" width="286" height="358"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
-                                                                <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="181" userLabel="ProblemsScroll">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="286" height="358"/>
+                                                                <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="46" horizontalPageScroll="10" verticalLineScroll="46" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="181" userLabel="ProblemsScroll">
+                                                                    <rect key="frame" x="0.0" y="2" width="286" height="358"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="Qqb-Or-87U">
                                                                         <rect key="frame" x="0.0" y="0.0" width="286" height="358"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
-                                                                            <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" id="201" userLabel="ProblemsView">
-                                                                                <rect key="frame" x="0.0" y="0.0" width="829" height="358"/>
+                                                                            <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnReordering="NO" columnSelection="YES" columnResizing="NO" multipleSelection="NO" autosaveColumns="NO" rowHeight="44" viewBased="YES" id="201" userLabel="ProblemsView">
+                                                                                <rect key="frame" x="0.0" y="0.0" width="286" height="358"/>
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <size key="intercellSpacing" width="3" height="2"/>
                                                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                                                 <tableColumns>
-                                                                                    <tableColumn width="783" minWidth="40" maxWidth="1000" id="205">
-                                                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Problem">
+                                                                                    <tableColumn width="256" minWidth="10" maxWidth="3.4028234663852886e+38" id="gmk-Ij-Eo4">
+                                                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left">
                                                                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
-                                                                                            <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
+                                                                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                         </tableHeaderCell>
-                                                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="206">
-                                                                                            <font key="font" metaFont="smallSystem"/>
+                                                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="qar-J8-Wgw">
+                                                                                            <font key="font" metaFont="system"/>
                                                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                                         </textFieldCell>
-                                                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
-                                                                                        <connections>
-                                                                                            <binding destination="605" name="value" keyPath="arrangedObjects.message" id="611"/>
-                                                                                        </connections>
-                                                                                    </tableColumn>
-                                                                                    <tableColumn width="40" minWidth="40" maxWidth="1000" id="204">
-                                                                                        <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Line">
-                                                                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
-                                                                                            <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
-                                                                                        </tableHeaderCell>
-                                                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="207">
-                                                                                            <font key="font" metaFont="smallSystem"/>
-                                                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                                                            <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                                                        </textFieldCell>
-                                                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
-                                                                                        <connections>
-                                                                                            <binding destination="605" name="value" keyPath="arrangedObjects.line" id="612"/>
-                                                                                        </connections>
+                                                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
+                                                                                        <prototypeCellViews>
+                                                                                            <tableCellView translatesAutoresizingMaskIntoConstraints="NO" id="tbY-mQ-MRW" customClass="MarkerTableCellView">
+                                                                                                <rect key="frame" x="1" y="1" width="256" height="34"/>
+                                                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                            </tableCellView>
+                                                                                        </prototypeCellViews>
                                                                                     </tableColumn>
                                                                                 </tableColumns>
                                                                                 <connections>
@@ -335,7 +323,7 @@
                                                                             </tableView>
                                                                         </subviews>
                                                                     </clipView>
-                                                                    <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="202">
+                                                                    <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="202">
                                                                         <rect key="frame" x="0.0" y="342" width="286" height="16"/>
                                                                         <autoresizingMask key="autoresizingMask"/>
                                                                     </scroller>
@@ -345,7 +333,7 @@
                                                                     </scroller>
                                                                 </scrollView>
                                                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yMd-Nv-gSA">
-                                                                    <rect key="frame" x="0.0" y="300" width="286" height="57"/>
+                                                                    <rect key="frame" x="1" y="300" width="282" height="57"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                                     <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="No errors" id="VkL-w9-WxT">
                                                                         <font key="font" metaFont="smallSystem"/>
@@ -368,14 +356,14 @@
                                                             <rect key="frame" x="0.0" y="0.0" width="286" height="358"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
-                                                                <scrollView focusRingType="none" fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="636" userLabel="BookmarksScroll">
+                                                                <scrollView focusRingType="none" fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="42" horizontalPageScroll="10" verticalLineScroll="42" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="636" userLabel="BookmarksScroll">
                                                                     <rect key="frame" x="0.0" y="0.0" width="286" height="358"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="UTc-dM-0dl">
                                                                         <rect key="frame" x="0.0" y="0.0" width="286" height="358"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
-                                                                            <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" id="637" userLabel="BookmarksView">
+                                                                            <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="40" viewBased="YES" id="637" userLabel="BookmarksView">
                                                                                 <rect key="frame" x="0.0" y="0.0" width="286" height="358"/>
                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                 <size key="intercellSpacing" width="3" height="2"/>
@@ -393,6 +381,12 @@
                                                                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                                         </textFieldCell>
                                                                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                                                        <prototypeCellViews>
+                                                                                            <tableCellView id="7Ng-FH-0Bw" customClass="MarkerTableCellView">
+                                                                                                <rect key="frame" x="1" y="1" width="283" height="17"/>
+                                                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                            </tableCellView>
+                                                                                        </prototypeCellViews>
                                                                                         <connections>
                                                                                             <binding destination="652" name="value" keyPath="arrangedObjects.message" id="657"/>
                                                                                         </connections>

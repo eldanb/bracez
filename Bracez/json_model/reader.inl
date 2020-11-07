@@ -492,7 +492,6 @@ inline void Reader::Parse(ObjectNode*& object, Reader::TokenStream& tokenStream,
                      tokenStream.Peek().nType != Token::TOKEN_OBJECT_END);
    while (bContinue)
    {
-
       // first the member name. save the token in case we have to throw an exception
       Token tokenName = tokenStream.Peek();
       MatchExpectedToken(Token::TOKEN_STRING, tokenStream);
@@ -532,9 +531,9 @@ inline void Reader::Parse(ObjectNode*& object, Reader::TokenStream& tokenStream,
 
       if(lTok.nType == Token::TOKEN_NEXT_ELEMENT)
       {
-         bContinue = true;
          lEndCoord = lTok.locEnd;
          MatchExpectedToken(lTok.nType, tokenStream);
+         bContinue = !tokenStream.EOS();
       } else
       {
          bContinue = false;
@@ -543,7 +542,7 @@ inline void Reader::Parse(ObjectNode*& object, Reader::TokenStream& tokenStream,
 
    if(tokenStream.EOS())
    {
-      listener->Error(lEndCoord, PARSER_ERROR_UNEXPECTED_EOS, "Expecting \",\" or \"}\"");
+      listener->Error(lEndCoord, PARSER_ERROR_UNEXPECTED_EOS, "Unexpected end of file");
    } else
    {    
       lEndCoord = tokenStream.Peek().locEnd;
