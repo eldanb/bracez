@@ -451,6 +451,11 @@ private:
                         break;
                     }
                         
+                    case L'"':
+                        outputCharacter(curCharacter);
+                        inString = true;
+                        break;
+                        
                     case L',':
                         outputCharacter(curCharacter);
                         copyAndEnsureNewLine();
