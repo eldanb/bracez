@@ -98,17 +98,17 @@ void LinesAndBookmarks::notifyListeners()
 }
 
 
-void LinesAndBookmarks::updateLineOffsetsAfterSplice(TextCoordinate aOffsetStart, TextLength aLen, TextLength aNewLen,
-                                                     const char *allText)
+void LinesAndBookmarks::updateLineOffsetsAfterSplice(TextCoordinate aOffsetStart,
+                                                     TextLength aLen, TextLength aNewLen,
+                                                     const wchar_t *updatedText)
 {
     SimpleMarkerList newLines;
     
-    const char *updateStart = allText+aOffsetStart;
-    const char *updateEnd = updateStart + aNewLen;
+    const wchar_t *updateEnd = updatedText + aNewLen;
     
-    for(const char *cur = updateStart; cur != updateEnd; cur++) {
-        if(*cur == '\n') {
-            newLines.appendMarker(cur - allText);
+    for(const wchar_t *cur = updatedText; cur != updateEnd; cur++) {
+        if(*cur == L'\n') {
+            newLines.appendMarker(cur - updatedText + aOffsetStart);
         }
     }
 
@@ -118,7 +118,7 @@ void LinesAndBookmarks::updateLineOffsetsAfterSplice(TextCoordinate aOffsetStart
                                         &lLineDelStart,
                                         &lLineDelLen))
     {
-        updateBookmarksByLineSplice(lLineDelStart, lLineDelLen,
+        updateBookmarksByLineSplice(lLineDelStart+1, lLineDelLen,
                                     newLines.size() // TODO new lines
                                     );
     }

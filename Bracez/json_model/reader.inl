@@ -564,10 +564,12 @@ inline void Reader::Parse(ArrayNode*& array, Reader::TokenStream& tokenStream, T
                      tokenStream.Peek().nType != Token::TOKEN_ARRAY_END);
    while (bContinue)
    {
-      Node *elemVal;
+      Node *elemVal = NULL;
       Parse(elemVal, tokenStream, lBegin);
 
-      array->DomAddElementNode(elemVal);
+     if(elemVal) {
+         array->DomAddElementNode(elemVal);
+     }
 
       bContinue = (tokenStream.EOS() == false &&
                    tokenStream.Peek().nType == Token::TOKEN_NEXT_ELEMENT);

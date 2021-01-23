@@ -35,6 +35,7 @@ class BookmarksListenerBridge;
 -(JsonCocoaNode*)rootNode;
 -(NSIndexPath*)findPathContaining:(unsigned int)aDocOffset;
 -(void)translateCoordinate:(TextCoordinate)aCoord toRow:(NSUInteger*)aRow col:(NSUInteger*)aCol;
+-(UInt32)characterIndexForStartOfLine:(UInt32)lineNumber;
 
 -(LinesAndBookmarks&)bookmarks;
 -(const MarkerList<ParseErrorMarker>*)errors;

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17156" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment version="101304" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17156"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17701"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -17,7 +17,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES" texturedBackground="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="372" y="285" width="628" height="413"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1025"/>
             <view key="contentView" autoresizesSubviews="NO" wantsLayer="YES" id="158">
                 <rect key="frame" x="0.0" y="0.0" width="628" height="413"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -80,7 +80,7 @@
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <subviews>
                                                                     <outlineView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" multipleSelection="NO" autosaveColumns="NO" rowHeight="14" indentationPerLevel="16" autoresizesOutlineColumn="YES" outlineTableColumn="195" id="194">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="147" height="392"/>
+                                                                        <rect key="frame" x="0.0" y="0.0" width="176" height="392"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                                         <color key="backgroundColor" red="0.96470588235294119" green="0.96470588235294119" blue="0.96470588235294119" alpha="1" colorSpace="calibratedRGB"/>
@@ -168,13 +168,13 @@
                                     <customView autoresizesSubviews="NO" translatesAutoresizingMaskIntoConstraints="NO" id="584">
                                         <rect key="frame" x="1" y="0.0" width="340" height="391"/>
                                         <subviews>
-                                            <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="184">
+                                            <scrollView autoresizesSubviews="NO" borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="184">
                                                 <rect key="frame" x="0.0" y="0.0" width="411" height="391"/>
                                                 <clipView key="contentView" drawsBackground="NO" id="jhX-ND-sNZ">
                                                     <rect key="frame" x="0.0" y="0.0" width="411" height="391"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
-                                                        <textView focusRingType="none" importsGraphics="NO" richText="NO" verticallyResizable="YES" allowsCharacterPickerTouchBarItem="NO" allowsUndo="YES" allowsNonContiguousLayout="YES" textCompletion="NO" id="187">
+                                                        <textView focusRingType="none" importsGraphics="NO" richText="NO" verticallyResizable="YES" findStyle="bar" incrementalSearchingEnabled="YES" allowsCharacterPickerTouchBarItem="NO" allowsUndo="YES" allowsNonContiguousLayout="YES" textCompletion="NO" id="187">
                                                             <rect key="frame" x="0.0" y="1" width="0.0" height="391"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -223,33 +223,52 @@
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                         <middleViews>
                                             <button horizontalHuggingPriority="1000" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5cG-3K-rvG">
-                                                <rect key="frame" x="102" y="0.0" width="14" height="30"/>
+                                                <rect key="frame" x="100" y="-3" width="15" height="36"/>
                                                 <buttonCell key="cell" type="bevel" title="Button" bezelStyle="regularSquare" image="NSRevealFreestandingTemplate" imagePosition="only" inset="2" id="yde-Qw-AzK">
                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
                                                 <connections>
-                                                    <binding destination="4" name="value" keyPath="selection.showFindPanel" id="6rZ-X1-e69"/>
+                                                    <binding destination="4" name="value" keyPath="selection.showFindPanel" id="Mi6-b9-sy0">
+                                                        <dictionary key="options">
+                                                            <bool key="NSValidatesImmediately" value="YES"/>
+                                                        </dictionary>
+                                                    </binding>
+                                                    <binding destination="4" name="enabled" keyPath="selection.showFindPanel" id="npl-Yl-6LL">
+                                                        <dictionary key="options">
+                                                            <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                                        </dictionary>
+                                                    </binding>
                                                 </connections>
                                             </button>
                                             <button horizontalHuggingPriority="1000" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DaZ-CR-lgM">
-                                                <rect key="frame" x="136" y="0.0" width="16" height="30"/>
+                                                <rect key="frame" x="135" y="0.0" width="16" height="30"/>
                                                 <buttonCell key="cell" type="bevel" title="Button" bezelStyle="regularSquare" image="ToolbarBookmarksTemplate" imagePosition="only" inset="2" id="LdE-M3-oXR">
                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
                                                 <connections>
+                                                    <binding destination="4" name="enabled" keyPath="selection.showBookmarksList" id="EhO-Jm-vdb">
+                                                        <dictionary key="options">
+                                                            <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                                        </dictionary>
+                                                    </binding>
                                                     <binding destination="4" name="value" keyPath="selection.showBookmarksList" id="KaY-DJ-a0S"/>
                                                 </connections>
                                             </button>
                                             <button horizontalHuggingPriority="1000" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Aw-8b-rob">
-                                                <rect key="frame" x="172" y="0.0" width="11" height="30"/>
+                                                <rect key="frame" x="171" y="-1.5" width="14.5" height="34"/>
                                                 <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="NSStopProgressTemplate" imagePosition="only" inset="2" id="VT0-uw-feR">
                                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                     <font key="font" metaFont="system"/>
                                                 </buttonCell>
                                                 <connections>
                                                     <binding destination="4" name="value" keyPath="selection.showProblemsList" id="amp-dh-Wck"/>
+                                                    <binding destination="4" name="enabled" keyPath="selection.showProblemsList" id="cx0-bM-fQn">
+                                                        <dictionary key="options">
+                                                            <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                                        </dictionary>
+                                                    </binding>
                                                 </connections>
                                             </button>
                                         </middleViews>
@@ -296,7 +315,7 @@
                                                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                 <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                                                 <tableColumns>
-                                                                                    <tableColumn width="256" minWidth="10" maxWidth="3.4028234663852886e+38" id="gmk-Ij-Eo4">
+                                                                                    <tableColumn width="227" minWidth="10" maxWidth="3.4028234663852886e+38" id="gmk-Ij-Eo4">
                                                                                         <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left">
                                                                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -309,7 +328,7 @@
                                                                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
                                                                                         <prototypeCellViews>
                                                                                             <tableCellView translatesAutoresizingMaskIntoConstraints="NO" id="tbY-mQ-MRW" customClass="MarkerTableCellView">
-                                                                                                <rect key="frame" x="1" y="1" width="256" height="34"/>
+                                                                                                <rect key="frame" x="11" y="1" width="236" height="34"/>
                                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                             </tableCellView>
                                                                                         </prototypeCellViews>
@@ -361,7 +380,7 @@
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="UTc-dM-0dl">
                                                                         <rect key="frame" x="0.0" y="0.0" width="286" height="358"/>
-                                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                        <autoresizingMask key="autoresizingMask"/>
                                                                         <subviews>
                                                                             <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="40" viewBased="YES" id="637" userLabel="BookmarksView">
                                                                                 <rect key="frame" x="0.0" y="0.0" width="286" height="358"/>
@@ -370,7 +389,7 @@
                                                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                 <color key="gridColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
                                                                                 <tableColumns>
-                                                                                    <tableColumn width="283" minWidth="40" maxWidth="1000" id="641">
+                                                                                    <tableColumn width="254" minWidth="40" maxWidth="1000" id="641">
                                                                                         <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Bookmark">
                                                                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
@@ -383,7 +402,7 @@
                                                                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                                         <prototypeCellViews>
                                                                                             <tableCellView id="7Ng-FH-0Bw" customClass="MarkerTableCellView">
-                                                                                                <rect key="frame" x="1" y="1" width="283" height="17"/>
+                                                                                                <rect key="frame" x="11" y="1" width="263" height="17"/>
                                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                             </tableCellView>
                                                                                         </prototypeCellViews>
@@ -443,7 +462,7 @@
                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                             <clipView key="contentView" id="CSS-qG-GdD">
                                                                                 <rect key="frame" x="1" y="1" width="285" height="266"/>
-                                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                <autoresizingMask key="autoresizingMask"/>
                                                                                 <subviews>
                                                                                     <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" id="TI2-e9-rTZ">
                                                                                         <rect key="frame" x="0.0" y="0.0" width="285" height="266"/>
@@ -464,7 +483,7 @@
                                                                                                 </textFieldCell>
                                                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                                                             </tableColumn>
-                                                                                            <tableColumn width="178" minWidth="40" maxWidth="1000" id="iM5-FG-Pbu">
+                                                                                            <tableColumn width="149" minWidth="40" maxWidth="1000" id="iM5-FG-Pbu">
                                                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left">
                                                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                                     <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
@@ -612,11 +631,11 @@
             </view>
             <toolbar key="toolbar" implicitIdentifier="DAAFECAE-1850-420E-8CEA-3E27B76E810F" autosavesConfiguration="NO" displayMode="iconOnly" sizeMode="small" id="157">
                 <allowedToolbarItems>
-                    <toolbarItem implicitItemIdentifier="A83D36F3-A960-4977-B76C-28F701E73885" label="Back" paletteLabel="Back" image="NSGoBackTemplate" sizingBehavior="auto" id="bmf-2x-UJf" customClass="ButtonToolbarItem">
+                    <toolbarItem implicitItemIdentifier="A83D36F3-A960-4977-B76C-28F701E73885" label="Back" paletteLabel="Back" image="NSGoBackTemplate" sizingBehavior="auto" navigational="YES" id="bmf-2x-UJf" customClass="ButtonToolbarItem">
                         <nil key="toolTip"/>
                         <button key="view" verticalHuggingPriority="750" id="F8n-J4-L5l">
-                            <rect key="frame" x="0.0" y="14" width="127" height="25"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <rect key="frame" x="6" y="14" width="22" height="23"/>
+                            <autoresizingMask key="autoresizingMask"/>
                             <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="NSGoBackTemplate" imagePosition="overlaps" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="HCv-4k-dbb">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="system"/>
@@ -626,11 +645,11 @@
                             </connections>
                         </button>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="A186463B-E6DF-4AFB-BDDD-CAB27C8CA6D5" label="Forward" paletteLabel="Forward" image="NSGoForwardTemplate" sizingBehavior="auto" id="ycT-Mm-511" customClass="ButtonToolbarItem">
+                    <toolbarItem implicitItemIdentifier="A186463B-E6DF-4AFB-BDDD-CAB27C8CA6D5" label="Forward" paletteLabel="Forward" image="NSGoForwardTemplate" sizingBehavior="auto" navigational="YES" id="ycT-Mm-511" customClass="ButtonToolbarItem">
                         <nil key="toolTip"/>
                         <button key="view" verticalHuggingPriority="750" id="rl1-nh-WdP">
-                            <rect key="frame" x="0.0" y="14" width="127" height="25"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <rect key="frame" x="14" y="14" width="22" height="23"/>
+                            <autoresizingMask key="autoresizingMask"/>
                             <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="NSGoForwardTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="bPY-4X-oOE">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="system"/>
@@ -643,6 +662,8 @@
                     <toolbarItem implicitItemIdentifier="NSToolbarPrintItem" id="211"/>
                     <toolbarItem implicitItemIdentifier="7281AE20-5384-41A5-B561-0ADD3CBE75D8" label="Preferences" paletteLabel="Preferences" tag="-1" image="NSPreferencesGeneral" id="578">
                         <nil key="toolTip"/>
+                        <size key="minSize" width="22" height="22"/>
+                        <size key="maxSize" width="22" height="22"/>
                         <connections>
                             <action selector="showPreferences:" target="-1" id="579"/>
                         </connections>
@@ -654,8 +675,8 @@
                     <toolbarItem implicitItemIdentifier="1C1A6AF8-AF02-4D6D-B620-55CE9F7DD55E" label="Delete" paletteLabel="Delete" image="NSStopProgressTemplate" sizingBehavior="auto" id="1hl-u1-DMO" customClass="ButtonToolbarItem">
                         <nil key="toolTip"/>
                         <button key="view" verticalHuggingPriority="750" id="WBj-4P-rfo">
-                            <rect key="frame" x="0.0" y="14" width="127" height="25"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <rect key="frame" x="8" y="14" width="26" height="23"/>
+                            <autoresizingMask key="autoresizingMask"/>
                             <buttonCell key="cell" type="roundTextured" title="Textured Rounded" bezelStyle="texturedRounded" image="NSStopProgressTemplate" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Oqe-Ff-xOv">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="system"/>
@@ -665,7 +686,7 @@
                             <action selector="removeJsonNode:" target="-1" id="Bcv-Ti-RCK"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="6550A738-D4BF-404D-B201-B852075614BB" label="View Mode" paletteLabel="View Mode" tag="-1" sizingBehavior="auto" id="P4o-A4-sy3" customClass="ViewModelEditor">
+                    <toolbarItem implicitItemIdentifier="6550A738-D4BF-404D-B201-B852075614BB" label="View Mode" paletteLabel="View Mode" tag="-1" sizingBehavior="auto" navigational="YES" id="P4o-A4-sy3" customClass="ViewModelEditor">
                         <connections>
                             <outlet property="viewModel" destination="4" id="DaE-JZ-Ky1"/>
                         </connections>
@@ -673,8 +694,8 @@
                     <toolbarItem implicitItemIdentifier="15D9F7CA-7C46-4C9D-9F26-8A2219D104D3" label="Utility Panel" paletteLabel="Utility Panel" image="TextView" sizingBehavior="auto" id="IQ1-wQ-0eh">
                         <nil key="toolTip"/>
                         <button key="view" verticalHuggingPriority="750" id="DeP-Qk-2bf">
-                            <rect key="frame" x="0.0" y="14" width="127" height="25"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <rect key="frame" x="19" y="14" width="32" height="23"/>
+                            <autoresizingMask key="autoresizingMask"/>
                             <buttonCell key="cell" type="roundTextured" bezelStyle="texturedRounded" image="TextView" imagePosition="only" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="e2x-t0-fx7">
                                 <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
                                 <font key="font" metaFont="system"/>
@@ -687,10 +708,9 @@
                 </allowedToolbarItems>
                 <defaultToolbarItems>
                     <toolbarItem reference="212"/>
+                    <toolbarItem reference="P4o-A4-sy3"/>
                     <toolbarItem reference="bmf-2x-UJf"/>
                     <toolbarItem reference="ycT-Mm-511"/>
-                    <toolbarItem reference="210"/>
-                    <toolbarItem reference="P4o-A4-sy3"/>
                     <toolbarItem reference="209"/>
                     <toolbarItem reference="IQ1-wQ-0eh"/>
                 </defaultToolbarItems>
@@ -826,13 +846,13 @@
         </menu>
     </objects>
     <resources>
-        <image name="NSGoBackTemplate" width="9" height="12"/>
-        <image name="NSGoForwardTemplate" width="9" height="12"/>
-        <image name="NSGoLeftTemplate" width="9" height="12"/>
-        <image name="NSGoRightTemplate" width="9" height="12"/>
+        <image name="NSGoBackTemplate" width="10" height="14"/>
+        <image name="NSGoForwardTemplate" width="10" height="14"/>
+        <image name="NSGoLeftTemplate" width="10" height="14"/>
+        <image name="NSGoRightTemplate" width="10" height="14"/>
         <image name="NSPreferencesGeneral" width="32" height="32"/>
-        <image name="NSRevealFreestandingTemplate" width="14" height="14"/>
-        <image name="NSStopProgressTemplate" width="11" height="11"/>
+        <image name="NSRevealFreestandingTemplate" width="15" height="15"/>
+        <image name="NSStopProgressTemplate" width="14" height="13"/>
         <image name="TextView" width="20" height="15"/>
         <image name="ToolbarBookmarksTemplate" width="16" height="16"/>
     </resources>

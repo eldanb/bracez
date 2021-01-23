@@ -82,7 +82,9 @@ struct ForwardedActionInfo
    enum {
       faiDomController,
       faiSelectionController,
-      faiSelf } forwardee;
+      faiSelf,
+      faiTextEdit
+   } forwardee;
    SEL entSelector;
 
 } ;
@@ -101,6 +103,8 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
 
     { "navigateBack:", ForwardedActionInfo::faiSelectionController, 0  },
     { "navigateForward:", ForwardedActionInfo::faiSelectionController, 0  },
+
+    { "performFindPanelAction:", ForwardedActionInfo::faiTextEdit, 0  },
 
     { NULL, ForwardedActionInfo::faiSelf, 0 }
 };
@@ -130,6 +134,8 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
          return domController;
        case ForwardedActionInfo::faiSelectionController:
          return selectionController;
+       case ForwardedActionInfo::faiTextEdit:
+          return textEditor;
       default:
          return self;
    }
@@ -198,4 +204,6 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
     
     [((JsonDocument*)self.delegate) reindentStartingAt:selectionRange.location len:selectionRange.length];
 }
+    
+
 @end

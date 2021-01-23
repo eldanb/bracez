@@ -557,6 +557,11 @@
    
    return lRow;
 }
+
+- (UInt32)characterIndexForStartOfLine:(int)aIdx {
+    return [document characterIndexForStartOfLine:aIdx];
+}
+
         
 - (UInt32)markersForLine:(int)aLine 
 {

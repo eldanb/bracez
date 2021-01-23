@@ -83,6 +83,7 @@
 - (int)lineNumberForCharacterIndex:(int)aIdx;
 - (UInt32)markersForLine:(int)aLine;
 - (void)connectGutterView:(id)aGutterView;
+- (UInt32)characterIndexForStartOfLine:(int)aIdx;
 
 - (void)_bookmarksChanged:(id)aUserData;
 

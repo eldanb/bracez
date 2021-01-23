@@ -7,6 +7,7 @@
 //
 
 #import "TextEditorGutterView.h"
+#import <CoreText/CoreText.h>
 
 @implementation TextEditorGutterView
 
@@ -26,6 +27,8 @@
 
       shouldShowLineNumbers = NO;
       shownFlagsMask = 0xffffffff;
+       
+       [self setAutoresizingMask:0];
       
       [self setRuleThickness:35];
    }
@@ -119,11 +122,13 @@
    [lLine stroke];*/
    
    NSLayoutManager* layoutManager = [textView layoutManager];
-   int lLineHeight = [layoutManager defaultLineHeightForFont:[textView font]];
-   if(!lLineHeight) 
+   CGFloat lDefaultLineHeight = [layoutManager defaultLineHeightForFont:textView.font];
+   if(!lDefaultLineHeight)
    {
       return;
    }
+    
+    CGFloat lineRectWidth = [self requiredThickness];
       
    int lCurLineNo;
    NSRect lCurLineRect;
@@ -132,12 +137,23 @@
    // Only get the visible part of the scroller view
 	NSRect documentVisibleRect = [[self scrollView] documentVisibleRect];
 
-   lCurLineRect.origin.y -= documentVisibleRect.origin.y; 
-   lCurLineRect.origin.x = 0;
-   lCurLineRect.size.width  = [self requiredThickness];
-
+   lCurLineRect.origin.y -= documentVisibleRect.origin.y;
    while(lCurLineRect.origin.y <= aRect.origin.y+aRect.size.height)
-   {      
+   {
+       int charIndex = [model characterIndexForStartOfLine:lCurLineNo];
+       int glyphIndex = [layoutManager glyphIndexForCharacterAtIndex:charIndex];
+       if(glyphIndex<layoutManager.numberOfGlyphs) {
+           lCurLineRect = [layoutManager lineFragmentRectForGlyphAtIndex:glyphIndex effectiveRange:nil];
+       } else {
+           lCurLineRect.origin.y = (lCurLineNo-1) * lDefaultLineHeight;
+           lCurLineRect.size.height = lDefaultLineHeight;
+       }
+
+       lCurLineRect.origin.y -= documentVisibleRect.origin.y;
+       
+       lCurLineRect.origin.x = 0;
+       lCurLineRect.size.width  = lineRectWidth;
+
       UInt32 lCurLineFlags=0;
       
       if(shownFlagsMask && model)
@@ -154,8 +170,7 @@
       {
          [self _drawOneNumberInMargin:lCurLineNo inRect:lCurLineRect];
       }
-      
-      lCurLineRect.origin.y += lLineHeight;
+            
       lCurLineNo ++;
    }
 

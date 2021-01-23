@@ -11,6 +11,7 @@
 @protocol GutterViewModel
 - (void)connectGutterView:(id)aGutterView;
 - (int)lineNumberForCharacterIndex:(int)aIdx;
+- (UInt32)characterIndexForStartOfLine:(int)aIdx;
 - (UInt32)markersForLine:(int)aLine;
 @end
 

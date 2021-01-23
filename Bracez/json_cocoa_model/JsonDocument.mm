@@ -231,6 +231,10 @@ private:
    *aCol = lCol;
 }
 
+-(UInt32)characterIndexForStartOfLine:(UInt32)lineNumber {
+    return linesAndBookmarks.getLineStart(lineNumber);
+}
+
 -(void)updateSemanticModel:(JsonFile*)aFile
 {
   [self willChangeValueForKey:@"rootNode"];
@@ -316,8 +320,11 @@ private:
             [self updateSyntaxInRange:editedRange];
         }
         
-        linesAndBookmarks.updateLineOffsetsAfterSplice(editedRange.location, editedRange.length-delta, editedRange.length,
-                                                       textStorage.string.UTF8String);
+        NSString *updatedRegion = [textStorage.string substringWithRange:editedRange];
+        linesAndBookmarks.updateLineOffsetsAfterSplice(editedRange.location,
+                                                       editedRange.length-delta,
+                                                       editedRange.length,
+                                                       updatedRegion.cStringWstring.c_str());
     }
 }
 
