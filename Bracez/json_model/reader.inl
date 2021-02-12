@@ -387,11 +387,11 @@ inline void Reader::Read(StringNode*& string, std::wistream& istr)              
 inline void Reader::Read(NumberNode*& number, std::wistream& istr)                { Read_i(number, istr); }
 inline void Reader::Read(BooleanNode*& boolean, std::wistream& istr)              { Read_i(boolean, istr); }
 inline void Reader::Read(NullNode*& null, std::wistream& istr)                    { Read_i(null, istr); }
-inline void Reader::Read(Node*& unknown, std::wistream& istr, ParseListener *aParseListener)       { Read_i(unknown, istr, aParseListener); }
+inline void Reader::Read(Node*& unknown, std::wistream& istr, ParseListener *aParseListener, bool allowSuffix)       { Read_i(unknown, istr, aParseListener, allowSuffix); }
 
 
 template <typename ElementTypeT>   
-void Reader::Read_i(ElementTypeT& element, std::wistream& istr, ParseListener *aParseListener)
+void Reader::Read_i(ElementTypeT& element, std::wistream& istr, ParseListener *aParseListener, bool allowSuffix)
 {
    Reader reader(aParseListener);
 
@@ -399,7 +399,7 @@ void Reader::Read_i(ElementTypeT& element, std::wistream& istr, ParseListener *a
    TokenStream tokenStream(inputStream, aParseListener);
    reader.Parse(element, tokenStream);
 
-   if (tokenStream.EOS() == false)
+   if (tokenStream.EOS() == false && !allowSuffix)
    {
       const Token& token = tokenStream.Peek();
       std::string sMessage = "Expected End of token stream; found " + wstring_to_utf8(token.sValue);

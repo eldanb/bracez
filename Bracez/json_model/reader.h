@@ -68,7 +68,7 @@ public:
    static void Read(NullNode *& null, std::wistream& istr);
 
    // ...otherwise, if you don't know, call this & visit it
-   static void Read(Node *& elementRoot, std::wistream& istr, ParseListener *aParseListener=NULL);
+   static void Read(Node *& elementRoot, std::wistream& istr, ParseListener *aParseListener=NULL, bool allowSuffix = false);
 
 private:
    Reader(ParseListener *aParseListener);
@@ -109,7 +109,7 @@ private:
    class TokenStream;
 
    template <typename ElementTypeT>   
-   static void Read_i(ElementTypeT& element, std::wistream& istr, ParseListener *aListener=NULL);
+   static void Read_i(ElementTypeT& element, std::wistream& istr, ParseListener *aListener=NULL, bool allowSuffix = false);
 
 public:
    // parsing token sequence into element structure

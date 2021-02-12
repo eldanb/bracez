@@ -85,6 +85,8 @@
 - (void)connectGutterView:(id)aGutterView;
 - (UInt32)characterIndexForStartOfLine:(int)aIdx;
 
+-(NSString*)currentPathAsJsonQuery;
+
 - (void)_bookmarksChanged:(id)aUserData;
 
 @end

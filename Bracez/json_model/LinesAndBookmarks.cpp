@@ -94,7 +94,7 @@ void LinesAndBookmarks::updateBookmarksByLineSplice(TextCoordinate aStartLine, T
 void LinesAndBookmarks::notifyListeners()
 {
    for_each(bookmarksListeners.begin(), bookmarksListeners.end(),
-            bind2nd(mem_fun(&BookmarksChangeListener::bookmarksChanged), this));
+            bind(&BookmarksChangeListener::bookmarksChanged, placeholders::_1, this));
 }
 
 

@@ -40,6 +40,8 @@ enum JsonMarkerType {
        markerType:(JsonMarkerType)markerType
         parentDoc:(JsonDocument*)aDoc;
 
++(JsonMarker*)markerForNode:(JsonCocoaNode*)node withParentDoc:(JsonDocument*)parentDoc;
+
 -(NSString*)message;
 -(NSString*)locationAsText;
 -(int)line;

@@ -32,6 +32,34 @@
    return self;
 }
 
+
+-(id)initWithLine:(int)aLine
+  description:(NSString*)description
+   markerType:(JsonMarkerType)markerType
+    parentDoc:(JsonDocument*)aDoc
+{
+    self = [self initWithDescription:description
+                         markerType:markerType
+                               code:0
+                         coordinate:aDoc.bookmarks.getLineStart(aLine-1)
+                          parentDoc:aDoc];
+
+    if(self)
+    {
+       line = aLine;
+    }
+
+    return self;
+}
+
++(JsonMarker*)markerForNode:(JsonCocoaNode*)node withParentDoc:(JsonDocument*)parentDoc {
+    return [[JsonMarker alloc] initWithDescription:node.nodeValue
+                                        markerType:JsonMarkerTypeBookmark
+                                              code:0
+                                        coordinate:node.textRange.start
+                                         parentDoc:parentDoc];
+}
+
 -(NSString*)locationAsText {
     if(!cachedLocationText) {
         if(line != -1) {
@@ -45,24 +73,6 @@
     return cachedLocationText;
 }
     
--(id)initWithLine:(int)aLine
-      description:(NSString*)description
-       markerType:(JsonMarkerType)markerType
-        parentDoc:(JsonDocument*)aDoc
-{
-   self = [self initWithDescription:description
-                         markerType:markerType
-                               code:0
-                         coordinate:aDoc.bookmarks.getLineStart(aLine-1)
-                          parentDoc:aDoc];
-   
-   if(self)
-   {
-       line = aLine;
-   }
-   
-   return self;
-}
 
 -(JsonMarkerType)markerType {
     return self->markerType;

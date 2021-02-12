@@ -124,7 +124,7 @@ const MARKER_TYPE *MarkerList<MARKER_TYPE>::prevMarker(TextCoordinate &aMarker) 
       aMarker = *iter;
       return &(*iter);
    } else {
-      return false;
+      return nullptr;
    }
 }
 

@@ -10,23 +10,35 @@
 #import "JsonTreeDataSource.h"
 #import "NodeTypeToColorTransformer.h"
 #import "JsonDocument.h"
+#import "JsonMarker.h"
+#include "JsonPathExpressionCompiler.hpp"
+#import "GuiModeControl.h"
+#import "NodeSelectionController.h"
+
+extern "C" {
+#include "extlib/jq/include/jq.h"
+}
 
 @interface JSONWindow () {
     JsonTreeDataSource *_treeDataSource;
+    TextEditorGutterView *gutterView;
+    IBOutlet GuiModeControl *guiModeControl;
 }
 
 @end
 
 @implementation JSONWindow
- 
+
 +(void)initialize
 {
-   [super initialize];
-   [NSValueTransformer setValueTransformer:[[NodeTypeToColorTransformer alloc] initWithEnableKey:@"TreeViewSyntaxColoring"] forName:@"treeViewNodeColors"];
+    [super initialize];
+    [NSValueTransformer setValueTransformer:[[NodeTypeToColorTransformer alloc] initWithEnableKey:@"TreeViewSyntaxColoring"] forName:@"treeViewNodeColors"];
 }
 
 -(void)awakeFromNib
-{                                               
+{
+    testjsonpathexpressionparser();
+
     [textEditor setHorizontallyResizable:YES];
     [textEditor setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
     [[textEditor textContainer] setWidthTracksTextView:NO];
@@ -35,58 +47,64 @@
     textEditor.enabledTextCheckingTypes = 0;
     [textEditor setMaxSize:NSMakeSize(MAXFLOAT, MAXFLOAT)];
     
-    [textEditor.layoutManager replaceTextStorage:((JsonDocument*)self.delegate).textStorage];
+    [textEditor.layoutManager replaceTextStorage:self.document.textStorage];
     
-   gutterView = [[TextEditorGutterView alloc] initWithScrollView:textEditorScroll];
-   [gutterView setModel:(id<GutterViewModel>)selectionController];
-   [textEditorScroll setVerticalRulerView:gutterView];
-
+    gutterView = [[TextEditorGutterView alloc] initWithScrollView:textEditorScroll];
+    [gutterView setModel:(id<GutterViewModel>)selectionController];
+    [textEditorScroll setVerticalRulerView:gutterView];
+    
     _treeDataSource = [[JsonTreeDataSource alloc] init];
-   [treeView setDataSource:_treeDataSource];
-   [treeView registerForDraggedTypes:[NSArray arrayWithObject:@"JsonNode"]];
+    [treeView setDataSource:_treeDataSource];
+    [treeView registerForDraggedTypes:[NSArray arrayWithObject:@"JsonNode"]];
     [treeView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
-   
-   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(defaultsChanged:) name:NSUserDefaultsDidChangeNotification object:nil];
-
-   [self loadDefaults];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(defaultsChanged:) name:NSUserDefaultsDidChangeNotification object:nil];
+    
+    
+    [self loadDefaults];
 }
 
 
 -(void)defaultsChanged:(NSNotification*)aNotification
 {
-   [self loadDefaults];
+    [self loadDefaults];
 }
 
 -(void)loadDefaults
 {
-   NSUserDefaults *lDefaults = [NSUserDefaults standardUserDefaults];
-
-   [textEditorScroll setRulersVisible:[lDefaults boolForKey:@"GutterMaster"]];
-   [gutterView setShowLineNumbers:[lDefaults boolForKey:@"GutterLineNumbers"]];
-   [treeView setNeedsDisplay];
+    NSUserDefaults *lDefaults = [NSUserDefaults standardUserDefaults];
     
-   NSData *lFontData =[[NSUserDefaults standardUserDefaults] valueForKey:@"TextEditorFont"];
-   NSFont *lFont = [NSUnarchiver unarchiveObjectWithData:lFontData];
-   textEditor.font = lFont;
+    [textEditorScroll setRulersVisible:[lDefaults boolForKey:@"GutterMaster"]];
+    [gutterView setShowLineNumbers:[lDefaults boolForKey:@"GutterLineNumbers"]];
+    [treeView setNeedsDisplay];
+    
+    NSData *lFontData =[[NSUserDefaults standardUserDefaults] valueForKey:@"TextEditorFont"];
+    NSFont *lFont = [NSUnarchiver unarchiveObjectWithData:lFontData];
+    textEditor.font = lFont;
+    
+    jqQueryInput.font = lFont;
+    jqQueryResult.font = lFont;
+
+    JSONPathInput.font = lFont;
 }
 
 -(void)removeJsonNode:(id)aSender
 {
-   [domController remove:aSender];
+    [domController remove:aSender];
 }
 
 
 struct ForwardedActionInfo
 {
-   const char *selectorString;
-   enum {
-      faiDomController,
-      faiSelectionController,
-      faiSelf,
-      faiTextEdit
-   } forwardee;
-   SEL entSelector;
-
+    const char *selectorString;
+    enum {
+        faiDomController,
+        faiSelectionController,
+        faiSelf,
+        faiTextEdit
+    } forwardee;
+    SEL entSelector;
+    
 } ;
 
 
@@ -98,102 +116,102 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
     { "goNextSibling:", ForwardedActionInfo::faiSelectionController, 0  },
     { "goPrevSibling:", ForwardedActionInfo::faiSelectionController, 0  },
     { "goParentNode:", ForwardedActionInfo::faiSelectionController, 0  },
-
+    
     { "copyPath:", ForwardedActionInfo::faiSelectionController, 0  },
-
+    
     { "navigateBack:", ForwardedActionInfo::faiSelectionController, 0  },
     { "navigateForward:", ForwardedActionInfo::faiSelectionController, 0  },
-
+    
     { "performFindPanelAction:", ForwardedActionInfo::faiTextEdit, 0  },
-
+    
     { NULL, ForwardedActionInfo::faiSelf, 0 }
 };
 
 -(id)_getActionForwardingTarget:(SEL)aSelector
 {
-   int lIdx=0;
-   while(glbForwardedActions[lIdx].selectorString)
-   {
-      if(!glbForwardedActions[lIdx].entSelector)
-      {
-         glbForwardedActions[lIdx].entSelector = NSSelectorFromString([NSString stringWithCString:glbForwardedActions[lIdx].selectorString encoding:NSUTF8StringEncoding]);
-      }
-      
-      if(glbForwardedActions[lIdx].entSelector == aSelector)
-      {
-         break;
-      }
-      
-      lIdx++;
-   }
-
-   
-   switch(glbForwardedActions[lIdx].forwardee)
-   {
-       case ForwardedActionInfo::faiDomController:
-         return domController;
-       case ForwardedActionInfo::faiSelectionController:
-         return selectionController;
-       case ForwardedActionInfo::faiTextEdit:
-          return textEditor;
-      default:
-         return self;
-   }
-      
-   return self;
+    int lIdx=0;
+    while(glbForwardedActions[lIdx].selectorString)
+    {
+        if(!glbForwardedActions[lIdx].entSelector)
+        {
+            glbForwardedActions[lIdx].entSelector = NSSelectorFromString([NSString stringWithCString:glbForwardedActions[lIdx].selectorString encoding:NSUTF8StringEncoding]);
+        }
+        
+        if(glbForwardedActions[lIdx].entSelector == aSelector)
+        {
+            break;
+        }
+        
+        lIdx++;
+    }
+    
+    
+    switch(glbForwardedActions[lIdx].forwardee)
+    {
+        case ForwardedActionInfo::faiDomController:
+            return domController;
+        case ForwardedActionInfo::faiSelectionController:
+            return selectionController;
+        case ForwardedActionInfo::faiTextEdit:
+            return textEditor;
+        default:
+            return self;
+    }
+    
+    return self;
 }
 
 - (BOOL)respondsToSelector:(SEL)aSelector
 {
-   id lResponder = [self _getActionForwardingTarget:aSelector];
-   
-   if(lResponder != self)
-   {
-      BOOL lRet= [lResponder respondsToSelector:aSelector];
-      return lRet;
-   } else {
-      return [super respondsToSelector:aSelector];
-   }
+    id lResponder = [self _getActionForwardingTarget:aSelector];
+    
+    if(lResponder != self)
+    {
+        BOOL lRet= [lResponder respondsToSelector:aSelector];
+        return lRet;
+    } else {
+        return [super respondsToSelector:aSelector];
+    }
 }
 
 - (NSMethodSignature *)	methodSignatureForSelector:(SEL) aSelector
 {
-   id lResponder = [self _getActionForwardingTarget:aSelector];
-   
-   if(lResponder != self)
-   {
-      return [lResponder methodSignatureForSelector:aSelector];
-   }
-   else
-   {
-      return [super methodSignatureForSelector:aSelector];
-   }
+    id lResponder = [self _getActionForwardingTarget:aSelector];
+    
+    if(lResponder != self)
+    {
+        return [lResponder methodSignatureForSelector:aSelector];
+    }
+    else
+    {
+        return [super methodSignatureForSelector:aSelector];
+    }
 }
 
 - (void)forwardInvocation:(NSInvocation *)anInvocation
 {
-   id lResponder = [self _getActionForwardingTarget:[anInvocation selector]];
-
-   if(lResponder != self)
-   {
-      [anInvocation invokeWithTarget:lResponder];
-   }
-   else
-   {
-      [super forwardInvocation:anInvocation];
-   }
+    id lResponder = [self _getActionForwardingTarget:[anInvocation selector]];
+    
+    if(lResponder != self)
+    {
+        [anInvocation invokeWithTarget:lResponder];
+    }
+    else
+    {
+        [super forwardInvocation:anInvocation];
+    }
 }
 
 - (BOOL)validateUserInterfaceItem:(id <NSValidatedUserInterfaceItem>)anItem
 {
-   id lResponder = [self _getActionForwardingTarget:[anItem action]];
-
-   if(lResponder != self)
-   {
-      return [lResponder validateUserInterfaceItem:anItem];
-   } else {
-      return YES;
-   }
+    id lResponder = [self _getActionForwardingTarget:[anItem action]];
+    
+    if(lResponder != self)
+    {
+        return [lResponder validateUserInterfaceItem:anItem];
+    } else {
+        return YES;
+    }
 }
 
 -(void)indentSelectionAction:(id)sender {
@@ -202,8 +220,98 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
         selectionRange = NSMakeRange(0, textEditor.textStorage.length);
     }
     
-    [((JsonDocument*)self.delegate) reindentStartingAt:selectionRange.location len:selectionRange.length];
+    [self.document reindentStartingAt:selectionRange.location len:selectionRange.length];
 }
+
+- (IBAction)executeJqQuery:(id)sender {
+    NSString *docText = self.document.textStorage.string;
     
+    jv doc = jv_parse(docText.UTF8String);
+    if(!jv_is_valid(doc)) {
+        [jqQueryResult.textStorage setAttributedString:
+            [[NSAttributedString alloc] initWithString:@"Invalid input document."
+                                            attributes:@{
+                                                NSForegroundColorAttributeName: [NSColor systemRedColor],
+                                                NSFontAttributeName: jqQueryResult.font
+                                            }]];
+    } else {
+        jq_state *state = jq_init();
+        int compileResult = jq_compile(state, jqQueryInput.stringValue.UTF8String);
+        if(!compileResult) {
+            [jqQueryResult.textStorage setAttributedString:
+                [[NSAttributedString alloc] initWithString:@"Invalid query."
+                                                attributes:@{
+                                                    NSForegroundColorAttributeName: [NSColor systemRedColor],
+                                                    NSFontAttributeName: jqQueryResult.font
+                                                }]];
+        } else {
+            NSMutableString *resultText = [NSMutableString string];
+            
+            jq_start(state, doc, 0);
+            jv result = jq_next(state);
+            while(jv_is_valid(result)) {
+                jv dumped = jv_dump_string(result, 0);
+                const char *str = jv_string_value(dumped);
+                
+                [resultText appendFormat:@"%s\n", str];
+                
+                result = jq_next(state);
+            }
+            
+            NSAttributedString *resultAS = [[NSAttributedString alloc] initWithString:resultText
+                                                                           attributes:@{
+                                                                               NSFontAttributeName: jqQueryResult.font
+                                                                           }];
+            [jqQueryResult.textStorage setAttributedString:resultAS];
+        }
+        
+        jq_teardown(&state);
+    }
+}
+
+
+
+- (IBAction)jqHelpClicked:(id)sender {
+    [[NSWorkspace sharedWorkspace]
+     openURL:[NSURL URLWithString:@"https://stedolan.github.io/jq/manual/"]];
+}
+
+- (IBAction)executeJsonPath:(id)sender {
+    JsonPathResultNodeList nodeList;
+    try {
+        JsonPathExpression expr = JsonPathExpression::compile(JSONPathInput.stringValue.UTF8String);
+        nodeList = expr.execute(self.document.rootNode.proxiedElement);
+        JSONPathQueryStatus.textColor = [NSColor blackColor];
+        JSONPathQueryStatus.stringValue = [NSString stringWithFormat:@"%ld results", nodeList.size()];
+    } catch(const std::exception &e) {
+        JSONPathQueryStatus.textColor = [NSColor redColor];
+        JSONPathQueryStatus.stringValue = [NSString stringWithFormat:@"Invalid JSON path syntax: %s", e.what()];
+    }
+    
+    NSMutableArray *nodesArray = [NSMutableArray arrayWithCapacity:nodeList.size()];
+    std::for_each(nodeList.begin(), nodeList.end(),
+                  [nodesArray, self](json::Node* node) {
+        JsonCocoaNode *nodeForResult = [JsonCocoaNode nodeForElement:node withName:@"Name"];
+        JsonMarker *markerForResult = [JsonMarker markerForNode:nodeForResult withParentDoc:self.document];
+        [nodesArray addObject:markerForResult];
+    });
+    
+    [JSONPathResultsController setContent:nodesArray];
+}
+
+- (IBAction)findByJSONPath:(id)sender {
+    [guiModeControl setShowJsonPathPanel:@(YES)];
+    [guiModeControl setShowNavPanel:YES];
+    [JSONPathInput becomeFirstResponder];
+}
+
+-(IBAction)findByJSONPathHere:(id)sender {
+    JSONPathInput.stringValue = selectionController.currentPathAsJsonQuery;
+    [self findByJSONPath:sender];
+}
+
+-(JsonDocument*)document {
+    return (JsonDocument*)self.delegate;
+}
 
 @end

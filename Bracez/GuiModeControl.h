@@ -15,7 +15,8 @@
    
    BOOL problemsList;
    BOOL bookmarksList;
-   BOOL findPanel;
+   BOOL jqPanel;
+   BOOL jsonPathPanel;
    BOOL showNavPanel;
 
    BOOL verticalSplit;
@@ -53,8 +54,11 @@
 -(void)setShowBookmarksList:(NSNumber*)aValue;
 -(NSNumber*)showBookmarksList;
 
--(void)setShowFindPanel:(NSNumber*)aValue;
--(NSNumber*)showFindPanel;
+-(void)setShowJqPanel:(NSNumber*)aValue;
+-(NSNumber*)showJqPanel;
+
+-(void)setShowJsonPathPanel:(NSNumber*)aValue;
+-(NSNumber*)showJsonPathPanel;
 
 
 -(void)updateNavPaneWithModeIndex:(int)aIdx value:(BOOL)aVal;

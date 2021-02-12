@@ -101,17 +101,20 @@
 {
    [self willChangeValueForKey:@"showProblemsList"];
    [self willChangeValueForKey:@"showBookmarksList"];
-   [self willChangeValueForKey:@"showFindPanel"];
+   [self willChangeValueForKey:@"showJqPanel"];
+   [self willChangeValueForKey:@"showJsonPathPanel"];
    
     if(aVal) {
         problemsList = (aIdx==0);
         bookmarksList = (aIdx==1);
-        findPanel = (aIdx==2);
+        jqPanel = (aIdx==2);
+        jsonPathPanel = (aIdx==3);
     }
    
    [self didChangeValueForKey:@"showProblemsList"];
    [self didChangeValueForKey:@"showBookmarksList"];
-   [self didChangeValueForKey:@"showFindPanel"];
+   [self didChangeValueForKey:@"showJqPanel"];
+   [self didChangeValueForKey:@"showJsonPathPanel"];
    
    [self updateGui];   
 }
@@ -127,14 +130,22 @@
 }
 
 
--(void)setShowFindPanel:(NSNumber*)aValue
+-(void)setShowJqPanel:(NSNumber*)aValue
 {
    [self updateNavPaneWithModeIndex:2 value:[aValue boolValue]];
 }
 
--(NSNumber*)showFindPanel
+-(NSNumber*)showJqPanel
 {
-   return [NSNumber numberWithBool:findPanel];
+   return [NSNumber numberWithBool:jqPanel];
+}
+
+-(void)setShowJsonPathPanel:(NSNumber*)aValue {
+    [self updateNavPaneWithModeIndex:3 value:[aValue boolValue]];
+}
+
+-(NSNumber*)showJsonPathPanel {
+    return [NSNumber numberWithBool:jsonPathPanel];
 }
 
 
@@ -229,7 +240,7 @@ static void animateSplitterPane(NSSplitView *aView, int aSize)
    
    
     // Update nav pane: first the tab
-    if(showNavPanel) {
+    //if(showNavPanel) {
        if(problemsList)
        {
           [navTabView selectTabViewItemWithIdentifier:@"problemsList"];
@@ -238,13 +249,17 @@ static void animateSplitterPane(NSSplitView *aView, int aSize)
        {
           [navTabView selectTabViewItemWithIdentifier:@"bookmarksList"];
        } else
-       if(findPanel)
+       if(jqPanel)
        {
-          [navTabView selectTabViewItemWithIdentifier:@"findPanel"];
+          [navTabView selectTabViewItemWithIdentifier:@"jqPanel"];
        }
-    } else {
-        [navTabView selectTabViewItemWithIdentifier:@"blankTab"];
-    }
+       if(jsonPathPanel)
+       {
+          [navTabView selectTabViewItemWithIdentifier:@"jsonPathPanel"];
+       }
+    //} else {
+      //  [navTabView selectTabViewItemWithIdentifier:@"blankTab"];
+   // }
     
    if((!navContainer.hidden) != showNavPanel)
    {

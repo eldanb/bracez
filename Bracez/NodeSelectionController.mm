@@ -20,7 +20,7 @@
    docListenerBridge = new JsonFileListenerObjCBridge(self);
    [document jsonFile]->addListener(docListenerBridge);
    
-   [treeController addObserver:self forKeyPath:@"selectionIndexPaths" options:nil context:nil];
+   [treeController addObserver:self forKeyPath:@"selectionIndexPaths" options:0 context:nil];
    [pathView setDelegate:self];  
    
    syncingNodeAndTextSel = false;
@@ -316,6 +316,26 @@
    }
 }
 
+-(NSString*)currentPathAsJsonQuery {
+    NSIndexPath *selIndexPath = [document findPathContaining:[textView selectedRange].location];
+    JsonCocoaNode *curNode = document.rootNode;
+    NSMutableString *path = [NSMutableString stringWithString:@"$"];
+    
+    for(int i=1; i<selIndexPath.length; i++) {
+        int curIndex = [selIndexPath indexAtPosition:i];
+        JsonCocoaNode *nextNode = [curNode objectInChildrenAtIndex:curIndex];
+        if(curNode.nodeType == ntArray) {
+            [path appendFormat:@"[%d]", curIndex];
+        } else
+        {
+            [path appendFormat:@".%@", nextNode.nodeName];
+        }
+        
+        curNode = nextNode;
+    }
+    
+    return path;
+}
 
 - (void)textViewDidChangeSelection:(NSNotification *)aNotification
 {
@@ -537,11 +557,11 @@
 
 -(IBAction)copyPath:(id)aSender
 {
-   NSString *lPath = @"Hello there.";
+   NSString *lPath = [self currentPathAsJsonQuery];
    
    NSPasteboard *lPasteBoard = [NSPasteboard generalPasteboard];
-   [lPasteBoard declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:nil];
-   [lPasteBoard setString:lPath forType:NSStringPboardType];
+   [lPasteBoard declareTypes:[NSArray arrayWithObject:NSPasteboardTypeString] owner:nil];
+   [lPasteBoard setString:lPath forType:NSPasteboardTypeString];
 }
 
 - (void)connectGutterView:(id)aGutterView

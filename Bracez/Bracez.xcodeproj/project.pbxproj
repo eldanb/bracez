@@ -19,6 +19,12 @@
 		B934AE0112205F6C005B06D6 /* SplitterAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = B934AE0012205F6C005B06D6 /* SplitterAnimation.m */; };
 		B934B0DC122464DF005B06D6 /* PreferencesDefaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = B934B0DB122464DF005B06D6 /* PreferencesDefaults.plist */; };
 		B934B53B122EF40F005B06D6 /* NodeTypeToColorTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = B934B53A122EF40F005B06D6 /* NodeTypeToColorTransformer.mm */; };
+		B94381F725C5333E00247A36 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = B94381E625C5333E00247A36 /* LICENSE */; };
+		B94381F825C5333E00247A36 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = B94381E825C5333E00247A36 /* Makefile */; };
+		B94381FB25C5333E00247A36 /* .gitmodules in Resources */ = {isa = PBXBuildFile; fileRef = B94381EB25C5333E00247A36 /* .gitmodules */; };
+		B94381FC25C5333E00247A36 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B94381EC25C5333E00247A36 /* README.md */; };
+		B943820A25C533A300247A36 /* JsonPathExpressionNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B943820825C533A300247A36 /* JsonPathExpressionNode.cpp */; };
+		B943821425C5519600247A36 /* JsonPathExpressionCompiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B943820C25C533CD00247A36 /* JsonPathExpressionCompiler.cpp */; };
 		B945F8961192A79100DCFAAE /* PathView.m in Sources */ = {isa = PBXBuildFile; fileRef = B945F8951192A79100DCFAAE /* PathView.m */; };
 		B945F9001192DAC800DCFAAE /* reader.inl in Resources */ = {isa = PBXBuildFile; fileRef = B945F8FB1192DAC800DCFAAE /* reader.inl */; };
 		B945F91C1192DDAC00DCFAAE /* json_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B945F91B1192DDAC00DCFAAE /* json_file.cpp */; };
@@ -47,9 +53,11 @@
 		B99B5A7311C6DF0000A33231 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B99B5A7211C6DF0000A33231 /* QuartzCore.framework */; };
 		B99B5C4111CBCC2F00A33231 /* TextEditorGutterView.mm in Sources */ = {isa = PBXBuildFile; fileRef = B99B5C4011CBCC2F00A33231 /* TextEditorGutterView.mm */; };
 		B99B5ED611CD5D2800A33231 /* PreferencesWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B99B5ED411CD5D2800A33231 /* PreferencesWindow.m */; };
+		B99D0DD725BC989C0006EA1F /* libjq.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B99D0DD625BC98810006EA1F /* libjq.a */; };
 		B9AADFFD253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9AADFFC253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm */; };
 		B9BBFDF0120D2CBE00E4E9AE /* LinesAndBookmarks.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9BBFDEE120D2CBE00E4E9AE /* LinesAndBookmarks.cpp */; };
 		B9D510B92540B13400B2286B /* NumberNonZeroValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = B9D510B82540B13400B2286B /* NumberNonZeroValueTransformer.m */; };
+		B9EC0CA225D5D92B0003C65A /* PathCompletionListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9EC0CA125D5D92B0003C65A /* PathCompletionListCell.xib */; };
 		B9F4AD4B12E8DA8C00BF8233 /* ToolbarBookmarksTemplate.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B9F4AD4A12E8DA8C00BF8233 /* ToolbarBookmarksTemplate.pdf */; };
 		B9F4AD5612E8DB7C00BF8233 /* SearchPaneView.m in Sources */ = {isa = PBXBuildFile; fileRef = B9F4AD5512E8DB7C00BF8233 /* SearchPaneView.m */; };
 		B9F4AECD1303376000BF8233 /* DarkDiviterSplitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B9F4AECC1303376000BF8233 /* DarkDiviterSplitter.m */; };
@@ -81,6 +89,27 @@
 		B934B0DB122464DF005B06D6 /* PreferencesDefaults.plist */ = {isa = PBXFileReference; explicitFileType = text.plist.xml; path = PreferencesDefaults.plist; sourceTree = "<group>"; };
 		B934B539122EF40F005B06D6 /* NodeTypeToColorTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTypeToColorTransformer.h; sourceTree = "<group>"; };
 		B934B53A122EF40F005B06D6 /* NodeTypeToColorTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NodeTypeToColorTransformer.mm; sourceTree = "<group>"; };
+		B94381E525C5333E00247A36 /* prolog.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = prolog.hpp; sourceTree = "<group>"; };
+		B94381E625C5333E00247A36 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		B94381E725C5333E00247A36 /* templateio.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = templateio.hpp; sourceTree = "<group>"; };
+		B94381E825C5333E00247A36 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		B94381E925C5333E00247A36 /* example_expression.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = example_expression.cpp; sourceTree = "<group>"; };
+		B94381EA25C5333E00247A36 /* test_simple.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_simple.cpp; sourceTree = "<group>"; };
+		B94381EB25C5333E00247A36 /* .gitmodules */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitmodules; sourceTree = "<group>"; };
+		B94381EC25C5333E00247A36 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		B94381ED25C5333E00247A36 /* mkcsv.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mkcsv.cpp; sourceTree = "<group>"; };
+		B94381EE25C5333E00247A36 /* profile.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = profile.hpp; sourceTree = "<group>"; };
+		B94381F025C5333E00247A36 /* parser_combinators.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = parser_combinators.hpp; sourceTree = "<group>"; };
+		B94381F125C5333E00247A36 /* mkexp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mkexp.cpp; sourceTree = "<group>"; };
+		B94381F225C5333E00247A36 /* function_traits.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = function_traits.hpp; sourceTree = "<group>"; };
+		B94381F325C5333E00247A36 /* prolog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = prolog.cpp; sourceTree = "<group>"; };
+		B94381F425C5333E00247A36 /* parser_simple.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = parser_simple.hpp; sourceTree = "<group>"; };
+		B94381F525C5333E00247A36 /* test_combinators.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_combinators.cpp; sourceTree = "<group>"; };
+		B94381F625C5333E00247A36 /* stream_iterator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = stream_iterator.hpp; sourceTree = "<group>"; };
+		B943820825C533A300247A36 /* JsonPathExpressionNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = JsonPathExpressionNode.cpp; sourceTree = "<group>"; };
+		B943820925C533A300247A36 /* JsonPathExpressionNode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = JsonPathExpressionNode.hpp; sourceTree = "<group>"; };
+		B943820C25C533CD00247A36 /* JsonPathExpressionCompiler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = JsonPathExpressionCompiler.cpp; sourceTree = "<group>"; };
+		B943820D25C533CD00247A36 /* JsonPathExpressionCompiler.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = JsonPathExpressionCompiler.hpp; sourceTree = "<group>"; };
 		B945F8941192A79100DCFAAE /* PathView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathView.h; sourceTree = "<group>"; };
 		B945F8951192A79100DCFAAE /* PathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PathView.m; sourceTree = "<group>"; };
 		B945F8FA1192DAC800DCFAAE /* reader.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.h; name = reader.h; path = json_model/reader.h; sourceTree = "<group>"; tabWidth = 4; usesTabs = 0; };
@@ -128,6 +157,8 @@
 		B99B5C4011CBCC2F00A33231 /* TextEditorGutterView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TextEditorGutterView.mm; sourceTree = "<group>"; };
 		B99B5ED411CD5D2800A33231 /* PreferencesWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferencesWindow.m; sourceTree = "<group>"; };
 		B99B5ED511CD5D2800A33231 /* PreferencesWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferencesWindow.h; sourceTree = "<group>"; };
+		B99D0DD125BC98600006EA1F /* libjq.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjq.1.dylib; path = ../../../../../../usr/local/Cellar/jq/1.6/lib/libjq.1.dylib; sourceTree = "<group>"; };
+		B99D0DD625BC98810006EA1F /* libjq.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjq.a; path = ../../../../../../usr/local/Cellar/jq/1.6/lib/libjq.a; sourceTree = "<group>"; };
 		B9AADFFB253A19AD00DE2559 /* SyntaxHilightJsonVisitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SyntaxHilightJsonVisitor.h; path = json_cocoa_model/SyntaxHilightJsonVisitor.h; sourceTree = "<group>"; };
 		B9AADFFC253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = SyntaxHilightJsonVisitor.mm; path = json_cocoa_model/SyntaxHilightJsonVisitor.mm; sourceTree = "<group>"; };
 		B9AAE003253AB2FA00DE2559 /* marker_list.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = marker_list.h; sourceTree = "<group>"; };
@@ -135,6 +166,7 @@
 		B9BBFDEF120D2CBE00E4E9AE /* LinesAndBookmarks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LinesAndBookmarks.h; path = json_model/LinesAndBookmarks.h; sourceTree = "<group>"; };
 		B9D510B72540B13400B2286B /* NumberNonZeroValueTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NumberNonZeroValueTransformer.h; sourceTree = "<group>"; };
 		B9D510B82540B13400B2286B /* NumberNonZeroValueTransformer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NumberNonZeroValueTransformer.m; sourceTree = "<group>"; };
+		B9EC0CA125D5D92B0003C65A /* PathCompletionListCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PathCompletionListCell.xib; sourceTree = "<group>"; };
 		B9F4AD4A12E8DA8C00BF8233 /* ToolbarBookmarksTemplate.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = ToolbarBookmarksTemplate.pdf; sourceTree = "<group>"; };
 		B9F4AD5412E8DB7C00BF8233 /* SearchPaneView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchPaneView.h; sourceTree = "<group>"; };
 		B9F4AD5512E8DB7C00BF8233 /* SearchPaneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchPaneView.m; sourceTree = "<group>"; };
@@ -148,6 +180,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B99D0DD725BC989C0006EA1F /* libjq.a in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				B99B5A7311C6DF0000A33231 /* QuartzCore.framework in Frameworks */,
 			);
@@ -194,6 +227,7 @@
 		29B97314FDCFA39411CA2CEA /* JsonMockup */ = {
 			isa = PBXGroup;
 			children = (
+				B94381E325C5333E00247A36 /* jsonpath */,
 				B934AD16121C74B0005B06D6 /* Util */,
 				B945FA241192FD4B00DCFAAE /* Gui */,
 				B945F9031192DD6800DCFAAE /* JsonCocoaModel */,
@@ -229,6 +263,7 @@
 				B98ACDD811A6F12A00C4F114 /* EditorWindow.xib */,
 				B98781DB11C4D91B00435107 /* PreferencesWindow.xib */,
 				B97B3C58253B2EAF00D19FF0 /* ViewModelEditor.xib */,
+				B9EC0CA125D5D92B0003C65A /* PathCompletionListCell.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -236,6 +271,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B99D0DD625BC98810006EA1F /* libjq.a */,
+				B99D0DD125BC98600006EA1F /* libjq.1.dylib */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
@@ -256,6 +293,50 @@
 				B952A45F254BFEA7005BFB1C /* NSString+WStringUtils.mm */,
 			);
 			name = Util;
+			sourceTree = "<group>";
+		};
+		B94381E325C5333E00247A36 /* jsonpath */ = {
+			isa = PBXGroup;
+			children = (
+				B94381E425C5333E00247A36 /* Parser-Combinators */,
+				B943820825C533A300247A36 /* JsonPathExpressionNode.cpp */,
+				B943820925C533A300247A36 /* JsonPathExpressionNode.hpp */,
+				B943820C25C533CD00247A36 /* JsonPathExpressionCompiler.cpp */,
+				B943820D25C533CD00247A36 /* JsonPathExpressionCompiler.hpp */,
+			);
+			path = jsonpath;
+			sourceTree = "<group>";
+		};
+		B94381E425C5333E00247A36 /* Parser-Combinators */ = {
+			isa = PBXGroup;
+			children = (
+				B94381E525C5333E00247A36 /* prolog.hpp */,
+				B94381E625C5333E00247A36 /* LICENSE */,
+				B94381E725C5333E00247A36 /* templateio.hpp */,
+				B94381E825C5333E00247A36 /* Makefile */,
+				B94381E925C5333E00247A36 /* example_expression.cpp */,
+				B94381EA25C5333E00247A36 /* test_simple.cpp */,
+				B94381EB25C5333E00247A36 /* .gitmodules */,
+				B94381EC25C5333E00247A36 /* README.md */,
+				B94381ED25C5333E00247A36 /* mkcsv.cpp */,
+				B94381EE25C5333E00247A36 /* profile.hpp */,
+				B94381EF25C5333E00247A36 /* File-Vector */,
+				B94381F025C5333E00247A36 /* parser_combinators.hpp */,
+				B94381F125C5333E00247A36 /* mkexp.cpp */,
+				B94381F225C5333E00247A36 /* function_traits.hpp */,
+				B94381F325C5333E00247A36 /* prolog.cpp */,
+				B94381F425C5333E00247A36 /* parser_simple.hpp */,
+				B94381F525C5333E00247A36 /* test_combinators.cpp */,
+				B94381F625C5333E00247A36 /* stream_iterator.hpp */,
+			);
+			path = "Parser-Combinators";
+			sourceTree = "<group>";
+		};
+		B94381EF25C5333E00247A36 /* File-Vector */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "File-Vector";
 			sourceTree = "<group>";
 		};
 		B945F8F71192DAB200DCFAAE /* JsonModel */ = {
@@ -402,11 +483,15 @@
 				B97B3C59253B2EAF00D19FF0 /* ViewModelEditor.xib in Resources */,
 				B98ACCA411A3E42300C4F114 /* BrowserView.png in Resources */,
 				B952A4652550A5CA005BFB1C /* MarkerTableCellView.xib in Resources */,
+				B94381FC25C5333E00247A36 /* README.md in Resources */,
+				B9EC0CA225D5D92B0003C65A /* PathCompletionListCell.xib in Resources */,
 				B98ACCA511A3E42300C4F114 /* TextView.png in Resources */,
 				B98ACCA611A3E42300C4F114 /* TreeView.png in Resources */,
 				B98ACCA711A3E42300C4F114 /* VertSplit.png in Resources */,
 				B98ACDD911A6F12A00C4F114 /* EditorWindow.xib in Resources */,
+				B94381F725C5333E00247A36 /* LICENSE in Resources */,
 				B98781DC11C4D91B00435107 /* PreferencesWindow.xib in Resources */,
+				B94381FB25C5333E00247A36 /* .gitmodules in Resources */,
 				B934B0DC122464DF005B06D6 /* PreferencesDefaults.plist in Resources */,
 				B9F4AD4B12E8DA8C00BF8233 /* ToolbarBookmarksTemplate.pdf in Resources */,
 			);
@@ -425,6 +510,7 @@
 				B945F91C1192DDAC00DCFAAE /* json_file.cpp in Sources */,
 				B945F9311192E0A800DCFAAE /* JsonCocoaNode.mm in Sources */,
 				B945FA271192FD9500DCFAAE /* GuiModeControl.m in Sources */,
+				B94381F825C5333E00247A36 /* Makefile in Sources */,
 				B945FB6F11937A3200DCFAAE /* JSONWindow.mm in Sources */,
 				B9AADFFD253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm in Sources */,
 				B945FD57119E832B00DCFAAE /* JsonDocument.mm in Sources */,
@@ -432,6 +518,7 @@
 				B98ACD5611A6E6B100C4F114 /* CoordView.m in Sources */,
 				B987820A11C4DE9600435107 /* PreferencesDialogController.mm in Sources */,
 				B987825911C535D800435107 /* JsonPreferencesDialogController.mm in Sources */,
+				B943821425C5519600247A36 /* JsonPathExpressionCompiler.cpp in Sources */,
 				B99B5A5D11C6CB7E00A33231 /* AnimatingTabView.m in Sources */,
 				B952A460254C0010005BFB1C /* NSString+WStringUtils.mm in Sources */,
 				B99B5C4111CBCC2F00A33231 /* TextEditorGutterView.mm in Sources */,
@@ -441,6 +528,7 @@
 				B930EB271202105400C8BE4B /* JsonTreeDataSource.mm in Sources */,
 				B9BBFDF0120D2CBE00E4E9AE /* LinesAndBookmarks.cpp in Sources */,
 				B97B3C56253B2E9C00D19FF0 /* ViewModelEditor.m in Sources */,
+				B943820A25C533A300247A36 /* JsonPathExpressionNode.cpp in Sources */,
 				B934AD19121C7503005B06D6 /* NSIndexPathAdditions.m in Sources */,
 				B934ADF412205C19005B06D6 /* KvoAnimation.m in Sources */,
 				B934AE0112205F6C005B06D6 /* SplitterAnimation.m in Sources */,
@@ -479,6 +567,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -488,9 +577,14 @@
 				GCC_PREFIX_HEADER = Bracez_Prefix.pch;
 				INFOPLIST_FILE = "Bracez-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/extlib/jq/lib",
+					/usr/local/Cellar/jq/1.6/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_NAME = Bracez;
-				VALID_ARCHS = "i386 x86_64";
+				VALID_ARCHS = x86_64;
 			};
 			name = Debug;
 		};
@@ -498,14 +592,21 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Bracez_Prefix.pch;
 				INFOPLIST_FILE = "Bracez-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/extlib/jq/lib",
+					/usr/local/Cellar/jq/1.6/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_NAME = Bracez;
+				VALID_ARCHS = x86_64;
 			};
 			name = Release;
 		};

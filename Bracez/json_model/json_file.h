@@ -73,6 +73,9 @@ namespace json
    
       virtual void CalculateJsonTextRepresentation(std::wstring &aDest) const = 0;
        
+      virtual bool ValueEquals(Node *other) const = 0;
+      virtual bool ValueLt(Node *other) const = 0;
+       
    private:
       friend class Reader;
       friend class ArrayNode;
@@ -107,7 +110,9 @@ namespace json
       
       virtual void DetachChildAt(int aIdx, Node **aNode) = 0;
 
-      
+      virtual bool ValueEquals(Node *other) const;
+      bool ValueLt(Node *other) const;
+
    protected:
       virtual void AdjustChildRangeAt(int aIdx, int aDiff);
 
@@ -150,7 +155,7 @@ namespace json
       
       // DOM-only modifiers
       void DomAddElementNode(Node *aElement);
-      
+             
    private:
       Elements elements;
    };
@@ -206,6 +211,8 @@ namespace json
       // DOM-only modifiers
       Member &DomAddMemberNode(const wstring &aName, Node *aElement);
 
+      bool ValueEquals(Node *other) const;
+
    protected:
       void AdjustChildRangeAt(int aIdx, int aDiff);
 
@@ -258,6 +265,9 @@ namespace json
 
       void CalculateJsonTextRepresentation(std::wstring &aDest) const;
 
+      bool ValueEquals(Node *other) const;
+      bool ValueLt(Node *other) const;
+
    protected:  
 
    } ;
@@ -276,6 +286,16 @@ namespace json
 
       void CalculateJsonTextRepresentation(std::wstring &aDest) const;
       
+      bool ValueEquals(Node *other) const {
+          ValueNode<ValueType, NodeTypeConst> *otherTyped = dynamic_cast< ValueNode<ValueType, NodeTypeConst> *>(other);
+          return otherTyped && otherTyped->GetValue() == GetValue();
+      }
+
+       bool ValueLt(Node *other) const {
+           ValueNode<ValueType, NodeTypeConst> *otherTyped = dynamic_cast< ValueNode<ValueType, NodeTypeConst> *>(other);
+           return otherTyped && otherTyped->GetValue() > GetValue();
+       }
+
    protected:
 
    private:

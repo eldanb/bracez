@@ -11,15 +11,20 @@
 @class TextEditorGutterView;
 
 @interface JSONWindow : NSWindow {
-
-   IBOutlet NSTextView *textEditor;
-   IBOutlet NSScrollView *textEditorScroll;
-   IBOutlet NSTreeController *domController;
-   IBOutlet NSOutlineView *treeView;
-
-   IBOutlet NodeSelectionController *selectionController;
     
-   TextEditorGutterView *gutterView;
+    IBOutlet NSTextView *textEditor;
+    IBOutlet NSScrollView *textEditorScroll;
+    IBOutlet NSTreeController *domController;
+    IBOutlet NSOutlineView *treeView;
+    
+    IBOutlet NSTextField *jqQueryInput;
+    IBOutlet NSTextView *jqQueryResult;
+
+    IBOutlet NSTextField *JSONPathInput;
+    IBOutlet NSArrayController *JSONPathResultsController;
+    IBOutlet NSTextField *JSONPathQueryStatus;
+    
+    IBOutlet NodeSelectionController *selectionController;    
 }
 
 -(void)loadDefaults;

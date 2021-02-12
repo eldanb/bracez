@@ -165,6 +165,28 @@ void ContainerNode::AdjustChildRangeAt(int aIdx, int aDiff)
    lNode->textRange.start += aDiff;   
 }
 
+bool ContainerNode::ValueEquals(Node *other) const {
+    ContainerNode *otherCont = dynamic_cast<ContainerNode*>(other);
+    if(!otherCont) {
+        return false;
+    }
+    
+    if(otherCont->GetChildCount() != GetChildCount()) {
+        return false;
+    }
+    
+    for(int idx=0; idx<GetChildCount(); idx++) {
+        if(!GetChildAt(idx)->ValueEquals(otherCont->GetChildAt(idx))) {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+bool ContainerNode::ValueLt(Node *other) const {
+    return false;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -655,6 +677,25 @@ void ObjectNode::accept(NodeVisitor *aVisitor)
    }
 }
    
+bool ObjectNode::ValueEquals(Node *other) const {
+    ObjectNode *objOtherNode = dynamic_cast<ObjectNode*>(other);
+    if(!objOtherNode) {
+        return false;
+    }
+
+    if(!ContainerNode::ValueEquals(other)) {
+        return false;
+    }
+    
+    int childCount = GetChildCount();
+    for(int idx=0; idx<childCount; idx++) {
+        if(GetMemberNameAt(idx) != objOtherNode->GetMemberNameAt(idx)) {
+            return false;
+        }
+    }
+    
+    return true;
+}
 
 void ObjectNode::CalculateJsonTextRepresentation(std::wstring &aDest) const
 {
@@ -753,6 +794,15 @@ void NullNode::CalculateJsonTextRepresentation(std::wstring &aDest) const
 {
    aDest = L"null";
 }
+
+bool NullNode::ValueEquals(Node *other) const {
+    return !!dynamic_cast<NullNode*>(other);
+}
+
+bool NullNode::ValueLt(Node *other) const {
+    return false;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

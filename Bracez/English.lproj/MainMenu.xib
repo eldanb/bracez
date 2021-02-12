@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17156" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17156"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17701"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -119,12 +119,6 @@
                             <menuItem isSeparatorItem="YES" id="74">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Page Setup..." keyEquivalent="P" id="77">
-                                <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
-                                <connections>
-                                    <action selector="runPageLayout:" target="-1" id="87"/>
-                                </connections>
-                            </menuItem>
                             <menuItem title="Print…" keyEquivalent="p" id="78">
                                 <connections>
                                     <action selector="print:" target="-1" id="86"/>
@@ -160,7 +154,8 @@
                                     <action selector="copy:" target="-1" id="224"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Copy Path" keyEquivalent="p" id="750">
+                            <menuItem title="Copy Path" keyEquivalent="c" id="750">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="copyPath:" target="-1" id="752"/>
                                 </connections>
@@ -175,7 +170,7 @@
                                     <action selector="delete:" target="-1" id="711"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Delete Node" keyEquivalent="d" id="712">
+                            <menuItem title="Delete Node" keyEquivalent="D" id="712">
                                 <connections>
                                     <action selector="removeJsonNode:" target="-1" id="714"/>
                                 </connections>
@@ -186,8 +181,7 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="OX5-qh-ugV"/>
-                            <menuItem title="Reindent JSON" id="mAL-RU-nST">
-                                <modifierMask key="keyEquivalentModifierMask"/>
+                            <menuItem title="Reindent JSON" keyEquivalent="I" id="mAL-RU-nST">
                                 <connections>
                                     <action selector="indentSelectionAction:" target="-1" id="DZU-sy-JPC"/>
                                 </connections>
@@ -222,6 +216,17 @@
                                                 <action selector="centerSelectionInVisibleArea:" target="-1" id="245"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="Qme-kT-7wI"/>
+                                        <menuItem title="JSON Path..." keyEquivalent="P" id="xe7-Th-wrw">
+                                            <connections>
+                                                <action selector="findByJSONPath:" target="-1" id="2mH-pf-zX3"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="JSON Path From Here..." keyEquivalent="H" id="TaO-3w-KAk">
+                                            <connections>
+                                                <action selector="findByJSONPathHere:" target="-1" id="Yzu-tX-o1s"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
@@ -249,24 +254,26 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Go" id="729">
                         <items>
-                            <menuItem title="Parent" keyEquivalent="=" id="732">
+                            <menuItem title="Previous Sibling" keyEquivalent="'" id="734">
+                                <connections>
+                                    <action selector="goPrevSibling:" target="-1" id="744"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Next Sibling" keyEquivalent="\" id="733">
+                                <connections>
+                                    <action selector="goNextSibling:" target="-1" id="743"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Parent" keyEquivalent="'" id="732">
+                                <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
                                 <connections>
                                     <action selector="goParentNode:" target="-1" id="742"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="First Child" keyEquivalent="\" id="748">
+                                <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
                                 <connections>
                                     <action selector="goFirstChild:" target="-1" id="749"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Next Sibling" keyEquivalent="]" id="733">
-                                <connections>
-                                    <action selector="goNextSibling:" target="-1" id="743"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Previous Sibling" keyEquivalent="[" id="734">
-                                <connections>
-                                    <action selector="goPrevSibling:" target="-1" id="744"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="735"/>
@@ -287,14 +294,12 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="741"/>
-                            <menuItem title="History Back" id="730">
-                                <modifierMask key="keyEquivalentModifierMask"/>
+                            <menuItem title="History Back" keyEquivalent="[" id="730">
                                 <connections>
                                     <action selector="navigateBack:" target="-1" id="745"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="History Forward" id="731">
-                                <modifierMask key="keyEquivalentModifierMask"/>
+                            <menuItem title="History Forward" keyEquivalent="]" id="731">
                                 <connections>
                                     <action selector="navigateForward:" target="-1" id="747"/>
                                 </connections>
@@ -306,6 +311,7 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Json" id="718">
                         <items>
+                            <menuItem title="Evaluate jq..." keyEquivalent="E" id="Ac4-VD-Reg"/>
                             <menuItem title="Associate Schema..." id="722">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                             </menuItem>

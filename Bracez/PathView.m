@@ -374,9 +374,10 @@
         _completionTableView = [[CompletionsTableView alloc] initWithFrame:NSZeroRect];
         _completionTableView.font = [self font];
         _completionTableView.headerView = nil;
+        NSNib *defaultCellNib = [[NSNib alloc] initWithNibNamed:@"PathCompletionListCell" bundle:[NSBundle mainBundle]];
+        [_completionTableView registerNib:defaultCellNib forIdentifier:@"defaultCell"];
         [_completionTableView setAction:@selector(completionCellClicked:)];
         NSTableColumn *tabCol = [[NSTableColumn alloc] initWithIdentifier:@"col1"];
-        [tabCol.dataCell setFont:[self font]];
         tabCol.editable = NO;
         [_completionTableView addTableColumn:tabCol];
         [_completionTableView setDataSource:self];
@@ -397,6 +398,15 @@
     
     // Move window to current caret position
     [_completionWindow setFrame:CGRectMake(glyphPos.x, glyphPos.y-150, 300, 150) display:YES];
+}
+
+-(NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+    NSTextView *view = (NSTextView*)[tableView makeViewWithIdentifier:@"defaultCell" owner:tableView];
+    ((NSTextField*)view.subviews.firstObject).font = self.font;
+    ((NSTextField*)view.subviews.firstObject).stringValue = [tableView.dataSource tableView:tableView
+                                                                  objectValueForTableColumn:tableColumn
+                                                                                        row:row];
+    return view;
 }
 
 -(void)handleCompletionSelectionWithTerminatingDot:(BOOL)terminatingDot {
@@ -487,7 +497,7 @@
    }
 
    NSRect lTextFrame = cellFrame;
-   lTextFrame.origin.y += (cellFrame.size.height-[super cellSize].height)/2-8;
+   lTextFrame.origin.y += (cellFrame.size.height-[super cellSize].height)/2-11;
    [super drawWithFrame:lTextFrame inView:controlView];
    
    [self setDrawsBackground:lSaveBk];
