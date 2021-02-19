@@ -11,9 +11,10 @@
 #import "NodeTypeToColorTransformer.h"
 #import "JsonDocument.h"
 #import "JsonMarker.h"
-#include "JsonPathExpressionCompiler.hpp"
 #import "GuiModeControl.h"
 #import "NodeSelectionController.h"
+#import "JsonPathSearchController.h"
+#import "BracezPreferences.h"
 
 extern "C" {
 #include "extlib/jq/include/jq.h"
@@ -37,8 +38,6 @@ extern "C" {
 
 -(void)awakeFromNib
 {
-    testjsonpathexpressionparser();
-
     [textEditor setHorizontallyResizable:YES];
     [textEditor setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
     [[textEditor textContainer] setWidthTracksTextView:NO];
@@ -72,20 +71,18 @@ extern "C" {
 
 -(void)loadDefaults
 {
-    NSUserDefaults *lDefaults = [NSUserDefaults standardUserDefaults];
-    
-    [textEditorScroll setRulersVisible:[lDefaults boolForKey:@"GutterMaster"]];
-    [gutterView setShowLineNumbers:[lDefaults boolForKey:@"GutterLineNumbers"]];
-    [treeView setNeedsDisplay];
-    
-    NSData *lFontData =[[NSUserDefaults standardUserDefaults] valueForKey:@"TextEditorFont"];
-    NSFont *lFont = [NSUnarchiver unarchiveObjectWithData:lFontData];
-    textEditor.font = lFont;
-    
-    jqQueryInput.font = lFont;
-    jqQueryResult.font = lFont;
+    BracezPreferences *prefs = [BracezPreferences sharedPreferences];
 
-    JSONPathInput.font = lFont;
+    [textEditorScroll setRulersVisible:prefs.gutterMasterSwitch];
+    [gutterView setShowLineNumbers:prefs.gutterLineNumbers];
+    treeView.needsDisplay = YES;
+    
+    textEditor.font = prefs.editorFont;
+    
+    jqQueryInput.font = prefs.editorFont;
+    jqQueryResult.font = prefs.editorFont;
+    
+    [jsonPathSearchController loadDefaults];
 }
 
 -(void)removeJsonNode:(id)aSender
@@ -276,42 +273,34 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
      openURL:[NSURL URLWithString:@"https://stedolan.github.io/jq/manual/"]];
 }
 
-- (IBAction)executeJsonPath:(id)sender {
-    JsonPathResultNodeList nodeList;
-    try {
-        JsonPathExpression expr = JsonPathExpression::compile(JSONPathInput.stringValue.UTF8String);
-        nodeList = expr.execute(self.document.rootNode.proxiedElement);
-        JSONPathQueryStatus.textColor = [NSColor blackColor];
-        JSONPathQueryStatus.stringValue = [NSString stringWithFormat:@"%ld results", nodeList.size()];
-    } catch(const std::exception &e) {
-        JSONPathQueryStatus.textColor = [NSColor redColor];
-        JSONPathQueryStatus.stringValue = [NSString stringWithFormat:@"Invalid JSON path syntax: %s", e.what()];
-    }
-    
-    NSMutableArray *nodesArray = [NSMutableArray arrayWithCapacity:nodeList.size()];
-    std::for_each(nodeList.begin(), nodeList.end(),
-                  [nodesArray, self](json::Node* node) {
-        JsonCocoaNode *nodeForResult = [JsonCocoaNode nodeForElement:node withName:@"Name"];
-        JsonMarker *markerForResult = [JsonMarker markerForNode:nodeForResult withParentDoc:self.document];
-        [nodesArray addObject:markerForResult];
-    });
-    
-    [JSONPathResultsController setContent:nodesArray];
+
+-(IBAction)showJqEval:(id)sender {
+    [guiModeControl setShowJqPanel:@(YES)];
+    [guiModeControl setShowNavPanel:YES];
 }
 
-- (IBAction)findByJSONPath:(id)sender {
+- (void)findByJsonPathWithQuery:(NSString*)query {
     [guiModeControl setShowJsonPathPanel:@(YES)];
     [guiModeControl setShowNavPanel:YES];
-    [JSONPathInput becomeFirstResponder];
+    [jsonPathSearchController startJsonPathQuery:query]; 
+}
+
+
+- (IBAction)findByJSONPath:(id)sender {
+    [self findByJsonPathWithQuery:nil];
 }
 
 -(IBAction)findByJSONPathHere:(id)sender {
-    JSONPathInput.stringValue = selectionController.currentPathAsJsonQuery;
-    [self findByJSONPath:sender];
+    [self findByJsonPathWithQuery:selectionController.currentPathAsJsonQuery];
 }
-
 -(JsonDocument*)document {
     return (JsonDocument*)self.delegate;
+}
+
+- (IBAction)showViewModeMenu:(id)sender {
+    [NSMenu popUpContextMenu:ViewModeMenu
+                   withEvent:[NSApp currentEvent]
+                     forView:((NSToolbarItem*)sender).view];
 }
 
 @end

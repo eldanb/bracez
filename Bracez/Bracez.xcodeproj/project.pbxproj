@@ -61,6 +61,8 @@
 		B9F4AD4B12E8DA8C00BF8233 /* ToolbarBookmarksTemplate.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B9F4AD4A12E8DA8C00BF8233 /* ToolbarBookmarksTemplate.pdf */; };
 		B9F4AD5612E8DB7C00BF8233 /* SearchPaneView.m in Sources */ = {isa = PBXBuildFile; fileRef = B9F4AD5512E8DB7C00BF8233 /* SearchPaneView.m */; };
 		B9F4AECD1303376000BF8233 /* DarkDiviterSplitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B9F4AECC1303376000BF8233 /* DarkDiviterSplitter.m */; };
+		B9FF94F925E022A60056B37C /* JsonPathSearchController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9FF94F825E022A50056B37C /* JsonPathSearchController.mm */; };
+		B9FF94FE25E026400056B37C /* BracezPreferences.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9FF94FD25E026400056B37C /* BracezPreferences.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -173,6 +175,10 @@
 		B9F4ADED12E96E1400BF8233 /* stopwatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stopwatch.h; sourceTree = "<group>"; };
 		B9F4AECB1303376000BF8233 /* DarkDiviterSplitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DarkDiviterSplitter.h; path = Util/DarkDiviterSplitter.h; sourceTree = "<group>"; };
 		B9F4AECC1303376000BF8233 /* DarkDiviterSplitter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DarkDiviterSplitter.m; path = Util/DarkDiviterSplitter.m; sourceTree = "<group>"; };
+		B9FF94F725E022A50056B37C /* JsonPathSearchController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JsonPathSearchController.h; sourceTree = "<group>"; };
+		B9FF94F825E022A50056B37C /* JsonPathSearchController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = JsonPathSearchController.mm; sourceTree = "<group>"; };
+		B9FF94FC25E026400056B37C /* BracezPreferences.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BracezPreferences.h; sourceTree = "<group>"; };
+		B9FF94FD25E026400056B37C /* BracezPreferences.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = BracezPreferences.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -409,6 +415,10 @@
 				B9D510B82540B13400B2286B /* NumberNonZeroValueTransformer.m */,
 				B952A4672550A5F1005BFB1C /* MarkerTableCellView.h */,
 				B952A4682550A5F1005BFB1C /* MarkerTableCellView.mm */,
+				B9FF94F725E022A50056B37C /* JsonPathSearchController.h */,
+				B9FF94F825E022A50056B37C /* JsonPathSearchController.mm */,
+				B9FF94FC25E026400056B37C /* BracezPreferences.h */,
+				B9FF94FD25E026400056B37C /* BracezPreferences.mm */,
 			);
 			name = Gui;
 			sourceTree = "<group>";
@@ -505,6 +515,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
+				B9FF94F925E022A60056B37C /* JsonPathSearchController.mm in Sources */,
 				256AC3DA0F4B6AC300CF3369 /* JsonMockupAppDelegate.mm in Sources */,
 				B945F8961192A79100DCFAAE /* PathView.m in Sources */,
 				B945F91C1192DDAC00DCFAAE /* json_file.cpp in Sources */,
@@ -538,6 +549,7 @@
 				B9D510B92540B13400B2286B /* NumberNonZeroValueTransformer.m in Sources */,
 				B9F4AD5612E8DB7C00BF8233 /* SearchPaneView.m in Sources */,
 				B9F4AECD1303376000BF8233 /* DarkDiviterSplitter.m in Sources */,
+				B9FF94FE25E026400056B37C /* BracezPreferences.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

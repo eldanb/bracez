@@ -10,6 +10,13 @@
 #include "reader.h"
 #include "NSString+WStringUtils.h"
 
+#include <codecvt>
+#include <locale>
+
+using convert_type = std::codecvt_utf8<wchar_t>;
+static std::wstring_convert<convert_type, wchar_t> wide_utf8_converter;
+
+
 using namespace json;
 
 @implementation JsonCocoaNode
@@ -130,6 +137,20 @@ using namespace json;
 -(NSString*) nodeName
 {
    return name;
+}
+
+-(void) setName:(NSString*)nodeName
+{
+    json::ObjectNode *objContainer = dynamic_cast<json::ObjectNode *>(proxiedElement->GetParent());
+    if(objContainer) {
+        long indexInParent = objContainer->GetIndexOfChild(proxiedElement);
+        objContainer->RenameMemberAt(indexInParent, wide_utf8_converter.from_bytes(nodeName.UTF8String));
+        name = nodeName;
+    }
+}
+
+-(BOOL) nameEditable {
+    return dynamic_cast<json::ObjectNode *>(proxiedElement->GetParent()) != NULL;
 }
 
 -(int)countOfChildren
@@ -319,6 +340,12 @@ using namespace json;
    }
    
    return -1;
+}
+
+-(void)reloadChildren {
+    [self willChangeValueForKey:@"children"];
+    children = nil;
+    [self didChangeValueForKey:@"children"];
 }
 
 @end

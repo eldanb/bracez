@@ -49,5 +49,6 @@ class BookmarksListenerBridge;
 -(void)reindentStartingAt:(TextCoordinate)aOffsetStart len:(TextLength)aLen;
 
 -(void)notifyErrorsChanged:(json::JsonFile*)aSender;
+-(void)notifyNodeInvalidated:(json::JsonFile*)aSender nodePath:(const json::JsonPath&)nodePath;
 -(void)notifyBookmarksUpdated;
 @end

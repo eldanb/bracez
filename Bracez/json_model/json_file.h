@@ -95,11 +95,12 @@ namespace json
    class ContainerNode : public Node
    {
    public:
+      void SetChildAt(int aIdx, Node *aNode, bool fromReparse = false);
+       
       virtual int GetChildCount()  const = 0;
       
       virtual Node *GetChildAt(int aIdx) = 0;
       virtual const Node *GetChildAt(int aIdx) const = 0;
-      virtual void SetChildAt(int aIdx, Node *aNode) = 0;
       virtual void RemoveChildAt(int aIdx);
 
       virtual int GetIndexOfChild(Node *aChild);
@@ -115,6 +116,7 @@ namespace json
 
    protected:
       virtual void AdjustChildRangeAt(int aIdx, int aDiff);
+      virtual void StoreChildAt(int aIdx, Node *aNode) = 0;
 
       friend class JsonFile;
 
@@ -138,7 +140,6 @@ namespace json
       
       Node *GetChildAt(int aIdx);
       const Node *GetChildAt(int aIdx) const;
-      void SetChildAt(int aIdx, Node *aNode);
       void DetachChildAt(int aIdx, Node **aNode);
 
       int FindChildEndingAfter(const TextCoordinate &aDocOffset) const;
@@ -155,7 +156,10 @@ namespace json
       
       // DOM-only modifiers
       void DomAddElementNode(Node *aElement);
-             
+      
+   protected:
+       virtual void StoreChildAt(int aIdx, Node *aNode);
+
    private:
       Elements elements;
    };
@@ -191,10 +195,10 @@ namespace json
       const Node *GetChildAt(int aIdx) const;
       const Member *GetChildMemberAt(int aIdx) const;
 
-      void SetChildAt(int aIdx, Node *aNode);
       void DetachChildAt(int aIdx, Node **aNode);
       ObjectNode::Member &InsertMemberAt(int aIdx, const wstring &aName,
                            Node *aElement, const wstring *aElementText=NULL);
+      void RenameMemberAt(int aIdx, const wstring &aName);
 
       int FindChildEndingAfter(const TextCoordinate &aDocOffset) const;
 
@@ -215,6 +219,7 @@ namespace json
 
    protected:
       void AdjustChildRangeAt(int aIdx, int aDiff);
+      virtual void StoreChildAt(int aIdx, Node *aNode);
 
    private:
       Members members;
@@ -235,7 +240,6 @@ namespace json
       
       virtual Node *GetChildAt(int aIdx);
       virtual const Node *GetChildAt(int aIdx) const;
-      void SetChildAt(int aIdx, Node *aNode);
       void DetachChildAt(int aIdx, Node **aNode);
 
 
@@ -244,6 +248,9 @@ namespace json
       JsonFile *GetOwner() const { return owner; }
       
       void CalculateJsonTextRepresentation(std::wstring &aDest) const;
+
+   protected:
+       virtual void StoreChildAt(int aIdx, Node *aNode);
 
    private:
       Node *rootNode;
@@ -320,6 +327,7 @@ namespace json
       virtual void notifyTextSpliced(JsonFile *aSender, TextCoordinate aOldOffset, 
                                      TextLength aOldLength, TextLength aNewLength) {}
       virtual void notifyErrorsChanged(JsonFile *aSender) {}
+      virtual void notifyNodeChanged(JsonFile *aSender, const JsonPath &nodePath) {}
    };
    
   
@@ -374,6 +382,12 @@ namespace json
       
       const MarkerList<ParseErrorMarker> &getErrors() { return errors; }
       
+       
+      bool spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
+                                   TextLength aLen,
+                                   const std::wstring &aNewText,
+                                   int maxParsedRegionLength);
+
    private:
       void spliceJsonTextByDomChange(TextCoordinate aOffsetStart, TextLength aLen, const std::wstring &aNewText);
       
@@ -411,6 +425,7 @@ namespace json
    
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
    
-   
+    wstring jsonizeString(const wstring &aSrc);
+
 }
 #endif

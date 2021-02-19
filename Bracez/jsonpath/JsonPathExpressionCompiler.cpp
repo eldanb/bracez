@@ -93,14 +93,8 @@ auto const close_filter_paren_token = tokenise(accept(is_char(')')));
 auto const open_paren_token = tokenise(accept_str("("));
 auto const close_paren_token = tokenise(accept(is_char(')')));
 
-auto const string_qualifier_token = tokenise(accept(is_char('\'')));
 auto const start_subscript_token = tokenise(accept(is_char('[')));
 auto const end_subscript_token = tokenise(accept(is_char(']')));
-
-
-// TODO better string parsing; use JSON parser here?
-auto const string_literal = discard(string_qualifier_token) && name_token && discard(string_qualifier_token);
-auto const number_literal = tokenise(some(accept(is_digit)));
 
 /*
  * Grammar: JSON
@@ -151,6 +145,20 @@ public:
         return "<json>";
     }
 };
+
+
+
+// TODO better string parsing; use JSON parser here?
+auto const number_literal = tokenise(some(accept(is_digit)));
+auto string_literal = all([](std::string* result, json::Node* node) {
+    json::StringNode *snode = dynamic_cast<json::StringNode*>(node);
+    if(!snode) {
+        return false;
+    } else {
+        *result = wide_utf8_converter.to_bytes(snode->GetValue());
+        return true;
+    }
+}, parse_json());
 
 
 
@@ -314,8 +322,8 @@ const auto navigation_step =
     attempt(navigate_to_ancestor) ||
     attempt(navigate_to_parent) ||    
     attempt(navigate_recurse) ||
-    attempt(navigate_non_recurse) ||
     attempt(index_array) ||
+    attempt(navigate_non_recurse) ||
     attempt(get_all_array_items) ||
     attempt(get_array_item_list) ||
     attempt(get_array_slice) ||
@@ -392,10 +400,11 @@ expression_parser_handle expression = or_expression;
 auto json_path_compiler = first_token && strict("navigation_pipe", navigation_pipe);
 
 
-JsonPathResultNodeList JsonPathExpression::execute(json::Node *root) {
+JsonPathResultNodeList JsonPathExpression::execute(json::Node *root, JsonPathExpressionOptions *options) {
     JsonPathExpressionNodeEvalContext evalContext;
     evalContext.rootNode = root;
     evalContext.contextNode = root;
+    evalContext.options = options;
     JsonPathExpressionNodeEvalResult evalResult = _rootNode->evaluate(evalContext);
     return evalResult.nodeList;
 }

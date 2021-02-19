@@ -15,6 +15,7 @@
 
 -(void)notifyJsonTextSpliced:(json::JsonFile*)aSender from:(TextCoordinate)aOldOffset length:(TextLength)aOldLength newLength:(TextLength)aNewLength;
 -(void)notifyErrorsChanged:(json::JsonFile*)aSender;
+-(void)notifyNodeInvalidated:(json::JsonFile*)aSender nodePath:(const json::JsonPath&)nodePath;
 
 @end
 
@@ -24,6 +25,8 @@ public:
    JsonFileListenerObjCBridge(id<ObjCJsonFileChangeListener> aTarget);   
    void notifyTextSpliced(json::JsonFile *aSender, TextCoordinate aOldOffset, TextLength aOldLength, TextLength aNewLength);
    void notifyErrorsChanged(json::JsonFile *aSender);
+   void notifyNodeChanged(json::JsonFile *aSender, const json::JsonPath &nodePath);
+
 private:
    id<ObjCJsonFileChangeListener> targetListener;
 };

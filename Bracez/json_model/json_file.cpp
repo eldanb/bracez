@@ -20,149 +20,209 @@
 
 namespace json 
 {
-   
-static wstring jsonize(const wstring &aSrc);
 
-   
+
+
 namespace priv
 {
-   class SpliceNotification : public Notification   
-   {
-   public:
-      SpliceNotification(TextCoordinate aOffsetStart, TextLength aLen, TextLength aNewLen) : 
-          offsetStart(aOffsetStart), len(aLen), newLen(aNewLen) {}
-      
-      SpliceNotification(const SpliceNotification &aOther) : 
-         offsetStart(aOther.offsetStart), len(aOther.len), newLen(aOther.newLen) {}
-      
-      SpliceNotification *clone() const
-      {
-         return new SpliceNotification(*this);
-      }
-      
-      void deliverToListener(JsonFile *aSender, JsonFileChangeListener *aListener) const
-      {
-          aListener->notifyTextSpliced(aSender, offsetStart, len, newLen);
-      }
-      
-   private:
-      TextCoordinate offsetStart;
-      TextLength len;
-      TextLength newLen;
-   }  ;
+class SpliceNotification : public Notification
+{
+public:
+    SpliceNotification(TextCoordinate aOffsetStart, TextLength aLen, TextLength aNewLen) :
+    offsetStart(aOffsetStart), len(aLen), newLen(aNewLen) {}
+    
+    SpliceNotification(const SpliceNotification &aOther) :
+    offsetStart(aOther.offsetStart), len(aOther.len), newLen(aOther.newLen) {}
+    
+    SpliceNotification *clone() const
+    {
+        return new SpliceNotification(*this);
+    }
+    
+    void deliverToListener(JsonFile *aSender, JsonFileChangeListener *aListener) const
+    {
+        aListener->notifyTextSpliced(aSender, offsetStart, len, newLen);
+    }
+    
+private:
+    TextCoordinate offsetStart;
+    TextLength len;
+    TextLength newLen;
+}  ;
 
-   class ErrorsChangedNotification : public Notification   
-   {
-   public:
-      ErrorsChangedNotification() {}
-      ErrorsChangedNotification(const ErrorsChangedNotification &aOther) {}
-      
-      ErrorsChangedNotification *clone() const
-      {
-         return new ErrorsChangedNotification(*this);
-      }
-      
-      void deliverToListener(JsonFile *aSender, JsonFileChangeListener *aListener) const
-      {
-         aListener->notifyErrorsChanged(aSender);
-      }
-   } ;  
-   
-   
-   class DeferNotificationsInBlock
-   {
-   public:
-      DeferNotificationsInBlock(JsonFile *aWho) : who(aWho) { who->beginDeferNotifications(); }
-      ~DeferNotificationsInBlock() { who->endDeferNotifications(); }
-      
-   private:
-      JsonFile *who;
-   } ;
+class ErrorsChangedNotification : public Notification
+{
+public:
+    ErrorsChangedNotification() {}
+    ErrorsChangedNotification(const ErrorsChangedNotification &aOther) {}
+    
+    ErrorsChangedNotification *clone() const
+    {
+        return new ErrorsChangedNotification(*this);
+    }
+    
+    void deliverToListener(JsonFile *aSender, JsonFileChangeListener *aListener) const
+    {
+        aListener->notifyErrorsChanged(aSender);
+    }
+} ;
+
+
+class NodeRefreshNotification : public Notification
+{
+public:
+    NodeRefreshNotification(JsonPath &&path) :
+        _path(path) {}
+    
+    NodeRefreshNotification(const NodeRefreshNotification &aOther)
+        : _path(aOther._path)
+    {
+        
+    }
+    
+    NodeRefreshNotification *clone() const
+    {
+        return new NodeRefreshNotification(*this);
+    }
+    
+    void deliverToListener(JsonFile *aSender, JsonFileChangeListener *aListener) const
+    {
+        aListener->notifyNodeChanged(aSender, _path);
+    }
+    
+private:
+    JsonPath _path;
+}  ;
+
+
+class DeferNotificationsInBlock
+{
+public:
+    DeferNotificationsInBlock(JsonFile *aWho) : who(aWho) { who->beginDeferNotifications(); }
+    ~DeferNotificationsInBlock() { who->endDeferNotifications(); }
+    
+private:
+    JsonFile *who;
+} ;
 }
-   
+
 using namespace priv;
 
 DocumentNode *Node::GetDocument() const
 {
-   const Node *lCurNode = this;
-   while(lCurNode->GetParent())
-   {  
-      lCurNode = lCurNode->GetParent();
-   }
-   
-   return const_cast<DocumentNode*>(dynamic_cast<const DocumentNode*>(lCurNode));
+    const Node *lCurNode = this;
+    while(lCurNode->GetParent())
+    {
+        lCurNode = lCurNode->GetParent();
+    }
+    
+    return const_cast<DocumentNode*>(dynamic_cast<const DocumentNode*>(lCurNode));
 }
-      
+
 const TextRange &Node::GetTextRange() const
 {
-   return textRange;
+    return textRange;
 }
-   
-   
+
+
 wstring Node::GetDocumentText() const
 {
-   TextRange lAbsRange = GetAbsTextRange();
-   return GetDocument()->GetOwner()->getText().substr(lAbsRange.start, lAbsRange.length());
+    TextRange lAbsRange = GetAbsTextRange();
+    return GetDocument()->GetOwner()->getText().substr(lAbsRange.start, lAbsRange.length());
 }
 
 
 TextRange Node::GetAbsTextRange() const
 {
-   int lOfs = 0;
-   const Node *lCurNode = GetParent();
-   while(lCurNode)
-   {
-      lOfs += lCurNode->GetTextRange().start;
-      lCurNode = lCurNode->GetParent();
-   }
-   
-   return TextRange(textRange.start+lOfs, textRange.end+lOfs);
+    int lOfs = 0;
+    const Node *lCurNode = GetParent();
+    while(lCurNode)
+    {
+        lOfs += lCurNode->GetTextRange().start;
+        lCurNode = lCurNode->GetParent();
+    }
+    
+    return TextRange(textRange.start+lOfs, textRange.end+lOfs);
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+void ContainerNode::SetChildAt(int aIdx, Node *aNode, bool fromReparse)
+{
+    // Don't send notifications till we're thru
+    DeferNotificationsInBlock lDnib(GetDocument()->GetOwner());
+    
+    // Get old node
+    Node *lOldNode = GetChildAt(aIdx);
+    
+    // Get new node text and range
+    int lNewStart = lOldNode->textRange.start;
+    int lNewEnd;
+    if(!fromReparse) {
+        std::wstring lNewNodeText;
+        aNode->CalculateJsonTextRepresentation(lNewNodeText);
+    
+        lNewEnd = lNewStart + lNewNodeText.length();
+
+        // Splice text in document
+        TextRange lAbsTextRange = lOldNode->GetAbsTextRange();
+        GetDocument()->GetOwner()->spliceJsonTextByDomChange(lAbsTextRange.start, lAbsTextRange.length(), lNewNodeText);
+    } else {
+        lNewEnd = lNewStart + aNode->textRange.length();
+    }
+ 
+    // Update in child list and import to document
+    StoreChildAt(aIdx, aNode);
+    aNode->parent = this;
+    aNode->textRange.start = lNewStart;
+    aNode->textRange.end = lNewEnd;
+    
+    delete lOldNode;
+}
+
 int ContainerNode::FindChildContaining(const TextCoordinate &aDocOffset) const
 {
-   int lRet = FindChildEndingAfter(aDocOffset);
-   if(lRet>=0 && GetChildAt(lRet)->GetTextRange().start<=aDocOffset)
-   {
-      return lRet;
-   } else
-   {
-      return -1;
-   }
+    int lRet = FindChildEndingAfter(aDocOffset);
+    if(lRet>=0 && GetChildAt(lRet)->GetTextRange().start<=aDocOffset)
+    {
+        return lRet;
+    } else
+    {
+        return -1;
+    }
 }
 
 int ContainerNode::GetIndexOfChild(Node *aChild)
 {
-   int lChildCount = GetChildCount();
-   for(int lIdx = 0; lIdx<lChildCount; lIdx++)
-   {
-      if(GetChildAt(lIdx) == aChild)
-      {
-         return lIdx;
-      }
-   }
-   
-   return -1;
+    int lChildCount = GetChildCount();
+    for(int lIdx = 0; lIdx<lChildCount; lIdx++)
+    {
+        if(GetChildAt(lIdx) == aChild)
+        {
+            return lIdx;
+        }
+    }
+    
+    return -1;
 }
 
 void ContainerNode::RemoveChildAt(int aIdx)
 {
-   Node *lChild;
-   DetachChildAt(aIdx, &lChild);
-   
-   delete lChild;
+    Node *lChild;
+    DetachChildAt(aIdx, &lChild);
+    
+    delete lChild;
 }
-      
+
 
 void ContainerNode::AdjustChildRangeAt(int aIdx, int aDiff)
 {
-   Node *lNode = GetChildAt(aIdx);
-      
-   lNode->textRange.end += aDiff;
-   lNode->textRange.start += aDiff;   
+    Node *lNode = GetChildAt(aIdx);
+    
+    lNode->textRange.end += aDiff;
+    lNode->textRange.start += aDiff;
 }
 
 bool ContainerNode::ValueEquals(Node *other) const {
@@ -192,254 +252,232 @@ bool ContainerNode::ValueLt(Node *other) const {
 
 ArrayNode::iterator ArrayNode::Begin()
 {
-   return elements.begin();
+    return elements.begin();
 }
 
 ArrayNode::iterator ArrayNode::End()
 {
-   return elements.end();
+    return elements.end();
 }
 
 ArrayNode::const_iterator ArrayNode::Begin() const
 {
-   return elements.begin();
+    return elements.begin();
 }
 
 ArrayNode::const_iterator ArrayNode::End() const
 {
-   return elements.end();
+    return elements.end();
 }
 
 int ArrayNode::GetChildCount() const
 {
-   return elements.size();
+    return elements.size();
 }
 
 Node *ArrayNode::GetChildAt(int aIdx)
 {
-   return elements[aIdx];
+    return elements[aIdx];
 }
 
 const Node *ArrayNode::GetChildAt(int aIdx) const
 {
-   return elements[aIdx];
+    return elements[aIdx];
 }
 
-void ArrayNode::SetChildAt(int aIdx, Node *aNode)
-{
-   // Don't send notifications till we're thru
-   DeferNotificationsInBlock lDnib(GetDocument()->GetOwner());
-   
-   // Get old node 
-   Node *lOldNode = elements[aIdx];
-
-   // Get new node text and range
-   std::wstring lNewNodeText;
-   aNode->CalculateJsonTextRepresentation(lNewNodeText);
-
-   int lNewStart = lOldNode->textRange.start;
-   int lNewEnd = lNewStart + lNewNodeText.length();
-      
-   // Splice text in document
-   TextRange lAbsTextRange = lOldNode->GetAbsTextRange();
-   GetDocument()->GetOwner()->spliceJsonTextByDomChange(lAbsTextRange.start, lAbsTextRange.length(), lNewNodeText);
-   
-   // Update in child list and import to document
-   elements[aIdx] = aNode;
-   aNode->parent = this;
-   aNode->textRange.start = lNewStart;
-   aNode->textRange.end = lNewEnd;   
+void ArrayNode::StoreChildAt(int aIdx, Node *aNode) {
+    elements[aIdx] = aNode;
 }
 
 void ArrayNode::DetachChildAt(int aIdx, Node **aNode)
 {
-   // Don't send notifications till we're thru
-   DeferNotificationsInBlock lDnib(GetDocument()->GetOwner());
-
-   Elements::iterator lIter = elements.begin() + aIdx;
-   Elements::iterator lNextIter = lIter+1;
-   
-   // Splice text in document   
-   TextRange lSpliceRange = (*lIter)->GetAbsTextRange();
-   if(lNextIter!=elements.end())
-   {
-      lSpliceRange.end = (*lNextIter)->GetAbsTextRange().start;
-   } else
-   {
-      lSpliceRange.end = GetAbsTextRange().end-1;
-   }
-
-   *aNode = *lIter;
-   (*aNode)->parent = NULL;
-   
-   elements.erase(lIter);   
-   
-   GetDocument()->GetOwner()->spliceJsonTextByDomChange(lSpliceRange.start, lSpliceRange.length(), wstring(L""));
+    // Don't send notifications till we're thru
+    DeferNotificationsInBlock lDnib(GetDocument()->GetOwner());
+    
+    Elements::iterator lIter = elements.begin() + aIdx;
+    Elements::iterator lNextIter = lIter+1;
+    
+    // Splice text in document
+    TextRange lSpliceRange = (*lIter)->GetAbsTextRange();
+    if(lNextIter!=elements.end())
+    {
+        lSpliceRange.end = (*lNextIter)->GetAbsTextRange().start;
+    } else
+    {
+        lSpliceRange.end = GetAbsTextRange().end-1;
+    }
+    
+    *aNode = *lIter;
+    (*aNode)->parent = NULL;
+    
+    elements.erase(lIter);
+    
+    GetDocument()->GetOwner()->spliceJsonTextByDomChange(lSpliceRange.start, lSpliceRange.length(), wstring(L""));
 }
-   
+
 void ArrayNode::InsertMemberAt(int aIdx, Node *aElement, const wstring *aElementText)
 {
-   // Don't send notifications till we're thru
-   DeferNotificationsInBlock lDnib(GetDocument()->GetOwner());
-
-   int lElemAddr;
-   int lChangeAddr;
-   
-   bool lIsLast;
-   
-   // Append or insert member at members list, devise text offset for member.
-   Elements::iterator lIter;
-   if(aIdx < 0 || aIdx >= elements.size())
-   {
-      aIdx = elements.size();
-      lElemAddr = textRange.length()-1;
-      lIter = elements.end();
-      lIsLast = true;
-   } else {
-      lIter = elements.begin()+aIdx;
-      lElemAddr = (*lIter)->textRange.start;
-      lIsLast = false;
-   }
-   
-   lChangeAddr = lElemAddr;
-   
-   // Setup member  parent
-   aElement->parent = this;
-   
-   // Calculate element text: start with name
-   wstring lCalculatedText;
-   if(lIsLast && aIdx)
-   {
-      lCalculatedText = L", ";
-      lElemAddr+=2;
-   }
-  
-   // Next -- element text
-   int lElementTextLen;
-   if(aElementText)
-   {
-      lCalculatedText += *aElementText;
-      lElementTextLen = aElementText->length();
-   } else {
-      wstring lTxt;
-      aElement->CalculateJsonTextRepresentation(lTxt);
-      lElementTextLen = lTxt.length();
-      lCalculatedText += lTxt;
-   }
-   
-   // Add comma if not last element
-   if(!lIsLast)
-   {
-      lCalculatedText += L", ";
-   } 
-   
-   // Update document text
-   GetDocument()->GetOwner()->spliceJsonTextByDomChange(GetAbsTextRange().start+lChangeAddr, 0, lCalculatedText);
-   
-   // Add element to sequence and setup address
-   elements.insert(lIter, aElement);
-   
-   aElement->textRange.start = lElemAddr;
-   aElement->textRange.end = lElemAddr + lElementTextLen;  
+    // Don't send notifications till we're thru
+    DeferNotificationsInBlock lDnib(GetDocument()->GetOwner());
+    
+    int lElemAddr;
+    int lChangeAddr;
+    
+    bool lIsLast;
+    
+    // Append or insert member at members list, devise text offset for member.
+    Elements::iterator lIter;
+    if(aIdx < 0 || aIdx >= elements.size())
+    {
+        aIdx = elements.size();
+        lElemAddr = textRange.length()-1;
+        lIter = elements.end();
+        lIsLast = true;
+    } else {
+        lIter = elements.begin()+aIdx;
+        lElemAddr = (*lIter)->textRange.start;
+        lIsLast = false;
+    }
+    
+    lChangeAddr = lElemAddr;
+    
+    // Setup member  parent
+    aElement->parent = this;
+    
+    // Calculate element text: start with name
+    wstring lCalculatedText;
+    if(lIsLast && aIdx)
+    {
+        lCalculatedText = L", ";
+        lElemAddr+=2;
+    }
+    
+    // Next -- element text
+    int lElementTextLen;
+    if(aElementText)
+    {
+        lCalculatedText += *aElementText;
+        lElementTextLen = aElementText->length();
+    } else {
+        wstring lTxt;
+        aElement->CalculateJsonTextRepresentation(lTxt);
+        lElementTextLen = lTxt.length();
+        lCalculatedText += lTxt;
+    }
+    
+    // Add comma if not last element
+    if(!lIsLast)
+    {
+        lCalculatedText += L", ";
+    }
+    
+    // Update document text
+    GetDocument()->GetOwner()->spliceJsonTextByDomChange(GetAbsTextRange().start+lChangeAddr, 0, lCalculatedText);
+    
+    // Add element to sequence and setup address
+    elements.insert(lIter, aElement);
+    
+    aElement->textRange.start = lElemAddr;
+    aElement->textRange.end = lElemAddr + lElementTextLen;
 }
-   
+
 struct ArrayMemberTextRangeOrdering 
 {
-   bool operator()(const Node *&aLeft, const Node *&aRight) const
-   {
-      return aLeft->GetTextRange().end < aRight->GetTextRange().end;
-   }
-
-   bool operator() (Node * const&aLeft, unsigned int aRight) const
-   {
-      return aLeft->GetTextRange().end < aRight;
-   }
+    bool operator()(const Node *&aLeft, const Node *&aRight) const
+    {
+        return aLeft->GetTextRange().end < aRight->GetTextRange().end;
+    }
+    
+    bool operator() (Node * const&aLeft, unsigned int aRight) const
+    {
+        return aLeft->GetTextRange().end < aRight;
+    }
 };
 
 
 int ArrayNode::FindChildEndingAfter(const TextCoordinate &aDocOffset) const
 {
-   const_iterator lContainingElement = lower_bound(elements.begin(), elements.end(), aDocOffset, ArrayMemberTextRangeOrdering());
-   
-   // Found member ending past offset?
-   if(lContainingElement == elements.end()) 
-      return -1;
-         
-   return lContainingElement - elements.begin();
+    const_iterator lContainingElement = lower_bound(elements.begin(), elements.end(), aDocOffset, ArrayMemberTextRangeOrdering());
+    
+    // Found member ending past offset?
+    if(lContainingElement == elements.end())
+        return -1;
+    
+    return lContainingElement - elements.begin();
 }
 
 
 void ArrayNode::DomAddElementNode(Node *aElement)
 {
-   elements.push_back(aElement);
-   aElement->parent = this;
+    elements.push_back(aElement);
+    aElement->parent = this;
 }
 
 NodeTypeId ArrayNode::GetNodeTypeId() const
 {
-   return ntArray;
+    return ntArray;
 }
 
 void ArrayNode::CalculateJsonTextRepresentation(std::wstring &aDest) const
 {
-   // TODO
+    // TODO
 }
 
 void ArrayNode::accept(NodeVisitor *aVisitor) const
 {
-   aVisitor->visitNode(this);
-   for(Elements::const_iterator lIter = elements.begin(); lIter!=elements.end(); lIter++)
-   {
-      (*lIter)->accept(aVisitor);
-   }
+    aVisitor->visitNode(this);
+    for(Elements::const_iterator lIter = elements.begin(); lIter!=elements.end(); lIter++)
+    {
+        (*lIter)->accept(aVisitor);
+    }
 }
 
 void ArrayNode::accept(NodeVisitor *aVisitor)
 {
-   aVisitor->visitNode(this);
-   for(Elements::iterator lIter = elements.begin(); lIter!=elements.end(); lIter++)
-   {
-      (*lIter)->accept(aVisitor);
-   }   
+    aVisitor->visitNode(this);
+    for(Elements::iterator lIter = elements.begin(); lIter!=elements.end(); lIter++)
+    {
+        (*lIter)->accept(aVisitor);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ObjectNode::iterator ObjectNode::Begin()
 {
-   return members.begin();
+    return members.begin();
 }
 
 ObjectNode::iterator ObjectNode::End()
 {
-   return members.end();
+    return members.end();
 }
-      
+
 ObjectNode::const_iterator ObjectNode::Begin() const
 {
-   return members.begin();
+    return members.begin();
 }
 
 ObjectNode::const_iterator ObjectNode::End() const
 {
-   return members.end();
+    return members.end();
 }
 
 int ObjectNode::GetChildCount() const
 {
-   return members.size();
+    return members.size();
 }
-      
+
 Node *ObjectNode::GetChildAt(int aIdx)
 {
-   return members[aIdx].node;
+    return members[aIdx].node;
 }
 
 const Node *ObjectNode::GetChildAt(int aIdx) const
 {
-   return members[aIdx].node;
+    return members[aIdx].node;
 }
- 
+
 int ObjectNode::GetIndexOfMemberWithName(const wstring &name) const {
     for(Members::const_iterator iter = members.begin();
         iter != members.end();
@@ -454,235 +492,225 @@ int ObjectNode::GetIndexOfMemberWithName(const wstring &name) const {
 
 const ObjectNode::Member *ObjectNode::GetChildMemberAt(int aIdx) const
 {
-   return &members[aIdx];
+    return &members[aIdx];
 }
 
-    
-void ObjectNode::SetChildAt(int aIdx, Node *aNode)
-{
-   // Don't send notifications till we're thru
-   DeferNotificationsInBlock lDnib(GetDocument()->GetOwner());
-
-   // Get old node 
-   Node *lOldNode = members[aIdx].node;
-
-   
-   // Get new node text and range
-   std::wstring lNewNodeText;
-   aNode->CalculateJsonTextRepresentation(lNewNodeText);
-   
-   int lNewStart = lOldNode->textRange.start;
-   int lNewEnd = lNewStart + lNewNodeText.length();
-   
-   // Splice text in document
-   TextRange lAbsTextRange = lOldNode->GetAbsTextRange();
-   GetDocument()->GetOwner()->spliceJsonTextByDomChange(lAbsTextRange.start, lAbsTextRange.length(), lNewNodeText);
-   
-   // Update in child list and import to document
-   members[aIdx].node = aNode;
-   aNode->parent = this;
-   aNode->textRange.start = lNewStart;
-   aNode->textRange.end = lNewEnd;   
-   
-   // Delete old node
-   delete lOldNode;
+void ObjectNode::StoreChildAt(int aIdx, Node *aNode) {
+    members[aIdx].node = aNode;
 }
 
 void ObjectNode::AdjustChildRangeAt(int aIdx, int aDiff)
 {
-   Member &lMember = members[aIdx];
-   
-   lMember.node->textRange.end += aDiff;
-   lMember.node->textRange.start += aDiff;
-   
-   lMember.nameRange.start += aDiff;
-   lMember.nameRange.end += aDiff;
+    Member &lMember = members[aIdx];
+    
+    lMember.node->textRange.end += aDiff;
+    lMember.node->textRange.start += aDiff;
+    
+    lMember.nameRange.start += aDiff;
+    lMember.nameRange.end += aDiff;
 }
 
 struct ObjectMemberTextRangeOrdering 
 {
-   bool operator()(const ObjectNode::Member &aLeft, const ObjectNode::Member &aRight) const
-   {
-      return aLeft.node->GetTextRange().end < aRight.node->GetTextRange().end;
-   }
-
-   bool operator() (const ObjectNode::Member &aLeft, unsigned int aRight) const
-   {
-      return aLeft.node->GetTextRange().end < aRight;
-   }
+    bool operator()(const ObjectNode::Member &aLeft, const ObjectNode::Member &aRight) const
+    {
+        return aLeft.node->GetTextRange().end < aRight.node->GetTextRange().end;
+    }
+    
+    bool operator() (const ObjectNode::Member &aLeft, unsigned int aRight) const
+    {
+        return aLeft.node->GetTextRange().end < aRight;
+    }
 };
 
 int ObjectNode::FindChildEndingAfter(const TextCoordinate &aDocOffset) const
 {
-   const_iterator lContainingElement = lower_bound(members.begin(), members.end(), aDocOffset, ObjectMemberTextRangeOrdering());
-   
-   // Found member ending past offset?
-   if(lContainingElement == members.end()) 
-      return -1;
-
-//   printf("Child ending after %d is '%s\n", aDocOffset, lContainingElement->name.c_str());
-   return lContainingElement - members.begin();
+    const_iterator lContainingElement = lower_bound(members.begin(), members.end(), aDocOffset, ObjectMemberTextRangeOrdering());
+    
+    // Found member ending past offset?
+    if(lContainingElement == members.end())
+        return -1;
+    
+    //   printf("Child ending after %d is '%s\n", aDocOffset, lContainingElement->name.c_str());
+    return lContainingElement - members.begin();
 }
 
 const wstring &ObjectNode::GetMemberNameAt(int aIdx) const
 {
-   return members[aIdx].name;
+    return members[aIdx].name;
 }
-   
+
+void ObjectNode::RenameMemberAt(int aIdx, const wstring &aName) {
+    TextRange orgRange = members[aIdx].nameRange;
+    std::wstring orgName = members[aIdx].name;
+    
+    std::wstring jsonizedName = jsonizeString(aName);
+    TextRange myAbs = GetAbsTextRange();
+    GetDocument()->GetOwner()->spliceJsonTextByDomChange(orgRange.start + myAbs.start, orgRange.length(),
+                                                         jsonizedName);
+
+    members[aIdx].name = aName;
+    
+    // A bit of a hack:
+    // Fix name range; it it was changed wrongly by spliceJsonTextByDomChange above.
+    members[aIdx].nameRange.start = orgRange.start;
+    members[aIdx].nameRange.end = members[aIdx].nameRange.start + jsonizedName.length();
+}
+
 ObjectNode::Member &ObjectNode::InsertMemberAt(int aIdx, const wstring &aName, Node *aElement, const wstring *aElementText)
 {
-   // Don't send notifications till we're thru
-   DeferNotificationsInBlock lDnib(GetDocument()->GetOwner());
-
-   int lNameAddr;
-   int lChangeAddr;
-   
-   Member lMember(aName, aElement);
-   bool lIsLast;
-
-   // Append or insert member at members list, devise text offset for member.
-   Members::iterator lIter;
-
-   if(aIdx < 0 || aIdx >= members.size())
-   {
-      aIdx = members.size();
-      lNameAddr = textRange.length()-1;
-      lIter = members.end();
-      lIsLast = true;
-   } else {
-      lIter = members.begin()+aIdx;
-      lNameAddr = lIter->nameRange.start;
-      lIsLast = false;
-   }
-
-   lChangeAddr = lNameAddr;
-
-   // Setup member and parent
-   lMember.name = aName;
-   aElement->parent = this;
-   
-   // Calculate element text: start with name
-   wstring lCalculatedText;
-   int lNameLen;
-
-   lCalculatedText = jsonize(lMember.name);
-   lNameLen = lCalculatedText.length();
-   
-   if(lIsLast && aIdx)
-   {
-      lCalculatedText = L", " + lCalculatedText;
-      lNameAddr+=2;
-   }
-   
-   lCalculatedText += L": ";
-   
-   // (Update node start address to skip name)
-   int lElemAddr = lChangeAddr + lCalculatedText.length();
-   
-   // Next -- element text
-   int lElementTextLen;
-   if(aElementText)
-   {
-      lCalculatedText += *aElementText;
-      lElementTextLen = aElementText->length();
-   } else {
-      wstring lTxt;
-      aElement->CalculateJsonTextRepresentation(lTxt);
-      lCalculatedText += lTxt;
-      lElementTextLen = lTxt.length();
-   }
-
-   if(!lIsLast)
-   {
-      lCalculatedText += L", ";
-   } 
-  
-   // Update document text
-   GetDocument()->GetOwner()->spliceJsonTextByDomChange(GetAbsTextRange().start+lChangeAddr, 0, lCalculatedText);
- 
-   // Add element and fixup addresses after splicing
-   aElement->textRange.start = lElemAddr;
-   aElement->textRange.end = lElemAddr + lElementTextLen;
-   lMember.nameRange.start = lNameAddr;
-   lMember.nameRange.end = lNameAddr + lNameLen;
-
-   members.insert(lIter, lMember);
-
-   return *lIter;
+    // Don't send notifications till we're thru
+    DeferNotificationsInBlock lDnib(GetDocument()->GetOwner());
+    
+    int lNameAddr;
+    int lChangeAddr;
+    
+    Member lMember(aName, aElement);
+    bool lIsLast;
+    
+    // Append or insert member at members list, devise text offset for member.
+    Members::iterator lIter;
+    
+    if(aIdx < 0 || aIdx >= members.size())
+    {
+        aIdx = members.size();
+        lNameAddr = textRange.length()-1;
+        lIter = members.end();
+        lIsLast = true;
+    } else {
+        lIter = members.begin()+aIdx;
+        lNameAddr = lIter->nameRange.start;
+        lIsLast = false;
+    }
+    
+    lChangeAddr = lNameAddr;
+    
+    // Setup member and parent
+    lMember.name = aName;
+    aElement->parent = this;
+    
+    // Calculate element text: start with name
+    wstring lCalculatedText;
+    int lNameLen;
+    
+    lCalculatedText = jsonizeString(lMember.name);
+    lNameLen = lCalculatedText.length();
+    
+    if(lIsLast && aIdx)
+    {
+        lCalculatedText = L", " + lCalculatedText;
+        lNameAddr+=2;
+    }
+    
+    lCalculatedText += L": ";
+    
+    // (Update node start address to skip name)
+    int lElemAddr = lChangeAddr + lCalculatedText.length();
+    
+    // Next -- element text
+    int lElementTextLen;
+    if(aElementText)
+    {
+        lCalculatedText += *aElementText;
+        lElementTextLen = aElementText->length();
+    } else {
+        wstring lTxt;
+        aElement->CalculateJsonTextRepresentation(lTxt);
+        lCalculatedText += lTxt;
+        lElementTextLen = lTxt.length();
+    }
+    
+    if(!lIsLast)
+    {
+        lCalculatedText += L", ";
+    }
+    
+    // Update document text
+    GetDocument()->GetOwner()->spliceJsonTextByDomChange(GetAbsTextRange().start+lChangeAddr, 0, lCalculatedText);
+    
+    // Add element and fixup addresses after splicing
+    aElement->textRange.start = lElemAddr;
+    aElement->textRange.end = lElemAddr + lElementTextLen;
+    lMember.nameRange.start = lNameAddr;
+    lMember.nameRange.end = lNameAddr + lNameLen;
+    
+    members.insert(lIter, lMember);
+    
+    return *lIter;
 }
-   
+
 ObjectNode::Member &ObjectNode::DomAddMemberNode(const wstring &aName, Node *aElement)
 {
-   Member lMemberInfo;
-   lMemberInfo.name = aName;
-   lMemberInfo.node = aElement;
-   
-   members.push_back(lMemberInfo);
-   
-   lMemberInfo.node->parent = this;
-   
-   return *(members.end()-1);
+    Member lMemberInfo;
+    lMemberInfo.name = aName;
+    lMemberInfo.node = aElement;
+    
+    members.push_back(lMemberInfo);
+    
+    lMemberInfo.node->parent = this;
+    
+    return *(members.end()-1);
 }
 
 void ObjectNode::DetachChildAt(int aIdx, Node **aNode)
 {
-   // Don't send notifications till we're thru
-   DeferNotificationsInBlock lDnib(GetDocument()->GetOwner());
-
-   Members::iterator lIter = members.begin() + aIdx;
-   Members::iterator lNextIter = lIter+1;
-   
-   // Splice text in document   
-   TextRange lMyAbsRange = GetAbsTextRange();
-   TextRange lSpliceRange = lMyAbsRange;
-   
-   lSpliceRange.start += lIter->nameRange.start;
-   
-   if(lNextIter!=members.end())
-   {
-      lSpliceRange.end = lNextIter->nameRange.start + lMyAbsRange.start;
-   } else
-   {
-      lSpliceRange.end--;
-   }
-   
-   *aNode = lIter->node;
-   (*aNode)->parent = NULL;
-
-   members.erase(lIter);   
-
-   GetDocument()->GetOwner()->spliceJsonTextByDomChange(lSpliceRange.start, lSpliceRange.length(), L"");
+    // Don't send notifications till we're thru
+    DeferNotificationsInBlock lDnib(GetDocument()->GetOwner());
+    
+    Members::iterator lIter = members.begin() + aIdx;
+    Members::iterator lNextIter = lIter+1;
+    
+    // Splice text in document
+    TextRange lMyAbsRange = GetAbsTextRange();
+    TextRange lSpliceRange = lMyAbsRange;
+    
+    lSpliceRange.start += lIter->nameRange.start;
+    
+    if(lNextIter!=members.end())
+    {
+        lSpliceRange.end = lNextIter->nameRange.start + lMyAbsRange.start;
+    } else
+    {
+        lSpliceRange.end--;
+    }
+    
+    *aNode = lIter->node;
+    (*aNode)->parent = NULL;
+    
+    members.erase(lIter);
+    
+    GetDocument()->GetOwner()->spliceJsonTextByDomChange(lSpliceRange.start, lSpliceRange.length(), L"");
 }
 
 NodeTypeId ObjectNode::GetNodeTypeId() const
 {
-   return ntObject;
+    return ntObject;
 }
 
 void ObjectNode::accept(NodeVisitor *aVisitor) const
 {
-   aVisitor->visitNode(this);
-   for(Members::const_iterator lIter = members.begin(); lIter!=members.end(); lIter++)
-   {
-      lIter->node->accept(aVisitor);
-   }
+    aVisitor->visitNode(this);
+    for(Members::const_iterator lIter = members.begin(); lIter!=members.end(); lIter++)
+    {
+        lIter->node->accept(aVisitor);
+    }
 }
 
 void ObjectNode::accept(NodeVisitor *aVisitor)
 {
-   aVisitor->visitNode(this);
-   for(Members::iterator lIter = members.begin(); lIter!=members.end(); lIter++)
-   {
-      lIter->node->accept(aVisitor);
-   }
+    aVisitor->visitNode(this);
+    for(Members::iterator lIter = members.begin(); lIter!=members.end(); lIter++)
+    {
+        lIter->node->accept(aVisitor);
+    }
 }
-   
+
 bool ObjectNode::ValueEquals(Node *other) const {
     ObjectNode *objOtherNode = dynamic_cast<ObjectNode*>(other);
     if(!objOtherNode) {
         return false;
     }
-
+    
     if(!ContainerNode::ValueEquals(other)) {
         return false;
     }
@@ -699,63 +727,63 @@ bool ObjectNode::ValueEquals(Node *other) const {
 
 void ObjectNode::CalculateJsonTextRepresentation(std::wstring &aDest) const
 {
-   // TODO
+    // TODO
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 DocumentNode::DocumentNode(JsonFile *aOwner, Node *aChild)
-   : rootNode(aChild), owner(aOwner)
+: rootNode(aChild), owner(aOwner)
 {
-   if(rootNode) {
-       rootNode->parent = this;
-       textRange.start = 0;
-       textRange.end = rootNode->textRange.end;
-   } else {
-       textRange.start = 0;
-       textRange.end = 0;
-   }
+    if(rootNode) {
+        rootNode->parent = this;
+        textRange.start = 0;
+        textRange.end = rootNode->textRange.end;
+    } else {
+        textRange.start = 0;
+        textRange.end = 0;
+    }
 }
-      
+
 NodeTypeId DocumentNode::GetNodeTypeId() const 
 {
-   return ntObject;
+    return ntObject;
 }
 
 int DocumentNode::GetChildCount() const
 {
-   return rootNode ? 1 : 0;
+    return rootNode ? 1 : 0;
 }
-   
+
 Node *DocumentNode::GetChildAt(int aIdx)
 {
-   return rootNode;
+    return rootNode;
 }
 
 const Node *DocumentNode::GetChildAt(int aIdx) const
 {
-   return rootNode;
+    return rootNode;
 }
 
-void DocumentNode::SetChildAt(int aIdx, Node *aNode)
+void DocumentNode::StoreChildAt(int aIdx, Node *aNode)
 {
-   // NOP
+    // NOP
 }
 
 int DocumentNode::FindChildEndingAfter(const TextCoordinate &aDocOffset) const
 {
-   return 0;
+    return 0;
 }
 
 void DocumentNode::accept(NodeVisitor *aVisitor) const
 {
-   aVisitor->visitNode(this);
-   rootNode->accept(aVisitor);
+    aVisitor->visitNode(this);
+    rootNode->accept(aVisitor);
 }
 
 void DocumentNode::accept(NodeVisitor *aVisitor)
 {
-   aVisitor->visitNode(this);
+    aVisitor->visitNode(this);
     if(rootNode) {
         rootNode->accept(aVisitor);
     }
@@ -763,7 +791,7 @@ void DocumentNode::accept(NodeVisitor *aVisitor)
 
 void DocumentNode::CalculateJsonTextRepresentation(std::wstring &aDest) const
 {
-   // TODO
+    // TODO
 }
 
 void DocumentNode::DetachChildAt(int aIdx, Node **aNode)
@@ -774,12 +802,12 @@ void DocumentNode::DetachChildAt(int aIdx, Node **aNode)
 
 void LeafNode::accept(NodeVisitor *aVisitor) const
 {
-   aVisitor->visitNode(this);
+    aVisitor->visitNode(this);
 }
 
 void LeafNode::accept(NodeVisitor *aVisitor)
 {
-   aVisitor->visitNode(this);
+    aVisitor->visitNode(this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -787,12 +815,12 @@ void LeafNode::accept(NodeVisitor *aVisitor)
 
 NodeTypeId NullNode::GetNodeTypeId() const
 {
-   return ntNull;
+    return ntNull;
 }
 
 void NullNode::CalculateJsonTextRepresentation(std::wstring &aDest) const
 {
-   aDest = L"null";
+    aDest = L"null";
 }
 
 bool NullNode::ValueEquals(Node *other) const {
@@ -811,53 +839,53 @@ bool NullNode::ValueLt(Node *other) const {
 template<> 
 void ValueNode<std::wstring, ntString>::CalculateJsonTextRepresentation(std::wstring &aDest) const
 {
-   wstringstream lStream;
-   
-   lStream << L'"';
-
-   std::wstring::const_iterator it(value.begin()),
-                               itEnd(value.end());
-   for (; it != itEnd; ++it)
-   {
-      switch (*it)
-      {
-         case L'"':         lStream << L"\\\"";   break;
-         case L'\\':        lStream << L"\\\\";   break;
-         case L'\b':        lStream << L"\\b";    break;
-         case L'\f':        lStream << L"\\f";    break;
-         case L'\n':        lStream << L"\\n";    break;
-         case L'\r':        lStream << L"\\r";    break;
-         case L'\t':        lStream << L"\\t";    break;
-         default:
-            if (*it >= 0x20 && *it < 128) {
-               lStream << *it;
-            }
-            else {
-                lStream << "\\u" << std::setw(4) << (*it & 0xffff);
-            }
-      }
-   }
-
-   lStream << '"';   
-
-   aDest = lStream.str();
+    wstringstream lStream;
+    
+    lStream << L'"';
+    
+    std::wstring::const_iterator it(value.begin()),
+    itEnd(value.end());
+    for (; it != itEnd; ++it)
+    {
+        switch (*it)
+        {
+            case L'"':         lStream << L"\\\"";   break;
+            case L'\\':        lStream << L"\\\\";   break;
+            case L'\b':        lStream << L"\\b";    break;
+            case L'\f':        lStream << L"\\f";    break;
+            case L'\n':        lStream << L"\\n";    break;
+            case L'\r':        lStream << L"\\r";    break;
+            case L'\t':        lStream << L"\\t";    break;
+            default:
+                if (*it >= 0x20 && *it < 128) {
+                    lStream << *it;
+                }
+                else {
+                    lStream << "\\u" << std::setw(4) << (*it & 0xffff);
+                }
+        }
+    }
+    
+    lStream << '"';
+    
+    aDest = lStream.str();
 }
 
 
 template<> 
 void ValueNode<double, ntNumber>::CalculateJsonTextRepresentation(std::wstring &aDest) const
 {
-   wstringstream lStream;
-
-   lStream << std::setprecision(20) << value;
-
-   aDest = lStream.str();
+    wstringstream lStream;
+    
+    lStream << std::setprecision(20) << value;
+    
+    aDest = lStream.str();
 }
 
 template<> 
 void ValueNode<bool, ntBoolean>::CalculateJsonTextRepresentation(std::wstring &aDest) const
 {
-   aDest = value ? L"true" : L"false";
+    aDest = value ? L"true" : L"false";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -869,61 +897,60 @@ Exception::Exception(const std::string& sMessage) : runtime_error(sMessage)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class JsonFileParseListener : public Reader::ParseListener
+class JsonParseErrorCollectionListenerListener : public Reader::ParseListener
 {
 public:
-   JsonFileParseListener(JsonFile *aFile)
-    : file(aFile) {   }
-   
-   void EndOfLine(TextCoordinate aCoord)
-   {
-   }
-
-   void Error(TextCoordinate aWhere, int aCode, const string &aText)
-   {
-      file->errors.addMarker(ParseErrorMarker(aWhere, aCode, aText));
-      printf("At %d, %d: %s\n", aWhere, aCode, aText.c_str());
-   }
-   
+    JsonParseErrorCollectionListenerListener(MarkerList<ParseErrorMarker> &errors)
+        : _errors(errors) {   }
+    
+    void EndOfLine(TextCoordinate aCoord)
+    {
+    }
+    
+    void Error(TextCoordinate aWhere, int aCode, const string &aText)
+    {
+        _errors.addMarker(ParseErrorMarker(aWhere, aCode, aText));
+    }
+    
 private:
-   JsonFile *file;
+    MarkerList<ParseErrorMarker> &_errors;
 } ;
 
 
 JsonFile::JsonFile()
-   : notificationsDeferred(0)
+: notificationsDeferred(0)
 {
-   jsonDom = new DocumentNode(this, new NullNode());
+    jsonDom = new DocumentNode(this, new NullNode());
 }
-      
+
 void JsonFile::setText(const wstring &aText)
 {
-   JsonFileParseListener listener(this);
-   
-   jsonText = aText;
-   wstringstream lStream(aText);
-   
-   stopwatch lStopWatch("Read Json");
-   Node *lNode = NULL;
-   Reader::Read(lNode, lStream, &listener);
-   lStopWatch.stop();
-   
-   jsonDom = new DocumentNode(this, lNode);
+    JsonParseErrorCollectionListenerListener listener(errors);
+    
+    jsonText = aText;
+    wstringstream lStream(aText);
+    
+    stopwatch lStopWatch("Read Json");
+    Node *lNode = NULL;
+    Reader::Read(lNode, lStream, &listener);
+    lStopWatch.stop();
+    
+    jsonDom = new DocumentNode(this, lNode);
 }
 
 const wstring &JsonFile::getText() const
 {
-   return jsonText;
+    return jsonText;
 }
 
 DocumentNode *JsonFile::getDom()
 {
-   return jsonDom;
+    return jsonDom;
 }
 
 const DocumentNode *JsonFile::getDom() const
 {
-   return jsonDom;
+    return jsonDom;
 }
 
 bool JsonFile::FindPathForJsonPathString(std::wstring aPathString, JsonPath &aRet) {
@@ -939,17 +966,17 @@ bool JsonFile::FindPathForJsonPathString(std::wstring aPathString, JsonPath &aRe
             aRet.push_back(lMemberIdx);
             lCurNode = lCurObjectNode->GetChildAt(lMemberIdx);
         } else
-        if(ArrayNode *lCurArrayNode = dynamic_cast<ArrayNode*>(lCurNode)) {
-            wchar_t * p;
-            int lArrayIndex = wcstol(lPathComponent.c_str(), &p, 10);
-            if(*p != 0) {
-               return false;
+            if(ArrayNode *lCurArrayNode = dynamic_cast<ArrayNode*>(lCurNode)) {
+                wchar_t * p;
+                int lArrayIndex = wcstol(lPathComponent.c_str(), &p, 10);
+                if(*p != 0) {
+                    return false;
+                }
+                aRet.push_back(lArrayIndex);
+                lCurNode = lCurArrayNode->GetChildAt(lArrayIndex);
+            } else {
+                return false;
             }
-            aRet.push_back(lArrayIndex);
-            lCurNode = lCurArrayNode->GetChildAt(lArrayIndex);
-        } else {
-            return false;
-        }
     }
     
     return true;
@@ -957,174 +984,274 @@ bool JsonFile::FindPathForJsonPathString(std::wstring aPathString, JsonPath &aRe
 
 bool JsonFile::FindPathContaining(unsigned int aDocOffset, JsonPath &path) const
 {
-   const ContainerNode *lCurElem = dynamic_cast<ContainerNode*>(jsonDom->GetChildAt(0));
-   
-   while( lCurElem )
-   {
-      aDocOffset -= lCurElem->GetTextRange().start;
+    const ContainerNode *lCurElem = dynamic_cast<ContainerNode*>(jsonDom->GetChildAt(0));
+    
+    while( lCurElem )
+    {
+        aDocOffset -= lCurElem->GetTextRange().start;
+        
+        int lNextNav = lCurElem->FindChildContaining(aDocOffset);
+        
+        if(lNextNav<0)
+            return true;
+        
+        path.push_back(lNextNav);
+        
+        lCurElem = dynamic_cast<const ContainerNode*>(lCurElem->GetChildAt(lNextNav));
+    }
+    
+    return true;
+}
 
-      int lNextNav = lCurElem->FindChildContaining(aDocOffset);
-      
-      if(lNextNav<0)
-         return true;
-      
-      path.push_back(lNextNav);
-            
-      lCurElem = dynamic_cast<const ContainerNode*>(lCurElem->GetChildAt(lNextNav));
-   }
-   
-   return true;
+bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
+                                       TextLength aLen,
+                                       const std::wstring &aNewText,
+                                       int maxParsedRegionLength) {
+    stopwatch spliceStopWatch("Fast spliceText");
+
+    // Adjust splice range to not include non-modified regions.
+    // E.g on MacOS the text system my specific a longer range
+    // than actually changed.
+    int newTextLen = aNewText.length();
+    int trimLeft = 0;
+    while(trimLeft < aLen &&
+          trimLeft < newTextLen &&
+          aNewText[trimLeft] == jsonText[aOffsetStart + trimLeft]) {
+        trimLeft++;
+    }
+    
+    int trimRight = 0;
+    while(trimRight < aLen &&
+          trimRight < newTextLen &&
+          aNewText[newTextLen - 1 - trimRight] == jsonText[aOffsetStart + aLen - 1 - trimRight]) {
+        trimRight++;
+    }
+    aOffsetStart += trimLeft;
+    aLen -= (trimLeft + trimRight);
+
+    // Locate integral node that contains the entire changed region
+    JsonPath integralNodeJsonPath;
+    Node *spliceContainer = jsonDom->GetChildAt(0);
+    ContainerNode *spliceContainerAsContainerNode;
+    int spliceContainerIndexInParent = 0;
+    TextCoordinate soughtOffset = aOffsetStart;
+    while( (spliceContainerAsContainerNode = dynamic_cast<ContainerNode*>(spliceContainer)) != NULL )
+    {
+        soughtOffset -= spliceContainer->GetTextRange().start;
+        
+        int lNextNav = spliceContainerAsContainerNode->FindChildContaining(soughtOffset);
+        if(lNextNav<0)
+            break;
+
+        Node *nextNavNode = spliceContainerAsContainerNode->GetChildAt(lNextNav);
+        if(nextNavNode->GetTextRange().end < soughtOffset+aLen) {
+            break;
+        }
+        
+        spliceContainer = nextNavNode;
+                
+        integralNodeJsonPath.push_back(lNextNav);
+        spliceContainerIndexInParent = lNextNav;
+    }
+    
+    if(!spliceContainer || spliceContainer == jsonDom->GetChildAt(0)) {
+        return false;
+    }
+    
+    
+    // Ensure integral node indeed contains the entire changed region and
+    // that it's not too long
+    TextRange absRange = spliceContainer->GetAbsTextRange();
+    if(absRange.start > aOffsetStart ||
+       absRange.end < aOffsetStart + aLen ||
+       absRange.length() > maxParsedRegionLength) {
+        return false;
+    }
+    
+    // Construct updated JSON for node
+    size_t updatedTextLen = newTextLen-trimRight-trimLeft;
+    std::wstring updatedJsonRegion = this->jsonText.substr(absRange.start, absRange.length());
+    updatedJsonRegion.insert(aOffsetStart - absRange.start, aNewText, trimLeft, updatedTextLen);
+    updatedJsonRegion.erase(aOffsetStart - absRange.start + updatedTextLen, aLen);
+    
+    // Re-parse updated JSON
+    MarkerList<ParseErrorMarker> errors;
+    JsonParseErrorCollectionListenerListener listener(errors);
+    
+    wstringstream reparseStream(updatedJsonRegion);
+    
+    stopwatch repraseStopWatch("Reparse Json");
+    Node *reparsedNode = NULL;
+    Reader::Read(reparsedNode, reparseStream, &listener); // TODO error listener
+    repraseStopWatch.stop();
+    
+    if(errors.size()) {
+        return false;
+    }
+    
+    integralNodeJsonPath.pop_back();
+    
+    jsonText.insert(aOffsetStart, aNewText, trimLeft, updatedTextLen);
+    jsonText.erase(aOffsetStart + updatedTextLen, aLen);
+    updateTreeOffsetsAfterSplice(aOffsetStart, aLen, updatedTextLen);
+    updateErrorsAfterSplice(aOffsetStart, aLen, updatedTextLen);
+
+    ContainerNode *spliceContainerContainer = spliceContainer->GetParent();
+    spliceContainerContainer->SetChildAt(spliceContainerIndexInParent, reparsedNode, true);
+    notify(NodeRefreshNotification(std::move(integralNodeJsonPath)));
+    
+    return true;
 }
 
 void JsonFile::spliceJsonTextByDomChange(TextCoordinate aOffsetStart, TextLength aLen, const std::wstring &aNewText)
 {
-   // Don't send notifications till we're thru
-   DeferNotificationsInBlock lDnib(this);
-
-   stopwatch lSpliceTime("spliceJsonTextByDomChange");
-
-   int lNewLen = aNewText.length();
-
-   // Update text and line lengths
-   jsonText.insert(aOffsetStart, aNewText);
-   jsonText.erase(aOffsetStart+lNewLen, aLen);
-   lSpliceTime.lap("Text update");
-     
-   notify(SpliceNotification(aOffsetStart, aLen, lNewLen));
-   
-   // Update tree offsets
-   updateTreeOffsetsAfterSplice(aOffsetStart, aLen, lNewLen);
-   
-   // Update errors
-   updateErrorsAfterSplice(aOffsetStart, aLen, lNewLen);
-
+    // Don't send notifications till we're thru
+    DeferNotificationsInBlock lDnib(this);
+    
+    stopwatch lSpliceTime("spliceJsonTextByDomChange");
+    
+    int lNewLen = aNewText.length();
+    
+    // Update text and line lengths
+    jsonText.insert(aOffsetStart, aNewText);
+    jsonText.erase(aOffsetStart+lNewLen, aLen);
+    lSpliceTime.lap("Text update");
+    
+    notify(SpliceNotification(aOffsetStart, aLen, lNewLen));
+    
+    // Update tree offsets
+    updateTreeOffsetsAfterSplice(aOffsetStart, aLen, lNewLen);
+    
+    // Update errors
+    updateErrorsAfterSplice(aOffsetStart, aLen, lNewLen);
+    
 }
 
 void JsonFile::updateTreeOffsetsAfterSplice(TextCoordinate aOffsetStart, TextLength aLen, TextLength aNewLen)
 {
-   // Update offsets in json tree; start in top most level
-   int lLenDiff = aNewLen - aLen;
-   ContainerNode *lCurContainer = jsonDom;
-   ContainerNode *lNextContainer = NULL;
-
-   int lChangedOffset = aOffsetStart;
-   do 
-   {
-      lChangedOffset -= lCurContainer->GetTextRange().start;
-      int lChildCount = lCurContainer->GetChildCount();         
-
-      // First first child that ends after change start
-      int lCurProcessChild = lCurContainer->FindChildEndingAfter(lChangedOffset);
-      if(lCurProcessChild==-1)
-      {
-         lNextContainer=NULL;
-         break;
-      }
-
-      // Check if first child intersects with change offset
-      Node *lNode = lCurContainer->GetChildAt(lCurProcessChild);
-      if(lNode->GetTextRange().start > lChangedOffset)
-      {
-         // No intersection - we don't need to look in additional inner containers
-         lNextContainer = NULL; 
-      } else 
-      {
-         lNode->textRange.end += lLenDiff;
-         if(aLen==0 && lNode->GetTextRange().start == lChangedOffset)
-         {
-            lNode->textRange.start += lLenDiff;           
-         }
-
-         // Got intersection; if this is a container, ask to handle it later
-         lNextContainer = dynamic_cast<ContainerNode*>(lNode);         
-         lCurProcessChild++;
-      } 
-
-      
-      // Adjust all elements in current level that are strictly *after* the changed region
-      while(lCurProcessChild < lChildCount)
-      {
-         lCurContainer->AdjustChildRangeAt(lCurProcessChild, lLenDiff);
-         lCurProcessChild++;
-      }
-      
-      lCurContainer = lNextContainer;
-   } while(lCurContainer);
+    // Update offsets in json tree; start in top most level
+    int lLenDiff = aNewLen - aLen;
+    ContainerNode *lCurContainer = jsonDom;
+    ContainerNode *lNextContainer = NULL;
+    
+    int lChangedOffset = aOffsetStart;
+    do
+    {
+        lChangedOffset -= lCurContainer->GetTextRange().start;
+        int lChildCount = lCurContainer->GetChildCount();
+        
+        // First first child that ends after change start
+        int lCurProcessChild = lCurContainer->FindChildEndingAfter(lChangedOffset);
+        if(lCurProcessChild==-1)
+        {
+            lNextContainer=NULL;
+            break;
+        }
+        
+        // Check if first child intersects with change offset
+        Node *lNode = lCurContainer->GetChildAt(lCurProcessChild);
+        if(lNode->GetTextRange().start > lChangedOffset)
+        {
+            // No intersection - we don't need to look in additional inner containers
+            lNextContainer = NULL;
+        } else
+        {
+            lNode->textRange.end += lLenDiff;
+            if(aLen==0 && lNode->GetTextRange().start == lChangedOffset)
+            {
+                lNode->textRange.start += lLenDiff;
+            }
+            
+            // Got intersection; if this is a container, ask to handle it later
+            lNextContainer = dynamic_cast<ContainerNode*>(lNode);
+            lCurProcessChild++;
+        }
+        
+        
+        // Adjust all elements in current level that are strictly *after* the changed region
+        while(lCurProcessChild < lChildCount)
+        {
+            lCurContainer->AdjustChildRangeAt(lCurProcessChild, lLenDiff);
+            lCurProcessChild++;
+        }
+        
+        lCurContainer = lNextContainer;
+    } while(lCurContainer);
 }
 
 
 void JsonFile::updateErrorsAfterSplice(TextCoordinate aOffsetStart, TextLength aLen, TextLength aNewLen)
 {
-   if(errors.spliceCoordinatesList(aOffsetStart, aLen, aNewLen))
-   {
-      notify(ErrorsChangedNotification());
-   }
+    if(errors.spliceCoordinatesList(aOffsetStart, aLen, aNewLen))
+    {
+        notify(ErrorsChangedNotification());
+    }
 }
-   
+
 
 void JsonFile::addListener(JsonFileChangeListener *aListener)
 {
-   listeners.push_back(aListener);
+    listeners.push_back(aListener);
 }
 
 void JsonFile::removeListener(JsonFileChangeListener *aListener)
 {
-   Listeners::iterator lIter = find(listeners.begin(), listeners.end(), aListener);
-   if(lIter!=listeners.end())
-   {
-      listeners.erase(lIter);
-   }
+    Listeners::iterator lIter = find(listeners.begin(), listeners.end(), aListener);
+    if(lIter!=listeners.end())
+    {
+        listeners.erase(lIter);
+    }
 }
 
 
 void JsonFile::beginDeferNotifications()
 {
-   notificationsDeferred++;
+    notificationsDeferred++;
 }
 
 void JsonFile::endDeferNotifications()
 {
-   if(!--notificationsDeferred)
-   {
-      while(!deferredNotifications.empty())
-      {
-         Notification *lNotification = deferredNotifications.front();
-         deliverNotification(*lNotification);
-         delete lNotification;
-         deferredNotifications.pop_front();
-      }
-   }
+    if(!--notificationsDeferred)
+    {
+        while(!deferredNotifications.empty())
+        {
+            Notification *lNotification = deferredNotifications.front();
+            deliverNotification(*lNotification);
+            delete lNotification;
+            deferredNotifications.pop_front();
+        }
+    }
 }
 
 void JsonFile::deliverNotification(const Notification &aNotification)
 {
-   stopwatch lStopWatch("deliverNotification");
-   
-   // Update listeners
-   for(Listeners::iterator lIter = listeners.begin(); lIter!=listeners.end(); lIter++)
-   {
-      aNotification.deliverToListener(this, *lIter);
-   }   
+    stopwatch lStopWatch("deliverNotification");
+    
+    // Update listeners
+    for(Listeners::iterator lIter = listeners.begin(); lIter!=listeners.end(); lIter++)
+    {
+        aNotification.deliverToListener(this, *lIter);
+    }
 }
-   
+
 void JsonFile::notify(const Notification &aNotification)
 {
-   if(notificationsDeferred)
-   {
-      deferredNotifications.push_back(aNotification.clone());
-   } else 
-   {
-      deliverNotification(aNotification);
-   }
+    if(notificationsDeferred)
+    {
+        deferredNotifications.push_back(aNotification.clone());
+    } else
+    {
+        deliverNotification(aNotification);
+    }
 }
-   
-static wstring jsonize(const wstring &aSrc)
+
+wstring jsonizeString(const wstring &aSrc)
 {
-   StringNode lNode(aSrc);
-   wstring lRet;
-   lNode.CalculateJsonTextRepresentation(lRet);
-   return lRet;
+    StringNode lNode(aSrc);
+    wstring lRet;
+    lNode.CalculateJsonTextRepresentation(lRet);
+    return lRet;
 }
-   
+
 }
 

@@ -9,9 +9,9 @@
 
 @class NodeSelectionController;
 @class TextEditorGutterView;
+@class JsonPathSearchController;
 
 @interface JSONWindow : NSWindow {
-    
     IBOutlet NSTextView *textEditor;
     IBOutlet NSScrollView *textEditorScroll;
     IBOutlet NSTreeController *domController;
@@ -20,11 +20,10 @@
     IBOutlet NSTextField *jqQueryInput;
     IBOutlet NSTextView *jqQueryResult;
 
-    IBOutlet NSTextField *JSONPathInput;
-    IBOutlet NSArrayController *JSONPathResultsController;
-    IBOutlet NSTextField *JSONPathQueryStatus;
+    IBOutlet NSMenu *ViewModeMenu;
+    IBOutlet NodeSelectionController *selectionController;
     
-    IBOutlet NodeSelectionController *selectionController;    
+    IBOutlet JsonPathSearchController *jsonPathSearchController;
 }
 
 -(void)loadDefaults;

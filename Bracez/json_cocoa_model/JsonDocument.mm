@@ -12,6 +12,7 @@
 #import "NSString+WStringUtils.h"
 #include "marker_list.h"
 
+#include "stopwatch.h"
 
 NSString *JsonDocumentBookmarkChangeNotification =
     @"com.zigsterz.braces.jsondocument.bookmarkchange";
@@ -31,6 +32,8 @@ NSString *JsonDocumentBookmarkChangeNotification =
     NSArray *bookmarkWrappers;
 
     NSObject *_lastRequestedSemanticModelRefresh;
+    
+    JsonCocoaNode *_cocoaNode;
 }
 
 @end
@@ -186,7 +189,10 @@ private:
 
 -(JsonCocoaNode*)rootNode
 {
-   return [JsonCocoaNode nodeForElement:file->getDom()->GetChildAt(0) withName:@"root"];
+    if(!_cocoaNode) {
+        _cocoaNode = [JsonCocoaNode nodeForElement:file->getDom()->GetChildAt(0) withName:@"root"];
+    }
+    return _cocoaNode;
 }
 
 -(NSIndexPath*)indexPathFromJsonPath:(const JsonPath &)aPath
@@ -246,6 +252,7 @@ private:
     }
     
   file = aFile;
+    _cocoaNode = nil;
     
     if(file) {
         file->addListener(jsonSemanticListenerBridge);
@@ -303,8 +310,15 @@ private:
     if(editedMask & NSTextStorageEditedCharacters)
     {
         [self updateChangeCount:NSChangeDone];
-        
+
+        NSString *updatedRegion = [textStorage.string substringWithRange:editedRange];
+
         if(!_isSemanticModelTextChangeInProgress) {
+            
+            if(!file->spliceTextWithWorkLimit(editedRange.location,
+                                               editedRange.length-delta,
+                                               updatedRegion.cStringWstring,
+                                               1024)) {
             /*
                 NSRange spliceRange = NSMakeRange(editedRange.location, editedRange.length-delta);
                 NSString *updatedText = [text substringWithRange:editedRange];
@@ -312,15 +326,16 @@ private:
                 // Try to handle change in a fast local way
             */
 
-            _isSemanticModelDirty = YES;
-            [self slowParseFileContent];
+
+                _isSemanticModelDirty = YES;
+                [self slowParseFileContent];
+            }
         }
 
         if(!_isSemanticModelDirty) {
             [self updateSyntaxInRange:editedRange];
         }
         
-        NSString *updatedRegion = [textStorage.string substringWithRange:editedRange];
         linesAndBookmarks.updateLineOffsetsAfterSplice(editedRange.location,
                                                        editedRange.length-delta,
                                                        editedRange.length,
@@ -601,8 +616,11 @@ private:
 
 -(void)updateSyntaxInRange:(NSRange)editedRange {
     NSData *lFontData =[[NSUserDefaults standardUserDefaults] valueForKey:@"TextEditorFont"];
-    NSFont *lFont = [NSUnarchiver unarchiveObjectWithData:lFontData];
-       
+    
+    stopwatch lStopWatch("Update syntax coloring");
+    NSError *err;
+    NSFont *lFont = [NSKeyedUnarchiver unarchivedObjectOfClass:NSFont.class
+                                                      fromData:lFontData error:&err];
     [self.textStorage beginEditing];
 
     [self.textStorage setAttributeRuns:[NSArray array]];
@@ -643,5 +661,13 @@ private:
     return _isSemanticModelTextChangeInProgress;
 }
 
+-(void)notifyNodeInvalidated:(json::JsonFile*)aSender nodePath:(const json::JsonPath&)nodePath {
+    JsonCocoaNode *node = self.rootNode;
+    for(auto iter = nodePath.begin(); iter != nodePath.end(); iter++) {
+        node = [node objectInChildrenAtIndex:*iter];
+    }
+    
+    [node reloadChildren];
+}
 
 @end

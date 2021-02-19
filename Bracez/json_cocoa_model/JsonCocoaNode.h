@@ -23,7 +23,11 @@
 
 -(int)nodeType;
 -(id) nodeValue;
+
 -(NSString*) nodeName;
+-(void) setName:(NSString*)nodeName;
+-(BOOL) nameEditable;
+
 -(BOOL) isContainer;
 
 -(json::Node*)proxiedElement;
@@ -47,4 +51,6 @@
 -(void)_internalRemoveChildAtIndex:(int)aIdx;
 -(void)_internalInsertChild:(JsonCocoaNode*)aChild atIndex:(int)aIdx;
 
+
+-(void)reloadChildren;
 @end

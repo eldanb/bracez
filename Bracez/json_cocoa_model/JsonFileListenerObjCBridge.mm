@@ -20,6 +20,10 @@ void JsonFileListenerObjCBridge::notifyTextSpliced(JsonFile *aSender, TextCoordi
    [targetListener notifyJsonTextSpliced:aSender from:aOldOffset length:aOldLength newLength:aNewLength];
 }
 
+void JsonFileListenerObjCBridge::notifyNodeChanged(JsonFile *aSender, const JsonPath &nodePath) {
+    [targetListener notifyNodeInvalidated:aSender nodePath:nodePath];
+}
+
 void JsonFileListenerObjCBridge::notifyErrorsChanged(json::JsonFile *aSender)
 {
    [targetListener notifyErrorsChanged:aSender];

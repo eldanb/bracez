@@ -6,6 +6,7 @@
 //
 
 #include "JsonPathExpressionNode.hpp"
+#include "JsonPathExpressionCompiler.hpp"
 
 using convert_type = std::codecvt_utf8<wchar_t>;
 static std::wstring_convert<convert_type, wchar_t> wide_utf8_converter;
@@ -167,19 +168,37 @@ void JsonPathExpressionNodeNavResolveName::inspect(std::ostream &out) const {
 
 void JsonPathExpressionNodeNavResolveName::stepFromNode(JsonPathExpressionNodeEvalContext &context, JsonPathExpressionNodeEvalResult &nodes) {
     JsonPathResultNodeList resultList;
-    std::for_each(nodes.nodeList.begin(),
-                  nodes.nodeList.end(),
-                  [this, &resultList](json::Node* node) {
-                        json::ObjectNode *obNode = dynamic_cast<json::ObjectNode*>(node);
-                        int idx = -1;
-                        if(obNode) {
-                            idx = obNode->GetIndexOfMemberWithName(_name);
-                        }
-                        if(idx != -1) {
-                            resultList.push_back(obNode->GetChildAt(idx));
-                        }
-                  });
-    
+    if(!(context.options && context.options->fuzzy)) {
+        std::for_each(nodes.nodeList.begin(),
+                      nodes.nodeList.end(),
+                      [this, &resultList](json::Node* node) {
+                            json::ObjectNode *obNode = dynamic_cast<json::ObjectNode*>(node);
+                            int idx = -1;
+                            if(obNode) {
+                                idx = obNode->GetIndexOfMemberWithName(_name);
+                            }
+                            if(idx != -1) {
+                                resultList.push_back(obNode->GetChildAt(idx));
+                            }
+                      });
+        
+    } else {
+        std::for_each(nodes.nodeList.begin(),
+                      nodes.nodeList.end(),
+                      [this, &resultList](json::Node* node) {
+                            json::ObjectNode *obNode = dynamic_cast<json::ObjectNode*>(node);
+                            if(obNode) {
+                                int childCount = obNode->GetChildCount();
+                                for(int idx=0; idx<childCount; idx++) {
+                                    if(obNode->GetMemberNameAt(idx).substr(0, _name.length()) == _name) {
+                                        resultList.push_back(obNode->GetChildAt(idx));
+                                    }
+                                }
+                            }
+                      });
+    }
+        
+
     nodes.nodeList = std::move(resultList);
 }
 

@@ -10,9 +10,13 @@
 
 #include "JsonPathExpressionNode.hpp"
 
+struct JsonPathExpressionOptions {
+    bool fuzzy;
+};
+
 class JsonPathExpression {
 public:
-    JsonPathResultNodeList execute(json::Node *root);
+    JsonPathResultNodeList execute(json::Node *root, JsonPathExpressionOptions *options = NULL);
     
 public:
     static JsonPathExpression compile(const std::wstring &inputExpression);

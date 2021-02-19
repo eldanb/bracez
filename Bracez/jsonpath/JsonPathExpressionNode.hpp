@@ -15,9 +15,12 @@
 
 #include "reader.h"
 
+struct JsonPathExpressionOptions;
+
 struct JsonPathExpressionNodeEvalContext {
     json::Node *rootNode;
     json::Node *contextNode;
+    JsonPathExpressionOptions *options;
 } ;
 
 typedef std::list<json::Node *> JsonPathResultNodeList;
