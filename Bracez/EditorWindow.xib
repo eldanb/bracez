@@ -319,7 +319,7 @@
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="UTc-dM-0dl">
                                                                             <rect key="frame" x="0.0" y="0.0" width="261" height="360"/>
-                                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                            <autoresizingMask key="autoresizingMask"/>
                                                                             <subviews>
                                                                                 <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="40" viewBased="YES" id="637" userLabel="BookmarksView">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="261" height="360"/>
@@ -453,7 +453,7 @@
                                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                                 <clipView key="contentView" drawsBackground="NO" id="s0D-Sl-40F">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="261" height="242"/>
-                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                    <autoresizingMask key="autoresizingMask"/>
                                                                                     <subviews>
                                                                                         <textView focusRingType="none" editable="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" spellingCorrection="YES" smartInsertDelete="YES" id="Gqx-B7-p6B">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="261" height="242"/>
@@ -698,9 +698,9 @@
                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                                     <subviews>
                                                         <button horizontalHuggingPriority="1000" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vpq-hb-dRH">
-                                                            <rect key="frame" x="3" y="-1" width="15" height="36"/>
+                                                            <rect key="frame" x="3" y="-1.5" width="15.5" height="37"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                            <buttonCell key="cell" type="bevel" title="Button" bezelStyle="regularSquare" image="NSRevealFreestandingTemplate" imagePosition="only" alignment="left" inset="2" id="JUs-Js-sEJ">
+                                                            <buttonCell key="cell" type="bevel" title="Button" bezelStyle="regularSquare" image="mappin.and.ellipse" catalog="system" imagePosition="only" alignment="left" inset="2" id="JUs-Js-sEJ">
                                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                                 <font key="font" metaFont="system"/>
                                                             </buttonCell>
@@ -736,7 +736,7 @@
                                                         <button horizontalHuggingPriority="1000" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Aw-8b-rob">
                                                             <rect key="frame" x="77" y="0.5" width="15.5" height="34"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                            <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="NSStopProgressTemplate" imagePosition="only" inset="2" id="VT0-uw-feR">
+                                                            <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="exclamationmark.triangle" catalog="system" imagePosition="only" inset="2" id="VT0-uw-feR">
                                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                                 <font key="font" metaFont="system"/>
                                                             </buttonCell>
@@ -750,9 +750,9 @@
                                                             </connections>
                                                         </button>
                                                         <button horizontalHuggingPriority="1000" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5cG-3K-rvG">
-                                                            <rect key="frame" x="26" y="-1" width="15" height="36"/>
+                                                            <rect key="frame" x="25" y="-1" width="20" height="36"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                            <buttonCell key="cell" type="bevel" title="Button" bezelStyle="regularSquare" image="NSRevealFreestandingTemplate" imagePosition="only" inset="2" id="yde-Qw-AzK">
+                                                            <buttonCell key="cell" type="bevel" title="./jq" bezelStyle="regularSquare" image="NSRevealFreestandingTemplate" inset="2" id="yde-Qw-AzK">
                                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                                 <font key="font" metaFont="system"/>
                                                             </buttonCell>
@@ -1009,7 +1009,7 @@
                         <binding destination="4" name="value" keyPath="selection.showTree" id="J6r-z9-jDZ"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Browser View" image="BrowserView" id="xT4-Rt-Z6d">
+                <menuItem title="Browser View" image="NSColumnViewTemplate" id="xT4-Rt-Z6d">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <binding destination="4" name="value" keyPath="selection.showBrowser" id="hZP-C4-in2"/>
@@ -1023,7 +1023,7 @@
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="Xs5-Dv-pYA"/>
-                <menuItem title="Vertical Layout" image="VertSplit" id="50i-ef-qpC">
+                <menuItem title="Vertical Layout" image="rectangle.split.1x2" catalog="system" id="50i-ef-qpC">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <binding destination="4" name="value" keyPath="selection.vertical" id="jfP-Ij-oDj"/>
@@ -1034,7 +1034,7 @@
         </menu>
     </objects>
     <resources>
-        <image name="BrowserView" width="20" height="15"/>
+        <image name="NSColumnViewTemplate" width="18" height="14"/>
         <image name="NSGoBackTemplate" width="10" height="14"/>
         <image name="NSGoForwardTemplate" width="10" height="14"/>
         <image name="NSPreferencesGeneral" width="32" height="32"/>
@@ -1043,7 +1043,9 @@
         <image name="TextView" width="20" height="15"/>
         <image name="ToolbarBookmarksTemplate" width="16" height="16"/>
         <image name="TreeView" width="19" height="15"/>
-        <image name="VertSplit" width="20" height="15"/>
+        <image name="exclamationmark.triangle" catalog="system" width="17" height="15"/>
+        <image name="mappin.and.ellipse" catalog="system" width="15" height="16"/>
+        <image name="rectangle.split.1x2" catalog="system" width="18" height="14"/>
         <image name="sidebar.left" catalog="system" width="15" height="12"/>
         <image name="sidebar.right" catalog="system" width="23" height="17"/>
     </resources>

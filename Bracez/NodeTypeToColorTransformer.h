@@ -11,19 +11,13 @@
 
 @interface NodeTypeToColorTransformer: NSValueTransformer 
 {
-   NSString *enableKey;
    
-   NSColor *defaultColor;
-   NSColor *stringColor;
-   NSColor *keyColor;
-   NSColor *keywordColor;
-   NSColor *numberColor;
    
 }
 
+-(id)init;
 
--(id)initWithEnableKey:(NSString*)aEnableKey;
-
+-(BOOL)enabled;
 -(NSColor*)colorForNodeType:(int)aNodeType;
 -(NSColor*)keyColor;
 

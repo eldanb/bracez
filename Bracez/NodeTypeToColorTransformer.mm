@@ -7,10 +7,21 @@
 //
 
 #import "NodeTypeToColorTransformer.h"
+#import "BracezPreferences.h"
 
 #include "json_file.h"
 
 using namespace json;
+
+@interface NodeTypeToColorTransformer () {
+    NSColor *defaultColor;
+    NSColor *stringColor;
+    NSColor *keyColor;
+    NSColor *keywordColor;
+    NSColor *numberColor;
+}
+
+@end
 
 @implementation NodeTypeToColorTransformer
 
@@ -24,24 +35,21 @@ using namespace json;
 
 -(id)init
 {
-   return [self initWithEnableKey:nil];
+    self = [super init];
+    if(self)
+    {
+       [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(defaultsChanged:)
+                                                    name:NSUserDefaultsDidChangeNotification object:nil];
+
+       [self _loadColors];
+    }
+    
+    return self;
 }
 
--(id)initWithEnableKey:(NSString*)aEnableKey
-{
-   self = [super init];
-   
-   if(self)
-   {
-      enableKey = aEnableKey;
 
-      [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(defaultsChanged:) 
-                                                   name:NSUserDefaultsDidChangeNotification object:nil];
-
-      [self _loadColors];
-   }
-   
-   return self;
+-(BOOL)enabled {
+    return [BracezPreferences sharedPreferences].enableTreeViewSyntaxColoring;
 }
 
 -(void)defaultsChanged:(NSNotification*)aNotify
@@ -51,22 +59,21 @@ using namespace json;
                         
 -(void) _loadColors;
 {
-   NSUserDefaults *lDefaults = [NSUserDefaults standardUserDefaults];
-
-   defaultColor = [NSUnarchiver unarchiveObjectWithData:[lDefaults dataForKey:@"TextEditorColorDefault"]];
-
-   if(!enableKey || [lDefaults boolForKey:enableKey])
-   {
-      stringColor = [NSUnarchiver unarchiveObjectWithData:[lDefaults dataForKey:@"TextEditorColorString"]];
-      keyColor = [NSUnarchiver unarchiveObjectWithData:[lDefaults dataForKey:@"TextEditorColorKey"]];
-      keywordColor = [NSUnarchiver unarchiveObjectWithData:[lDefaults dataForKey:@"TextEditorColorKeyword"]];
-      numberColor = [NSUnarchiver unarchiveObjectWithData:[lDefaults dataForKey:@"TextEditorColorNumber"]];
-   } else {
-      stringColor = defaultColor;
-      keyColor = defaultColor;
-      keywordColor = defaultColor;
-      numberColor = defaultColor;
-   }
+    BracezPreferences *lPrefs = [BracezPreferences sharedPreferences];
+    
+    defaultColor = lPrefs.editorColorDefault;
+    
+    if(self.enabled) {
+        stringColor = lPrefs.editorColorString;
+        keyColor = lPrefs.editorColorKey;
+        keywordColor = lPrefs.editorColorKeyword;
+        numberColor = lPrefs.editorColorNumber;
+    } else {
+        stringColor = defaultColor;
+        keyColor = defaultColor;
+        keywordColor = defaultColor;
+        numberColor = defaultColor;
+    }
 }
 
 - (id)transformedValue:(id)value {

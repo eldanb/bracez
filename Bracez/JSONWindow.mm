@@ -33,7 +33,7 @@ extern "C" {
 +(void)initialize
 {
     [super initialize];
-    [NSValueTransformer setValueTransformer:[[NodeTypeToColorTransformer alloc] initWithEnableKey:@"TreeViewSyntaxColoring"] forName:@"treeViewNodeColors"];
+    [NSValueTransformer setValueTransformer:[[NodeTypeToColorTransformer alloc] init] forName:@"treeViewNodeColors"];
 }
 
 -(void)awakeFromNib

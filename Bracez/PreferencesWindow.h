@@ -6,10 +6,12 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "BracezPreferences.h"
 
 @interface PreferencesWindow : NSWindow {
 
    IBOutlet NSTextField *fontLabel;
+   IBOutlet BracezPreferences *preferences;
 }
 
 - (IBAction)setFontClicked:(id)aSender;

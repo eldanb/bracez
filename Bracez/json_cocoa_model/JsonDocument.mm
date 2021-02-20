@@ -10,6 +10,7 @@
 #import "JsonMarker.h"
 #import "SyntaxHilightJsonVisitor.h"
 #import "NSString+WStringUtils.h"
+#include "BracezPreferences.h"
 #include "marker_list.h"
 
 #include "stopwatch.h"
@@ -615,21 +616,17 @@ private:
 
 
 -(void)updateSyntaxInRange:(NSRange)editedRange {
-    NSData *lFontData =[[NSUserDefaults standardUserDefaults] valueForKey:@"TextEditorFont"];
-    
+    NSFont *lFont = [[BracezPreferences sharedPreferences] editorFont];
     stopwatch lStopWatch("Update syntax coloring");
-    NSError *err;
-    NSFont *lFont = [NSKeyedUnarchiver unarchivedObjectOfClass:NSFont.class
-                                                      fromData:lFontData error:&err];
+
     [self.textStorage beginEditing];
-
+    
     [self.textStorage setAttributeRuns:[NSArray array]];
-
     [self.textStorage setFont:lFont];
-
+    
     SyntaxHighlightJsonVisitor visitor(self.textStorage, editedRange);
     file->getDom()->accept(&visitor);
-
+    
     [self.textStorage endEditing];
 }
 

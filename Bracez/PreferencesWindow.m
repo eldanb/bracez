@@ -32,19 +32,14 @@
 
 - (void)_updateDefaultFont:(NSFont*)aFont
 {
-   [[NSUserDefaults standardUserDefaults] setValue:[NSKeyedArchiver archivedDataWithRootObject:aFont
-                                                                         requiringSecureCoding:NO
-                                                                                         error:nil]
-                                            forKey:@"TextEditorFont"];
+    preferences.editorFont = aFont;
 }
 
 - (void)_displayChosenFont
 {
-   NSData *lFontData = [[NSUserDefaults standardUserDefaults] valueForKey:@"TextEditorFont"];
-   NSFont *lFont = [NSKeyedUnarchiver unarchivedObjectOfClass:NSFont.class
-                                                     fromData:lFontData
-                                                        error:nil];    
-   [fontLabel setFont:[NSFont fontWithDescriptor:[lFont fontDescriptor] size:11.0]];
+   NSFont *lFont = preferences.editorFont;
+   [fontLabel setFont:[NSFont fontWithDescriptor:[ preferences.editorFont fontDescriptor]
+                                            size:11.0]];
    [fontLabel setStringValue:[NSString stringWithFormat:@"%@ %.0f", [lFont displayName], [lFont pointSize]]];
 }
 

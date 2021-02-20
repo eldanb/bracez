@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17156" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17156"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17701"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -19,7 +19,7 @@
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="131" y="138" width="480" height="290"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1025"/>
             <view key="contentView" id="6">
                 <rect key="frame" x="0.0" y="0.0" width="480" height="290"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -41,9 +41,6 @@
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
-                                            <connections>
-                                                <binding destination="104" name="value" keyPath="values.RememberLastViewConfiguration" id="124"/>
-                                            </connections>
                                         </button>
                                     </subviews>
                                 </view>
@@ -96,11 +93,7 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <connections>
-                                                <binding destination="104" name="value" keyPath="values.TextEditorColorDefault" id="117">
-                                                    <dictionary key="options">
-                                                        <string key="NSValueTransformerName">NSUnarchiveFromData</string>
-                                                    </dictionary>
-                                                </binding>
+                                                <binding destination="VgD-zE-YhD" name="value" keyPath="editorColorDefault" id="9vL-t5-OP4"/>
                                             </connections>
                                         </colorWell>
                                         <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="70">
@@ -117,11 +110,7 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.0" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             <connections>
-                                                <binding destination="104" name="value" keyPath="values.TextEditorColorString" id="130">
-                                                    <dictionary key="options">
-                                                        <string key="NSValueTransformerName">NSUnarchiveFromData</string>
-                                                    </dictionary>
-                                                </binding>
+                                                <binding destination="VgD-zE-YhD" name="value" keyPath="editorColorString" id="sDm-7R-WoF"/>
                                             </connections>
                                         </colorWell>
                                         <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="75">
@@ -138,11 +127,7 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.0" green="0.50196081400000003" blue="0.50196081400000003" alpha="1" colorSpace="calibratedRGB"/>
                                             <connections>
-                                                <binding destination="104" name="value" keyPath="values.TextEditorColorNumber" id="131">
-                                                    <dictionary key="options">
-                                                        <string key="NSValueTransformerName">NSUnarchiveFromData</string>
-                                                    </dictionary>
-                                                </binding>
+                                                <binding destination="VgD-zE-YhD" name="value" keyPath="editorColorNumber" id="7XK-LV-SN1"/>
                                             </connections>
                                         </colorWell>
                                         <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="78">
@@ -159,11 +144,7 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.0" green="0.0" blue="0.50196081400000003" alpha="1" colorSpace="calibratedRGB"/>
                                             <connections>
-                                                <binding destination="104" name="value" keyPath="values.TextEditorColorKey" id="128">
-                                                    <dictionary key="options">
-                                                        <string key="NSValueTransformerName">NSUnarchiveFromData</string>
-                                                    </dictionary>
-                                                </binding>
+                                                <binding destination="VgD-zE-YhD" name="value" keyPath="editorColorKey" id="oNk-jV-P8f"/>
                                             </connections>
                                         </colorWell>
                                         <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="87">
@@ -180,11 +161,7 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <color key="color" red="0.50196081400000003" green="0.50196081400000003" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <connections>
-                                                <binding destination="104" name="value" keyPath="values.TextEditorColorKeyword" id="132">
-                                                    <dictionary key="options">
-                                                        <string key="NSValueTransformerName">NSUnarchiveFromData</string>
-                                                    </dictionary>
-                                                </binding>
+                                                <binding destination="VgD-zE-YhD" name="value" keyPath="editorColorKeyword" id="eLx-yM-E3x"/>
                                             </connections>
                                         </colorWell>
                                         <button fixedFrame="YES" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="90">
@@ -195,7 +172,7 @@
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
-                                                <binding destination="104" name="value" keyPath="values.GutterMaster" id="118"/>
+                                                <binding destination="VgD-zE-YhD" name="value" keyPath="gutterMasterSwitch" id="Lyx-Rv-aMO"/>
                                             </connections>
                                         </button>
                                         <button fixedFrame="YES" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="94">
@@ -206,8 +183,7 @@
                                                 <font key="font" metaFont="smallSystem"/>
                                             </buttonCell>
                                             <connections>
-                                                <binding destination="104" name="value" keyPath="values.GutterLineNumbers" id="119"/>
-                                                <binding destination="104" name="enabled" keyPath="values.GutterMaster" id="127"/>
+                                                <binding destination="VgD-zE-YhD" name="value" keyPath="gutterLineNumbers" id="7ST-lm-k8k"/>
                                             </connections>
                                         </button>
                                         <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="101">
@@ -235,7 +211,7 @@
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
-                                                <binding destination="104" name="value" keyPath="values.TreeViewSyntaxColoring" id="145"/>
+                                                <binding destination="VgD-zE-YhD" name="value" keyPath="enableTreeViewSyntaxColoring" id="USI-SR-P2U"/>
                                             </connections>
                                         </button>
                                     </subviews>
@@ -248,16 +224,22 @@
             <toolbar key="toolbar" implicitIdentifier="E788E493-2452-4C54-AEAE-702CC0238407" autosavesConfiguration="NO" allowsUserCustomization="NO" displayMode="iconAndLabel" sizeMode="regular" id="20">
                 <allowedToolbarItems>
                     <toolbarItem implicitItemIdentifier="08B5E111-4602-49EB-B1BE-CA6632E540F9" explicitItemIdentifier="general" label="General" paletteLabel="General" tag="-1" image="NSPreferencesGeneral" autovalidates="NO" selectable="YES" id="28">
+                        <size key="minSize" width="22" height="22"/>
+                        <size key="maxSize" width="22" height="22"/>
                         <connections>
                             <action selector="changePage:" target="-2" id="52"/>
                         </connections>
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="E675BBA1-1A1F-4071-B841-F2CBE15542B9" explicitItemIdentifier="texted" label="Text Editor" paletteLabel="Text Editor" tag="-1" image="NSAdvanced" autovalidates="NO" selectable="YES" id="29">
+                        <size key="minSize" width="22" height="22"/>
+                        <size key="maxSize" width="22" height="22"/>
                         <connections>
                             <action selector="changePage:" target="-2" id="53"/>
                         </connections>
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="3F130A0F-FED1-4A49-93DE-997E409A7B69" explicitItemIdentifier="vised" label="Visual Editor" paletteLabel="Visual Editor" tag="-1" image="NSAdvanced" autovalidates="NO" selectable="YES" id="140">
+                        <size key="minSize" width="22" height="22"/>
+                        <size key="maxSize" width="22" height="22"/>
                         <connections>
                             <action selector="changePage:" target="-2" id="141"/>
                         </connections>
@@ -272,10 +254,12 @@
             <connections>
                 <outlet property="delegate" destination="-2" id="9"/>
                 <outlet property="fontLabel" destination="101" id="103"/>
+                <outlet property="preferences" destination="VgD-zE-YhD" id="t5O-A8-mkg"/>
             </connections>
             <point key="canvasLocation" x="32" y="98"/>
         </window>
-        <userDefaultsController representsSharedInstance="YES" id="104"/>
+        <customObject id="VgD-zE-YhD" customClass="BracezPreferences"/>
+        <userDefaultsController representsSharedInstance="YES" id="0mh-CV-PO5"/>
     </objects>
     <resources>
         <image name="NSAdvanced" width="32" height="32"/>

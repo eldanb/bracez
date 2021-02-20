@@ -10,8 +10,5 @@
 
 int main(int argc, char *argv[])
 {
-   // Load defaults for preferences
-   [[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"PreferencesDefaults" ofType:@"plist"]]];
-
     return NSApplicationMain(argc,  (const char **) argv);
 }
