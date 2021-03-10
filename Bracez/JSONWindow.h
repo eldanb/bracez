@@ -10,6 +10,7 @@
 @class NodeSelectionController;
 @class TextEditorGutterView;
 @class JsonPathSearchController;
+@class HistoryAndFavoritesControl;
 
 @interface JSONWindow : NSWindow {
     IBOutlet NSTextView *textEditor;
@@ -19,7 +20,8 @@
     
     IBOutlet NSTextField *jqQueryInput;
     IBOutlet NSTextView *jqQueryResult;
-
+    IBOutlet HistoryAndFavoritesControl *jqQueryFavHist;
+    
     IBOutlet NSMenu *ViewModeMenu;
     IBOutlet NodeSelectionController *selectionController;
     

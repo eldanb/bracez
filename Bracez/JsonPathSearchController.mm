@@ -10,7 +10,8 @@
 #import "JsonCocoaNode.h"
 #import "JsonMarker.h"
 #import "JsonDocument.h"
-
+#import "stopwatch.h"
+#import "HistoryAndFavoritesControl.h"
 #include "JsonPathExpressionCompiler.hpp"
 
 @interface JsonPathSearchController () {
@@ -35,12 +36,16 @@
 }
 
 - (IBAction)executeJsonPath:(id)sender {
+    [JSONPathHistoryFavorites accumulateHistory];
+    
     JsonPathResultNodeList nodeList;
     try {
         JsonPathExpression expr = JsonPathExpression::compile(_searchPath.UTF8String);
         JsonPathExpressionOptions opts;
         opts.fuzzy = self.fuzzySearch;
+        
         nodeList = expr.execute(document.rootNode.proxiedElement, &opts);
+        
         JSONPathQueryStatus.textColor = [NSColor blackColor];
         JSONPathQueryStatus.stringValue = [NSString stringWithFormat:@"%ld results", nodeList.size()];
     } catch(const std::exception &e) {

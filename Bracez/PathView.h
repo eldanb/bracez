@@ -18,6 +18,7 @@
 - (void)pathView:(PathView *)aPathView previewPathExtensionString:(NSString*)string;
 - (NSArray<NSString*>*)pathView:(PathView *)aPathView proposeCompletionsForString:(NSString*)string;
 - (NSString*)pathView:(PathView *)aPathView updateExtensionValue:(NSString*)curExtension forSelectedCompletion:(NSString*)completion;
+- (void)pathViewRequestMoveToParent:(PathView*)aPathView;
 @end
 
 @interface PathViewComponentCell : NSTextFieldCell {

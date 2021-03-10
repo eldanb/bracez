@@ -11,7 +11,7 @@
 @protocol GutterViewModel
 - (void)connectGutterView:(id)aGutterView;
 - (int)lineNumberForCharacterIndex:(int)aIdx;
-- (UInt32)characterIndexForStartOfLine:(int)aIdx;
+- (UInt32)characterIndexForFirstCharOfLine:(int)aIdx;
 - (UInt32)markersForLine:(int)aLine;
 @end
 
@@ -19,6 +19,7 @@
 
    NSTextView *textView;   
    NSMutableDictionary *marginAttributes;
+   NSMutableDictionary *marginAttributesWithMarkers;
    id <GutterViewModel> model;
    BOOL shouldShowLineNumbers;
    int shownFlagsMask;
@@ -33,7 +34,8 @@
 
 -(void)markersChanged;
 
--(void)_drawOneNumberInMargin:(unsigned) aNumber inRect:(NSRect)r;
+-(void)_drawOneNumberInMargin:(unsigned) aNumber inRect:(NSRect)r withFlags:(int)flags;
+
 -(void)_drawFlags:(UInt32)aFlags inRect:(NSRect)aRect;
 -(void)_drawMarkerWithColor:(NSColor*)aBaseColor inRect:(NSRect)aRect;
 

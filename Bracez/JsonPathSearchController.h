@@ -8,12 +8,14 @@
 #import <Foundation/Foundation.h>
 
 @class JsonDocument;
+@class HistoryAndFavoritesControl;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface JsonPathSearchController : NSObject {
     IBOutlet JsonDocument* document;
     
+    IBOutlet HistoryAndFavoritesControl *JSONPathHistoryFavorites;
     IBOutlet NSTextField *JSONPathInput;
     IBOutlet NSArrayController *JSONPathResultsController;
     IBOutlet NSTextField *JSONPathQueryStatus;

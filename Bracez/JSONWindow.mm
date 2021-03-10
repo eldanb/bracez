@@ -15,12 +15,14 @@
 #import "NodeSelectionController.h"
 #import "JsonPathSearchController.h"
 #import "BracezPreferences.h"
+#import "HistoryAndFavoritesControl.h"
+#import "BracezTextView.h"
 
 extern "C" {
 #include "extlib/jq/include/jq.h"
 }
 
-@interface JSONWindow () {
+@interface JSONWindow () <BracezTextViewDelegate> {
     JsonTreeDataSource *_treeDataSource;
     TextEditorGutterView *gutterView;
     IBOutlet GuiModeControl *guiModeControl;
@@ -217,7 +219,7 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
         selectionRange = NSMakeRange(0, textEditor.textStorage.length);
     }
     
-    [self.document reindentStartingAt:selectionRange.location len:selectionRange.length];
+    [self.document reindentStartingAt:TextCoordinate(selectionRange.location) len:selectionRange.length];
 }
 
 - (IBAction)executeJqQuery:(id)sender {
@@ -264,6 +266,8 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
         
         jq_teardown(&state);
     }
+    
+    [jqQueryFavHist accumulateHistory];
 }
 
 
@@ -293,6 +297,7 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
 -(IBAction)findByJSONPathHere:(id)sender {
     [self findByJsonPathWithQuery:selectionController.currentPathAsJsonQuery];
 }
+
 -(JsonDocument*)document {
     return (JsonDocument*)self.delegate;
 }
@@ -302,5 +307,19 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
                    withEvent:[NSApp currentEvent]
                      forView:((NSToolbarItem*)sender).view];
 }
+
+-(void)bracezTextView:(id)sender forNewLineAt:(int)where suggestIndent:(int *)indent {
+    *indent = [self.document suggestIdentForNewLineAt:TextCoordinate(where)];
+}
+
+-(void)bracezTextView:(id)sender
+      forCloseParenAt:(int)where
+        suggestIndent:(int*)indent
+         getLineStart:(int*)lineStart {
+    TextCoordinate c;
+    *indent = [self.document suggestCloserIndentAt:TextCoordinate(where) getLineStart:&c];
+    *lineStart = c.getAddress();
+}
+
 
 @end

@@ -50,8 +50,8 @@
     self = [super initWithFrame:frame];
     if (self) {
       _bkCell = [[NSButtonCell alloc] init];
-      [_bkCell setBezelStyle:NSSmallSquareBezelStyle];
-      [_bkCell setAlignment:NSLeftTextAlignment];
+      [_bkCell setBezelStyle:NSBezelStyleSmallSquare];
+      [_bkCell setAlignment:NSTextAlignmentLeft];
       [_bkCell setWraps:NO];
       [_bkCell setTitle:@""];
       
@@ -71,7 +71,7 @@
 -(void)mouseDown:(NSEvent *)theEvent
 {
    int lModifiers = [theEvent modifierFlags];
-   if((lModifiers & NSControlKeyMask) == 0)
+   if((lModifiers & NSEventModifierFlagControl) == 0)
    {
       NSPoint lClickPoint = [self convertPoint:[theEvent locationInWindow] fromView:nil];
       PathViewComponentCell *lPathElement =  [self hitTestPathElement:lClickPoint andGetFrame:nil];
@@ -199,6 +199,16 @@
                 [_completionTableView scrollRowToVisible:selectedRow];
             }
             return TRUE;
+            
+        case NSBackspaceCharacter:
+        case NSDeleteCharacter:
+            if(!_pathExtensionEdit.stringValue.length) {
+                [_delegate pathViewRequestMoveToParent:self];
+                self.shownPath = [self.shownPath subarrayWithRange:NSMakeRange(0, self.shownPath.count-1)];
+                [self startPathExtensionEntryWithDefault:@""];                
+                return TRUE;
+            }
+            return FALSE;
             
         default:
             return FALSE;

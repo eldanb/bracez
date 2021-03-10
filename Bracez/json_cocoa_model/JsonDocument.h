@@ -31,11 +31,12 @@ class BookmarksListenerBridge;
 
 -(BOOL)isSemanticModelTextChangeInProgress;
 -(BOOL)isSemanticModelDirty;
+-(BOOL)isSemanticModelUpdateInProgress;
 
 -(JsonCocoaNode*)rootNode;
--(NSIndexPath*)findPathContaining:(unsigned int)aDocOffset;
+-(NSIndexPath*)findPathContaining:(TextCoordinate)aDocOffset;
 -(void)translateCoordinate:(TextCoordinate)aCoord toRow:(NSUInteger*)aRow col:(NSUInteger*)aCol;
--(UInt32)characterIndexForStartOfLine:(UInt32)lineNumber;
+-(UInt32)characterIndexForFirstCharOfLine:(UInt32)lineNumber;
 
 -(LinesAndBookmarks&)bookmarks;
 -(const MarkerList<ParseErrorMarker>*)errors;
@@ -47,6 +48,8 @@ class BookmarksListenerBridge;
 -(NSIndexPath*)pathFromJsonPathString:(NSString*)jsonPathString;
 
 -(void)reindentStartingAt:(TextCoordinate)aOffsetStart len:(TextLength)aLen;
+-(int)suggestIdentForNewLineAt:(TextCoordinate)where;
+-(int)suggestCloserIndentAt:(TextCoordinate)where getLineStart:(TextCoordinate*)lineStart;
 
 -(void)notifyErrorsChanged:(json::JsonFile*)aSender;
 -(void)notifyNodeInvalidated:(json::JsonFile*)aSender nodePath:(const json::JsonPath&)nodePath;

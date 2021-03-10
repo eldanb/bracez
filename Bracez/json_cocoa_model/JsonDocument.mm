@@ -12,7 +12,7 @@
 #import "NSString+WStringUtils.h"
 #include "BracezPreferences.h"
 #include "marker_list.h"
-
+#include "JsonIndentFormatter.hpp"
 #include "stopwatch.h"
 
 NSString *JsonDocumentBookmarkChangeNotification =
@@ -21,6 +21,7 @@ NSString *JsonDocumentBookmarkChangeNotification =
 @interface JsonDocument () {
     BOOL _isSemanticModelTextChangeInProgress;
     BOOL _isSemanticModelDirty;
+    BOOL _isSemanticModelUpdateInProgress;
     
     JsonFile *file;
      
@@ -68,6 +69,8 @@ private:
    if(self)
    {
        _pendingSemanticDataRequests = [NSMutableArray array];
+       
+       _isSemanticModelUpdateInProgress = NO;
        
       self.textStorage = [[NSTextStorage alloc] init];
       self.textStorage.delegate = self;
@@ -129,16 +132,17 @@ private:
           lIter != linesAndBookmarks.end();
           lIter++)
       {
-          TextCoordinate lineStart = linesAndBookmarks.getLineStart( (*lIter) - 1);
+          int bookmarkLine = lIter->getCoordinate().getAddress();
+          TextCoordinate lineStart = linesAndBookmarks.getLineFirstCharacter( bookmarkLine );
           NSString *textStorageString = self.textStorage.string;
           
           NSString *lineContent = [textStorageString substringWithRange:NSIntersectionRange(NSMakeRange(0, textStorageString.length),
-                                                                                            NSMakeRange(lineStart+1, 150))];
+                                                                                            NSMakeRange(lineStart.getAddress(), 150))];
           NSString *trimmedLineContent = [lineContent stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
           NSString *lineDesc = [trimmedLineContent substringWithRange:NSIntersectionRange(NSMakeRange(0, trimmedLineContent.length),
                                                                                           NSMakeRange(0, 50))];
           
-          [lMarkerArray addObject:[[JsonMarker alloc] initWithLine:(TextCoordinate)*lIter
+          [lMarkerArray addObject:[[JsonMarker alloc] initWithLine:lIter->getCoordinate().getAddress()
                                                        description:lineDesc
                                                         markerType:JsonMarkerTypeBookmark
                                                          parentDoc:self]];
@@ -211,7 +215,7 @@ private:
    return lRet;
 }
 
--(NSIndexPath*)findPathContaining:(unsigned int)aDocOffset
+-(NSIndexPath*)findPathContaining:(TextCoordinate)aDocOffset
 {
    JsonPath lPath;
    file->FindPathContaining(aDocOffset, lPath);
@@ -238,12 +242,15 @@ private:
    *aCol = lCol;
 }
 
--(UInt32)characterIndexForStartOfLine:(UInt32)lineNumber {
-    return linesAndBookmarks.getLineStart(lineNumber);
+-(UInt32)characterIndexForFirstCharOfLine:(UInt32)lineNumber {
+    return (lineNumber-1)<linesAndBookmarks.numLines() ?
+                linesAndBookmarks.getLineFirstCharacter(lineNumber).getAddress() :
+                -1;
 }
 
 -(void)updateSemanticModel:(JsonFile*)aFile
 {
+    _isSemanticModelUpdateInProgress = true;
   [self willChangeValueForKey:@"rootNode"];
   [self willChangeValueForKey:@"problems"];
     
@@ -264,7 +271,8 @@ private:
   [self didChangeValueForKey:@"rootNode"];
   
   _isSemanticModelDirty = NO;
-
+    _isSemanticModelUpdateInProgress = false;
+    
   [self updateSyntaxInRange:NSMakeRange(0, self.textStorage.string.length)];
 }
 
@@ -273,8 +281,8 @@ private:
    _isSemanticModelTextChangeInProgress = YES;
 
     
-    NSString *lNewText = [NSString stringWithWstring:aSender->getText().substr(aOldOffset, aNewLength)];
-    [self.textStorage replaceCharactersInRange:NSMakeRange(aOldOffset, aOldLength)
+    NSString *lNewText = [NSString stringWithWstring:aSender->getText().substr(aOldOffset.getAddress(), aNewLength)];
+    [self.textStorage replaceCharactersInRange:NSMakeRange(aOldOffset.getAddress(), aOldLength)
                                     withString:lNewText];
    
    
@@ -315,314 +323,101 @@ private:
         NSString *updatedRegion = [textStorage.string substringWithRange:editedRange];
 
         if(!_isSemanticModelTextChangeInProgress) {
-            
-            if(!file->spliceTextWithWorkLimit(editedRange.location,
+            _isSemanticModelUpdateInProgress = true;
+            if(!file->spliceTextWithWorkLimit(TextCoordinate(editedRange.location),
                                                editedRange.length-delta,
                                                updatedRegion.cStringWstring,
                                                1024)) {
-            /*
-                NSRange spliceRange = NSMakeRange(editedRange.location, editedRange.length-delta);
-                NSString *updatedText = [text substringWithRange:editedRange];
-             
-                // Try to handle change in a fast local way
-            */
-
-
                 _isSemanticModelDirty = YES;
                 [self slowParseFileContent];
             }
+            _isSemanticModelUpdateInProgress = false;
         }
+
+        linesAndBookmarks.updateLineOffsetsAfterSplice(TextCoordinate(editedRange.location),
+                                                       editedRange.length-delta,
+                                                       editedRange.length,
+                                                       updatedRegion.cStringWstring.c_str());
 
         if(!_isSemanticModelDirty) {
             [self updateSyntaxInRange:editedRange];
         }
-        
-        linesAndBookmarks.updateLineOffsetsAfterSplice(editedRange.location,
-                                                       editedRange.length-delta,
-                                                       editedRange.length,
-                                                       updatedRegion.cStringWstring.c_str());
     }
 }
 
-class JsonIndentationFixer {
-public:
-    JsonIndentationFixer(const std::wstring &text, TextCoordinate aOffsetStart, TextLength aLen)
-        : jsonText(text) {
-        int textLen = jsonText.length();
-        startOffset = aOffsetStart;
 
-        if(startOffset+aLen > textLen) {
-            aLen = textLen - startOffset;
-        }
-        endOffset = startOffset + aLen;
-    }
-    
-    const std::wstring &getIndented() {
-        if(!output.length()) {
-            reindent();
-        }
-        
-        return output;
-    }
-    
-private:
-    void detectIndentLevelsAtStart() {
-        bool inIndent = true;
-        int lineIndentLen = 0;
-        while(inputOffset < startOffset) {
-            const wchar_t curChar = readCharacter();
-            
-            if(curChar == '\n') {
-                inIndent = true;
-                continue;
-            }
-            
-            if(!inString)
-            {
-                if(inIndent && !isspace(curChar)) {
-                    inIndent = false;
-                    lineIndentLen = inputCol;
-                }
-                
-                switch(curChar) {
-                    case L'"':
-                        inString = true;
-                        break;
-                        
-                    case L'{':
-                    case L'[':
-                        indentLevelStack.push_back(lineIndentLen + 3);
-                        break;
-                        
-                    case L'}':
-                    case L']':
-                        if(!indentLevelStack.empty()) {
-                            indentLevelStack.pop_back();
-                        }
-                        break;
-                }
-            } else {
-                switch(curChar) {
-                    case L'\\':
-                        inEscape = true;
-                        break;
-                    
-                    case L'"':
-                        if(!inEscape) {
-                            inString = false;
-                        } else {
-                            inEscape = false;
-                        }
-                        break;
-                        
-                    default:
-                        inEscape = false;
-                        break;
-                }
-            }
-        }
-    }
-        
-    void reindent() {
-        if(startOffset > jsonText.length()) {
-            return;
-        }
-        
-        inputCol = 0;
-        inputOffset = 0;
-        outputCol = 0;
-        
-        prevNewLine = false;
-        inEscape = false;
-        inString = false;
-
-        detectIndentLevelsAtStart();
-
-        int peekedInputCol = peekInputColumn();
-        outputCol = peekedInputCol;
-        if(peekedInputCol == 0) {
-            skipInputWhitespace();
-        }
-                
-        while(inputOffset < endOffset) {
-            wchar_t curCharacter = readCharacter();
-            if(curCharacter == '\n') {
-                outputCharacter(curCharacter);
-                skipInputWhitespace();
-            } else
-            if(!inString) {
-                switch(curCharacter) {
-                    case L'{':
-                    case L'[': {
-                        outputCharacter(curCharacter);
-                        indentLevelStack.push_back((indentLevelStack.empty() ? 0 : indentLevelStack.back()) + 3);
-                        copyAndEnsureNewLine();
-                        break;
-                    }
-                    
-                    case L'}':
-                    case L']': {
-                        if(!indentLevelStack.empty()) {
-                            indentLevelStack.pop_back();
-                        }
-                        
-                        if(outputCol != 0) {
-                            outputCharacter(L'\n');
-                        }
-                        
-                        outputCharacter(curCharacter);
-                        break;
-                    }
-                        
-                    case L'"':
-                        outputCharacter(curCharacter);
-                        inString = true;
-                        break;
-                        
-                    case L',':
-                        outputCharacter(curCharacter);
-                        copyAndEnsureNewLine();
-                        break;
-                        
-                    default:
-                        outputCharacter(curCharacter);
-                        break;
-                }
-            }
-            else {
-                if(curCharacter == L'\\') {
-                    inEscape = true;
-                } else
-                if(curCharacter == L'"' && !inEscape) {
-                    inString = false;
-                } else {
-                    inEscape = false;
-                }
-                
-                outputCharacter(curCharacter);
-            }
-        }
-    }
-       
-    // Read a character and update the
-    // input col to reflect the col of the last read character
-    wchar_t readCharacter() {
-        const wchar_t ret = jsonText[inputOffset];
-        
-        if(prevNewLine) {
-            inputCol = 0;
-        } else {
-            inputCol++;
-        }
-        
-        prevNewLine = ret == L'\n';
-        inputOffset++;
-        
-        return ret;
-    }
-    
-    // Return the next character that will be read by
-    // readCharacter
-    wchar_t peekCharacter() {
-        return jsonText[inputOffset];
-    }
-
-    // Return the column of the next character that will be read by a call to peekCharacter
-    // This will be the 'current column' after a call to readCharacter.
-    wchar_t peekInputColumn() {
-        if(prevNewLine) {
-            return 0;
-        } else {
-            return inputCol+1;
-        }
-    }
-
-    void skipInputWhitespace() {
-        wchar_t cchar = peekCharacter();
-        while(cchar == ' ' || cchar == '\t') {
-            readCharacter();
-            cchar = peekCharacter();
-        }
-    }
-    
-    void outputIndent() {
-        int indentSize = indentLevelStack.empty() ? 0 : indentLevelStack.back();
-        outputCol += indentSize;
-        
-        while(indentSize--) {
-            output.push_back(L' ');
-        }
-    }
-    
-    void copyAndEnsureNewLine() {
-        while(inputOffset < endOffset) {
-            wchar_t curChar = peekCharacter();
-            
-            if(curChar == L'\n') {
-                outputCharacter(L'\n');
-                readCharacter();
-                skipInputWhitespace();
-                return;
-            } else
-            if(isspace(curChar)) {
-                readCharacter();
-            } else {
-                break;
-            }
-        }
-        
-        outputCharacter(L'\n');
-    }
-
-    void outputCharacter(wchar_t character) {
-        if(!outputCol) {
-            outputIndent();
-        }
-        
-        output.push_back(character);
-        
-        outputCol++;
-        
-        if(character == L'\n') {
-            outputCol = 0;
-        }
-    }
-private:
-    const std::wstring &jsonText;
-    TextCoordinate startOffset;
-    TextCoordinate endOffset;
-    
-    std::vector<int> indentLevelStack;
-    TextCoordinate inputOffset;
-    TextCoordinate inputCol;
-
-    TextCoordinate outputCol;
-    
-    bool prevNewLine;
-    bool inEscape;
-    bool inString;
-    
-    std::wstring output;
-};
-
--(void)reindentStartingAt:(TextCoordinate)aOffsetStart len:(TextLength)aLen {
+-(void)reindentStartingAt:(int)aOffsetStart len:(TextLength)aLen {
     std::wstring jsonText = _textStorage.string.cStringWstring;
-    JsonIndentationFixer fixer(jsonText, aOffsetStart, aLen);
+    JsonIndentFormatter fixer(jsonText, linesAndBookmarks, TextCoordinate(aOffsetStart), aLen);
     const std::wstring &indent = fixer.getIndented();
         
     [_textStorage replaceCharactersInRange:NSMakeRange(aOffsetStart, aLen) withString:[NSString stringWithWstring:indent]];
 }
 
+TextCoordinate getContainerStartColumnAddr(const json::ContainerNode *containerNode) {
+    const json::ObjectNode *containerContainerObj = dynamic_cast<const json::ObjectNode *>(containerNode->GetParent());
+    if(containerContainerObj) {
+        int idx = containerContainerObj->GetIndexOfChild(containerNode);
+        
+        return (containerContainerObj->GetAbsTextRange().start +
+                containerContainerObj->GetChildMemberAt(idx)->nameRange.start.getAddress());
+    } else {
+        return containerNode->GetAbsTextRange().start;
+    }
+    
+}
 
+-(int)suggestIdentForNewLineAt:(TextCoordinate)where {
+    if(where == 0) {
+        return 0;
+    }
+    
+    const json::Node *n = file->FindNodeContaining(where, NULL, true);
+    if(!n) {
+        return 0;
+    }
+    
+    const json::ContainerNode *container = dynamic_cast<const json::ContainerNode*>(n);
+    if(!container) {
+        container = n->GetParent();
+    }
+    
+    TextCoordinate containerStartColAddr = getContainerStartColumnAddr(container);
+    unsigned long containerStartCol, containerStartRow;
+    linesAndBookmarks.getCoordinateRowCol(containerStartColAddr, containerStartRow, containerStartCol);
+    return containerStartCol-1 + 3;
+}
+
+-(int)suggestCloserIndentAt:(TextCoordinate)where getLineStart:(int*)lineStart {
+    unsigned long row, col;
+    linesAndBookmarks.getCoordinateRowCol(where, row, col);
+    *lineStart = linesAndBookmarks.getLineStart(row-1).getAddress();
+        
+    const json::Node *n = file->FindNodeContaining(where, NULL);
+    const json::ContainerNode *container = dynamic_cast<const json::ContainerNode*>(n);
+    if(container) {
+        TextCoordinate containerStartColAddr = getContainerStartColumnAddr(container);
+        unsigned long containerStartCol, containerStartRow;
+        linesAndBookmarks.getCoordinateRowCol(containerStartColAddr, containerStartRow, containerStartCol);
+        return containerStartCol-1;
+    } else {
+        return col;
+    }
+}
 
 -(void)updateSyntaxInRange:(NSRange)editedRange {
+    
     NSFont *lFont = [[BracezPreferences sharedPreferences] editorFont];
     stopwatch lStopWatch("Update syntax coloring");
 
     [self.textStorage beginEditing];
     
-    [self.textStorage setAttributeRuns:[NSArray array]];
-    [self.textStorage setFont:lFont];
+    if(editedRange.location == 0 && editedRange.length == self.textStorage.length) {
+        [self.textStorage setAttributeRuns:[NSArray array]];
+        [self.textStorage setFont:lFont];
+    } else {
+        //[self.textStorage setAttributes:@{} range:editedRange];
+    }
     
     SyntaxHighlightJsonVisitor visitor(self.textStorage, editedRange);
     file->getDom()->accept(&visitor);
@@ -657,6 +452,11 @@ private:
 -(BOOL)isSemanticModelTextChangeInProgress {
     return _isSemanticModelTextChangeInProgress;
 }
+
+-(BOOL)isSemanticModelUpdateInProgress {
+    return _isSemanticModelUpdateInProgress;
+}
+
 
 -(void)notifyNodeInvalidated:(json::JsonFile*)aSender nodePath:(const json::JsonPath&)nodePath {
     JsonCocoaNode *node = self.rootNode;

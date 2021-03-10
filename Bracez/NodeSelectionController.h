@@ -83,7 +83,7 @@
 - (int)lineNumberForCharacterIndex:(int)aIdx;
 - (UInt32)markersForLine:(int)aLine;
 - (void)connectGutterView:(id)aGutterView;
-- (UInt32)characterIndexForStartOfLine:(int)aIdx;
+- (UInt32)characterIndexForFirstCharOfLine:(int)aIdx;
 
 -(NSString*)currentPathAsJsonQuery;
 

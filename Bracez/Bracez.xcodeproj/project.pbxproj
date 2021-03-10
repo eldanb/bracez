@@ -12,6 +12,8 @@
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		B90EEE5025E9017A008B14BE /* HistoryAndFavoritesEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = B90EEE4E25E9017A008B14BE /* HistoryAndFavoritesEditor.m */; };
+		B90EEE5125E9017A008B14BE /* HistoryAndFavoritesEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = B90EEE4F25E9017A008B14BE /* HistoryAndFavoritesEditor.xib */; };
 		B9264D9812A2D7C00037AD39 /* JsonFileListenerObjCBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9264D9712A2D7C00037AD39 /* JsonFileListenerObjCBridge.mm */; };
 		B930EB271202105400C8BE4B /* JsonTreeDataSource.mm in Sources */ = {isa = PBXBuildFile; fileRef = B930EB261202105400C8BE4B /* JsonTreeDataSource.mm */; };
 		B934AD19121C7503005B06D6 /* NSIndexPathAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = B934AD18121C7502005B06D6 /* NSIndexPathAdditions.m */; };
@@ -40,6 +42,8 @@
 		B97B3C4C253B257000D19FF0 /* ButtonToolbarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B97B3C4B253B257000D19FF0 /* ButtonToolbarItem.m */; };
 		B97B3C56253B2E9C00D19FF0 /* ViewModelEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = B97B3C55253B2E9C00D19FF0 /* ViewModelEditor.m */; };
 		B97B3C59253B2EAF00D19FF0 /* ViewModelEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = B97B3C58253B2EAF00D19FF0 /* ViewModelEditor.xib */; };
+		B984A95125EC35EE00452256 /* BracezTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = B984A95025EC35EE00452256 /* BracezTextView.m */; };
+		B984A95525ED8A6600452256 /* JsonIndentFormatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B984A95325ED8A6600452256 /* JsonIndentFormatter.cpp */; };
 		B98781DC11C4D91B00435107 /* PreferencesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B98781DB11C4D91B00435107 /* PreferencesWindow.xib */; };
 		B987820A11C4DE9600435107 /* PreferencesDialogController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B987820911C4DE9600435107 /* PreferencesDialogController.mm */; };
 		B987825911C535D800435107 /* JsonPreferencesDialogController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B987825811C535D800435107 /* JsonPreferencesDialogController.mm */; };
@@ -55,12 +59,15 @@
 		B99B5ED611CD5D2800A33231 /* PreferencesWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B99B5ED411CD5D2800A33231 /* PreferencesWindow.m */; };
 		B99D0DD725BC989C0006EA1F /* libjq.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B99D0DD625BC98810006EA1F /* libjq.a */; };
 		B9AADFFD253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9AADFFC253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm */; };
+		B9BA73F825E5A0AA00094D8F /* HistoryAndFavoritesControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B9BA73F725E5A0AA00094D8F /* HistoryAndFavoritesControl.m */; };
 		B9BBFDF0120D2CBE00E4E9AE /* LinesAndBookmarks.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9BBFDEE120D2CBE00E4E9AE /* LinesAndBookmarks.cpp */; };
 		B9D510B92540B13400B2286B /* NumberNonZeroValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = B9D510B82540B13400B2286B /* NumberNonZeroValueTransformer.m */; };
 		B9EC0CA225D5D92B0003C65A /* PathCompletionListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9EC0CA125D5D92B0003C65A /* PathCompletionListCell.xib */; };
 		B9F4AD4B12E8DA8C00BF8233 /* ToolbarBookmarksTemplate.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B9F4AD4A12E8DA8C00BF8233 /* ToolbarBookmarksTemplate.pdf */; };
 		B9F4AD5612E8DB7C00BF8233 /* SearchPaneView.m in Sources */ = {isa = PBXBuildFile; fileRef = B9F4AD5512E8DB7C00BF8233 /* SearchPaneView.m */; };
 		B9F4AECD1303376000BF8233 /* DarkDiviterSplitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B9F4AECC1303376000BF8233 /* DarkDiviterSplitter.m */; };
+		B9FC2A9125F8C14B00484EA3 /* marker_list.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2A8F25F8B89B00484EA3 /* marker_list.cpp */; };
+		B9FC2A9325F8C14F00484EA3 /* Exception.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2A8C25F8B0A400484EA3 /* Exception.cpp */; };
 		B9FF94F925E022A60056B37C /* JsonPathSearchController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9FF94F825E022A50056B37C /* JsonPathSearchController.mm */; };
 		B9FF94FE25E026400056B37C /* BracezPreferences.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9FF94FD25E026400056B37C /* BracezPreferences.mm */; };
 /* End PBXBuildFile section */
@@ -78,6 +85,9 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		8D1107310486CEB800E47090 /* Bracez-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Bracez-Info.plist"; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Bracez.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bracez.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B90EEE4D25E9017A008B14BE /* HistoryAndFavoritesEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HistoryAndFavoritesEditor.h; sourceTree = "<group>"; };
+		B90EEE4E25E9017A008B14BE /* HistoryAndFavoritesEditor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HistoryAndFavoritesEditor.m; sourceTree = "<group>"; };
+		B90EEE4F25E9017A008B14BE /* HistoryAndFavoritesEditor.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HistoryAndFavoritesEditor.xib; sourceTree = "<group>"; };
 		B9264D9612A2D7C00037AD39 /* JsonFileListenerObjCBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsonFileListenerObjCBridge.h; path = json_cocoa_model/JsonFileListenerObjCBridge.h; sourceTree = "<group>"; };
 		B9264D9712A2D7C00037AD39 /* JsonFileListenerObjCBridge.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = JsonFileListenerObjCBridge.mm; path = json_cocoa_model/JsonFileListenerObjCBridge.mm; sourceTree = "<group>"; };
 		B930EB251202105400C8BE4B /* JsonTreeDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JsonTreeDataSource.h; sourceTree = "<group>"; };
@@ -140,6 +150,10 @@
 		B97B3C54253B2E9C00D19FF0 /* ViewModelEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewModelEditor.h; sourceTree = "<group>"; };
 		B97B3C55253B2E9C00D19FF0 /* ViewModelEditor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewModelEditor.m; sourceTree = "<group>"; };
 		B97B3C58253B2EAF00D19FF0 /* ViewModelEditor.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ViewModelEditor.xib; sourceTree = "<group>"; };
+		B984A94F25EC35EE00452256 /* BracezTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BracezTextView.h; sourceTree = "<group>"; };
+		B984A95025EC35EE00452256 /* BracezTextView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BracezTextView.m; sourceTree = "<group>"; };
+		B984A95325ED8A6600452256 /* JsonIndentFormatter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = JsonIndentFormatter.cpp; path = json_model/JsonIndentFormatter.cpp; sourceTree = "<group>"; };
+		B984A95425ED8A6600452256 /* JsonIndentFormatter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = JsonIndentFormatter.hpp; path = json_model/JsonIndentFormatter.hpp; sourceTree = "<group>"; };
 		B98781DB11C4D91B00435107 /* PreferencesWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PreferencesWindow.xib; sourceTree = "<group>"; };
 		B987820811C4DE9600435107 /* PreferencesDialogController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferencesDialogController.h; sourceTree = "<group>"; };
 		B987820911C4DE9600435107 /* PreferencesDialogController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PreferencesDialogController.mm; sourceTree = "<group>"; };
@@ -164,6 +178,8 @@
 		B9AADFFB253A19AD00DE2559 /* SyntaxHilightJsonVisitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SyntaxHilightJsonVisitor.h; path = json_cocoa_model/SyntaxHilightJsonVisitor.h; sourceTree = "<group>"; };
 		B9AADFFC253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = SyntaxHilightJsonVisitor.mm; path = json_cocoa_model/SyntaxHilightJsonVisitor.mm; sourceTree = "<group>"; };
 		B9AAE003253AB2FA00DE2559 /* marker_list.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = marker_list.h; sourceTree = "<group>"; };
+		B9BA73F625E5A0AA00094D8F /* HistoryAndFavoritesControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HistoryAndFavoritesControl.h; sourceTree = "<group>"; };
+		B9BA73F725E5A0AA00094D8F /* HistoryAndFavoritesControl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HistoryAndFavoritesControl.m; sourceTree = "<group>"; };
 		B9BBFDEE120D2CBE00E4E9AE /* LinesAndBookmarks.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LinesAndBookmarks.cpp; path = json_model/LinesAndBookmarks.cpp; sourceTree = "<group>"; };
 		B9BBFDEF120D2CBE00E4E9AE /* LinesAndBookmarks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LinesAndBookmarks.h; path = json_model/LinesAndBookmarks.h; sourceTree = "<group>"; };
 		B9D510B72540B13400B2286B /* NumberNonZeroValueTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NumberNonZeroValueTransformer.h; sourceTree = "<group>"; };
@@ -175,6 +191,9 @@
 		B9F4ADED12E96E1400BF8233 /* stopwatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stopwatch.h; sourceTree = "<group>"; };
 		B9F4AECB1303376000BF8233 /* DarkDiviterSplitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DarkDiviterSplitter.h; path = Util/DarkDiviterSplitter.h; sourceTree = "<group>"; };
 		B9F4AECC1303376000BF8233 /* DarkDiviterSplitter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DarkDiviterSplitter.m; path = Util/DarkDiviterSplitter.m; sourceTree = "<group>"; };
+		B9FC2A8C25F8B0A400484EA3 /* Exception.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Exception.cpp; path = json_model/Exception.cpp; sourceTree = "<group>"; };
+		B9FC2A8D25F8B0A400484EA3 /* Exception.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Exception.hpp; path = json_model/Exception.hpp; sourceTree = "<group>"; };
+		B9FC2A8F25F8B89B00484EA3 /* marker_list.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = marker_list.cpp; path = json_model/marker_list.cpp; sourceTree = "<group>"; };
 		B9FF94F725E022A50056B37C /* JsonPathSearchController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JsonPathSearchController.h; sourceTree = "<group>"; };
 		B9FF94F825E022A50056B37C /* JsonPathSearchController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = JsonPathSearchController.mm; sourceTree = "<group>"; };
 		B9FF94FC25E026400056B37C /* BracezPreferences.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BracezPreferences.h; sourceTree = "<group>"; };
@@ -268,6 +287,7 @@
 				1DDD58140DA1D0A300B32029 /* MainMenu.xib */,
 				B98ACDD811A6F12A00C4F114 /* EditorWindow.xib */,
 				B98781DB11C4D91B00435107 /* PreferencesWindow.xib */,
+				B90EEE4F25E9017A008B14BE /* HistoryAndFavoritesEditor.xib */,
 				B97B3C58253B2EAF00D19FF0 /* ViewModelEditor.xib */,
 				B9EC0CA125D5D92B0003C65A /* PathCompletionListCell.xib */,
 			);
@@ -355,6 +375,11 @@
 				B945F91A1192DDAC00DCFAAE /* json_file.h */,
 				B945F91B1192DDAC00DCFAAE /* json_file.cpp */,
 				B9AAE003253AB2FA00DE2559 /* marker_list.h */,
+				B984A95325ED8A6600452256 /* JsonIndentFormatter.cpp */,
+				B984A95425ED8A6600452256 /* JsonIndentFormatter.hpp */,
+				B9FC2A8C25F8B0A400484EA3 /* Exception.cpp */,
+				B9FC2A8D25F8B0A400484EA3 /* Exception.hpp */,
+				B9FC2A8F25F8B89B00484EA3 /* marker_list.cpp */,
 			);
 			name = JsonModel;
 			sourceTree = "<group>";
@@ -419,6 +444,12 @@
 				B9FF94F825E022A50056B37C /* JsonPathSearchController.mm */,
 				B9FF94FC25E026400056B37C /* BracezPreferences.h */,
 				B9FF94FD25E026400056B37C /* BracezPreferences.mm */,
+				B9BA73F625E5A0AA00094D8F /* HistoryAndFavoritesControl.h */,
+				B9BA73F725E5A0AA00094D8F /* HistoryAndFavoritesControl.m */,
+				B90EEE4D25E9017A008B14BE /* HistoryAndFavoritesEditor.h */,
+				B90EEE4E25E9017A008B14BE /* HistoryAndFavoritesEditor.m */,
+				B984A94F25EC35EE00452256 /* BracezTextView.h */,
+				B984A95025EC35EE00452256 /* BracezTextView.m */,
 			);
 			name = Gui;
 			sourceTree = "<group>";
@@ -490,6 +521,7 @@
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */,
 				B945F9001192DAC800DCFAAE /* reader.inl in Resources */,
+				B90EEE5125E9017A008B14BE /* HistoryAndFavoritesEditor.xib in Resources */,
 				B97B3C59253B2EAF00D19FF0 /* ViewModelEditor.xib in Resources */,
 				B98ACCA411A3E42300C4F114 /* BrowserView.png in Resources */,
 				B952A4652550A5CA005BFB1C /* MarkerTableCellView.xib in Resources */,
@@ -514,6 +546,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B984A95525ED8A6600452256 /* JsonIndentFormatter.cpp in Sources */,
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
 				B9FF94F925E022A60056B37C /* JsonPathSearchController.mm in Sources */,
 				256AC3DA0F4B6AC300CF3369 /* JsonMockupAppDelegate.mm in Sources */,
@@ -527,14 +560,18 @@
 				B945FD57119E832B00DCFAAE /* JsonDocument.mm in Sources */,
 				B945FDC6119E899D00DCFAAE /* NodeSelectionController.mm in Sources */,
 				B98ACD5611A6E6B100C4F114 /* CoordView.m in Sources */,
+				B90EEE5025E9017A008B14BE /* HistoryAndFavoritesEditor.m in Sources */,
+				B984A95125EC35EE00452256 /* BracezTextView.m in Sources */,
 				B987820A11C4DE9600435107 /* PreferencesDialogController.mm in Sources */,
 				B987825911C535D800435107 /* JsonPreferencesDialogController.mm in Sources */,
 				B943821425C5519600247A36 /* JsonPathExpressionCompiler.cpp in Sources */,
 				B99B5A5D11C6CB7E00A33231 /* AnimatingTabView.m in Sources */,
 				B952A460254C0010005BFB1C /* NSString+WStringUtils.mm in Sources */,
 				B99B5C4111CBCC2F00A33231 /* TextEditorGutterView.mm in Sources */,
+				B9BA73F825E5A0AA00094D8F /* HistoryAndFavoritesControl.m in Sources */,
 				B99B5ED611CD5D2800A33231 /* PreferencesWindow.m in Sources */,
 				B97B3C4C253B257000D19FF0 /* ButtonToolbarItem.m in Sources */,
+				B9FC2A9325F8C14F00484EA3 /* Exception.cpp in Sources */,
 				B952A4692550A5F1005BFB1C /* MarkerTableCellView.mm in Sources */,
 				B930EB271202105400C8BE4B /* JsonTreeDataSource.mm in Sources */,
 				B9BBFDF0120D2CBE00E4E9AE /* LinesAndBookmarks.cpp in Sources */,
@@ -544,6 +581,7 @@
 				B934ADF412205C19005B06D6 /* KvoAnimation.m in Sources */,
 				B934AE0112205F6C005B06D6 /* SplitterAnimation.m in Sources */,
 				B934B53B122EF40F005B06D6 /* NodeTypeToColorTransformer.mm in Sources */,
+				B9FC2A9125F8C14B00484EA3 /* marker_list.cpp in Sources */,
 				B9264D9812A2D7C00037AD39 /* JsonFileListenerObjCBridge.mm in Sources */,
 				B94D2A0112B2C316007B9DA2 /* JsonMarker.mm in Sources */,
 				B9D510B92540B13400B2286B /* NumberNonZeroValueTransformer.m in Sources */,

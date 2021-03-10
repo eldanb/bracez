@@ -34,61 +34,46 @@ namespace json
 //////////////////////
 // Reader::InputStream
 
-class Reader::InputStream // would be cool if we could inherit from std::istream & override "get"
+   
+
+inline wchar_t InputStream::Peek() {
+  assert(m_iStr.eof() == false); // enforce reading of only valid stream data
+  return m_iStr.peek();
+}
+
+inline bool InputStream::EOS() const {
+  m_iStr.peek(); // apparently eof flag isn't set until a character read is attempted. whatever.
+  return m_iStr.eof();
+}
+
+inline bool InputStream::VerifyString(const std::wstring &sExpected)
 {
-public:
-   InputStream(std::wistream& iStr, ParseListener *aListener = NULL) :
-      m_iStr(iStr), m_Location(0), m_parseListener(aListener) {}
-
-   // protect access to the input stream, so we can keeep track of document/line offsets
-   wchar_t Get(); // big, define outside
-   wchar_t Peek() {
-      assert(m_iStr.eof() == false); // enforce reading of only valid stream data 
-      return m_iStr.peek();
-   }
-
-   bool EOS() {
-      m_iStr.peek(); // apparently eof flag isn't set until a character read is attempted. whatever.
-      return m_iStr.eof();
-   }
-
-   bool VerifyString(const std::wstring &sExpected)
-   {
-      bool lRet=true;
-      int lPerformedGetCount  = 0;
-      std::wstring::const_iterator it(sExpected.begin()),
-                                   itEnd(sExpected.end());
-      for ( ; lRet && it != itEnd; ++it) {
-          if (EOS() ||      // did we reach the end before finding what we're looking for...
-              (lPerformedGetCount++, m_iStr.get()) != *it) // ...or did we find something different?
-          {
-             lRet=false;
-          }
-       }
-       
-       while(lPerformedGetCount--)
-       {
-          m_iStr.unget();
-       }
-       
-       return lRet;
+  bool lRet=true;
+  int lPerformedGetCount  = 0;
+  std::wstring::const_iterator it(sExpected.begin()),
+                               itEnd(sExpected.end());
+  for ( ; lRet && it != itEnd; ++it) {
+      if (EOS() ||      // did we reach the end before finding what we're looking for...
+          (lPerformedGetCount++, m_iStr.get()) != *it) // ...or did we find something different?
+      {
+         lRet=false;
+      }
    }
    
-   const TextCoordinate& GetLocation() const { return m_Location; }
+   while(lPerformedGetCount--)
+   {
+      m_iStr.unget();
+   }
+   
+   return lRet;
+}
 
-private:
-   std::wistream& m_iStr;
-   TextCoordinate m_Location;
-   ParseListener *m_parseListener;
-};
-
-
-inline wchar_t Reader::InputStream::Get()
+inline wchar_t InputStream::Get()
 {
    assert(m_iStr.eof() == false); // enforce reading of only valid stream data 
    wchar_t c = m_iStr.get();
    
-   ++m_Location;
+   m_Location = m_Location + 1;
    if (c == L'\n') {
       if(m_parseListener)
       {
@@ -101,46 +86,27 @@ inline wchar_t Reader::InputStream::Get()
 
 
 
-//////////////////////
-// Reader::TokenStream
-
-class Reader::TokenStream
-{
-public:
-   TokenStream(InputStream &aInputStream, ParseListener *aListener);
-
-   const Token& Peek();
-   const Token& Get();
-
-   bool EOS() const;
-
-private:
-   void pumpTokenIfNeeded();
-   void pumpToken();
-   void EatWhiteSpace();
-   void Match4Hex(unsigned int& integer);
-   void MatchString();
-   void MatchBareWordToken();
-   void MatchNumber();
-
-   bool tokenEaten;
-   Token currentToken;
-
-   InputStream &inputStream;
-   ParseListener *listener;
-   
-   char tokenTypeLookup[256];
-   char charClassLookup[256];
-};
 
 
-inline Reader::TokenStream::TokenStream(InputStream& aInputStream, ParseListener *aListener) :
+inline TokenStream::TokenStream(InputStream& aInputStream,
+                                ParseListener *aListener,
+                                bool aSkipWhitespace,
+                                int startRow,
+                                int startCol) :
     inputStream(aInputStream),
     tokenEaten(true),
-    listener(aListener)
+    listener(aListener),
+    skipWhitespace(aSkipWhitespace),
+    currentRow(startRow),
+    currentCol(startCol)
 {
     // Prepare lookup tables
     memset(tokenTypeLookup, Token::TOKEN_UNKNOWN, 256);
+    
+    
+    tokenTypeLookup['\n'] = Token::TOKEN_WHITESPACE;
+    tokenTypeLookup['\t'] = Token::TOKEN_WHITESPACE;
+    tokenTypeLookup[' '] = Token::TOKEN_WHITESPACE;
     
     tokenTypeLookup['{'] = Token::TOKEN_OBJECT_BEGIN;
     tokenTypeLookup['}'] = Token::TOKEN_OBJECT_END;
@@ -163,13 +129,13 @@ inline Reader::TokenStream::TokenStream(InputStream& aInputStream, ParseListener
     EatWhiteSpace();              // ignore any leading white space...
 }
 
-inline const Reader::Token& Reader::TokenStream::Peek() {
+inline const Token& TokenStream::Peek() {
    pumpTokenIfNeeded();
     
    return currentToken;
 }
 
-inline const Reader::Token& Reader::TokenStream::Get() {
+inline const Token& TokenStream::Get() {
    assert(!EOS());
    pumpTokenIfNeeded();
    tokenEaten = true;
@@ -177,11 +143,19 @@ inline const Reader::Token& Reader::TokenStream::Get() {
    return currentToken; 
 }
 
-inline bool Reader::TokenStream::EOS() const {
+inline bool TokenStream::EOS() const {
    return tokenEaten && inputStream.EOS(); 
 }
 
-inline void Reader::TokenStream::pumpTokenIfNeeded()
+inline int TokenStream::Row() {
+    return currentRow;
+}
+
+inline int TokenStream::Col() {
+    return currentCol;
+}
+
+inline void TokenStream::pumpTokenIfNeeded()
 {
     if(tokenEaten)
     {
@@ -191,7 +165,7 @@ inline void Reader::TokenStream::pumpTokenIfNeeded()
     }
 }
 
-inline void Reader::TokenStream::pumpToken()
+inline void TokenStream::pumpToken()
 {
   // Mark token start
   currentToken.locBegin = inputStream.GetLocation();
@@ -213,9 +187,10 @@ inline void Reader::TokenStream::pumpToken()
      case Token::TOKEN_UNKNOWN:
         MatchBareWordToken();
         break;
-        
+                  
      default:   // Default case is for simple tokens
-        inputStream.Get();            
+        currentToken.sOrgText = inputStream.Get();
+        updateLineCol(sChar);
   }
   
   currentToken.locEnd = inputStream.GetLocation();
@@ -223,14 +198,16 @@ inline void Reader::TokenStream::pumpToken()
   EatWhiteSpace();              // Skip to next real token
 }
 
-inline void Reader::TokenStream::EatWhiteSpace()
+inline void TokenStream::EatWhiteSpace()
 {
-   while (inputStream.EOS() == false && 
-          ::isspace(inputStream.Peek()))
-      inputStream.Get();
+    if(skipWhitespace) {
+       while (inputStream.EOS() == false &&
+              ::isspace(inputStream.Peek()))
+           updateLineCol(inputStream.Get());
+    }
 }
 
-inline void Reader::TokenStream::Match4Hex(unsigned int& integer) {
+inline void TokenStream::Match4Hex(unsigned int& integer) {
    std::wstringstream ss;
    int i;
    for (i = 0; (i < 4) && (inputStream.EOS() == false) && isxdigit(inputStream.Peek()); ++i)
@@ -242,24 +219,30 @@ inline void Reader::TokenStream::Match4Hex(unsigned int& integer) {
    ss >> integer;
 }
 
-inline void Reader::TokenStream::MatchString()
+inline void TokenStream::MatchString()
 {
    // Eat starting "\""
    inputStream.Get();
    
    // Initialize value
    currentToken.sValue.clear();
-   
+   currentToken.sOrgText = L"\"";
+
    while (inputStream.EOS() == false &&
           inputStream.Peek() != L'"')
    {
       wchar_t c = inputStream.Get();
-
+      currentToken.sOrgText.push_back(c);
+       
+      updateLineCol(c);
+       
       // escape?
       if (c == L'\\' &&
           inputStream.EOS() == false) // shouldn't have reached the end yet
       {
          c = inputStream.Get();
+         currentToken.sOrgText.push_back(c);
+          
          switch (c) {
             case L'/':      currentToken.sValue.push_back(L'/');     break;
             case L'"':      currentToken.sValue.push_back(L'"');     break;
@@ -327,15 +310,15 @@ inline void Reader::TokenStream::MatchString()
    }
 
     if(inputStream.EOS() == false) {
-        // eat the last '"' that we just peeked
-        inputStream.Get();
+        // eat the last '"' that we just peeked        
+        currentToken.sOrgText.push_back(inputStream.Get());
     } else {
         std::string sMessage = "Unterminated string constant.";
         listener->Error(inputStream.GetLocation(), PARSER_ERROR_UNEXPECTED_CHARACTER, sMessage);
     }
 }
 
-inline void Reader::TokenStream::MatchBareWordToken()
+inline void TokenStream::MatchBareWordToken()
 {
     currentToken.sValue.clear();
     
@@ -345,6 +328,7 @@ inline void Reader::TokenStream::MatchBareWordToken()
           c != L']' && c != L'}' && c != L',' && c != L':'  // Pretty ugly hack
             )
     {
+        updateLineCol(c);
         currentToken.sValue.push_back(inputStream.Get());
     }
     
@@ -361,17 +345,35 @@ inline void Reader::TokenStream::MatchBareWordToken()
         std::string sErrorMessage = "Unknown token in stream: " + wstring_to_utf8(currentToken.sValue);
         listener->Error(currentToken.locBegin, PARSER_ERROR_UNEXPECTED_CHARACTER, sErrorMessage);
     }
+    
+    currentToken.sOrgText = currentToken.sValue;
 }
 
-inline void Reader::TokenStream::MatchNumber()
+inline void TokenStream::MatchNumber()
 {
    currentToken.sValue.clear();
       
    while (inputStream.EOS() == false &&
-          charClassLookup[inputStream.Peek()] == Reader::Token::CHAR_CLASS_NUMERIC)
+          charClassLookup[inputStream.Peek()] == Token::CHAR_CLASS_NUMERIC)
    {
+       updateLineCol(inputStream.Peek());
       currentToken.sValue.push_back(inputStream.Get());   
    }
+    
+    currentToken.sOrgText = currentToken.sValue;
+}
+
+inline void TokenStream::updateLineCol(wchar_t forChar) {
+    if(prevNewLine) {
+        currentCol = 0;
+        currentRow++;
+        prevNewLine = false;
+    } else {
+        currentCol++;
+        if(forChar == '\n') {
+            prevNewLine = true;
+        }
+    }
 }
 
 ///////////////////
@@ -410,7 +412,7 @@ void Reader::Read_i(ElementTypeT& element, std::wistream& istr, ParseListener *a
 
 
 
-inline void Reader::Parse(Node*& element, Reader::TokenStream& tokenStream, TextCoordinate aBaseOfs) 
+inline void Reader::Parse(Node*& element, TokenStream& tokenStream, TextCoordinate aBaseOfs)
 {
    if (tokenStream.EOS()) {
       std::string sMessage = "Unexpected end of token stream";
@@ -479,10 +481,9 @@ inline void Reader::Parse(Node*& element, Reader::TokenStream& tokenStream, Text
 }
 
 
-inline void Reader::Parse(ObjectNode*& object, Reader::TokenStream& tokenStream, TextCoordinate aBaseOfs)
+inline void Reader::Parse(ObjectNode*& object, TokenStream& tokenStream, TextCoordinate aBaseOfs)
 {
    TextCoordinate lBegin(tokenStream.Peek().locBegin);
-   TextCoordinate lEndCoord(tokenStream.Peek().locEnd);
     
    MatchExpectedToken(Token::TOKEN_OBJECT_BEGIN, tokenStream);
 
@@ -502,13 +503,14 @@ inline void Reader::Parse(ObjectNode*& object, Reader::TokenStream& tokenStream,
       // ...then the value itself (can be anything).
       Node *nodeVal = NULL;
       Parse(nodeVal, tokenStream, lBegin);
-
+       
        // try adding it to the object (this could throw)
        if(nodeVal) {
            try
            {
               ObjectNode::Member &member = object->DomAddMemberNode(tokenName.sValue, nodeVal);
-              member.nameRange = TextRange(tokenName.locBegin-lBegin, tokenName.locEnd-lBegin);
+              member.nameRange = TextRange(tokenName.locBegin.relativeTo(lBegin),
+                                           tokenName.locEnd.relativeTo(lBegin));
            }
            catch (Exception&)
            {
@@ -520,42 +522,44 @@ inline void Reader::Parse(ObjectNode*& object, Reader::TokenStream& tokenStream,
            std::string sMessage = "Could not parse member value '" + wstring_to_utf8(tokenName.sValue) + "'";
            listener->Error(tokenName.locBegin, PARSER_ERROR_INVALID_MEMBER, sMessage);
        }
+       
       Token lTok;
       while(!tokenStream.EOS() &&
             (lTok = tokenStream.Peek(), lTok.nType != Token::TOKEN_NEXT_ELEMENT && lTok.nType != Token::TOKEN_OBJECT_END))
       {
-         lEndCoord = lTok.locBegin;
          listener->Error(lTok.locBegin, PARSER_ERROR_UNEXPECTED_TOKEN, "Expecting \",\" or \"}\"");
          tokenStream.Get();
       }
 
       if(lTok.nType == Token::TOKEN_NEXT_ELEMENT)
       {
-         lEndCoord = lTok.locEnd;
          MatchExpectedToken(lTok.nType, tokenStream);
          bContinue = !tokenStream.EOS();
       } else
       {
          bContinue = false;
       }
+      
    }
 
    if(tokenStream.EOS())
    {
-      listener->Error(lEndCoord, PARSER_ERROR_UNEXPECTED_EOS, "Unexpected end of file");
+      listener->Error(tokenStream.getInputStream().GetLocation(), PARSER_ERROR_UNEXPECTED_EOS, "Unexpected end of file");
+      object->textRange = TextRange(lBegin.relativeTo(aBaseOfs), TextCoordinate::infinity);
    } else
-   {    
-      lEndCoord = tokenStream.Peek().locEnd;
-      MatchExpectedToken(Token::TOKEN_OBJECT_END, tokenStream);
+   {
+       TextCoordinate lEndCoord = MatchExpectedToken(Token::TOKEN_OBJECT_END, tokenStream).locEnd;
+       object->textRange = TextRange(lBegin.relativeTo(aBaseOfs), lEndCoord.relativeTo(aBaseOfs));
    }
 
-   object->textRange = TextRange(lBegin-aBaseOfs, lEndCoord-aBaseOfs);
+   
 }
 
 
-inline void Reader::Parse(ArrayNode*& array, Reader::TokenStream& tokenStream, TextCoordinate aBaseOfs)
+inline void Reader::Parse(ArrayNode*& array, TokenStream& tokenStream, TextCoordinate aBaseOfs)
 {
    TextCoordinate lBegin(tokenStream.Peek().locBegin);
+      
    MatchExpectedToken(Token::TOKEN_ARRAY_BEGIN, tokenStream);
 
    array = new ArrayNode();
@@ -578,31 +582,32 @@ inline void Reader::Parse(ArrayNode*& array, Reader::TokenStream& tokenStream, T
    }
 
    if(tokenStream.EOS()) {
-       listener->Error(0, PARSER_ERROR_UNEXPECTED_EOS, "Expecting \",\" or \"]\"");
-       return;
+       listener->Error(TextCoordinate(0), PARSER_ERROR_UNEXPECTED_EOS, "Expecting \",\" or \"]\"");
+       array->textRange = TextRange(lBegin.relativeTo(aBaseOfs), TextCoordinate::infinity);
+   } else {
+       TextCoordinate lEnd = MatchExpectedToken(Token::TOKEN_ARRAY_END, tokenStream).locEnd;
+       array->textRange = TextRange(lBegin.relativeTo(aBaseOfs), lEnd.relativeTo(aBaseOfs));
    }
+
     
-   TextCoordinate lEnd(tokenStream.Peek().locEnd);   
-   array->textRange = TextRange(lBegin-aBaseOfs, lEnd-aBaseOfs);
-   
-   MatchExpectedToken(Token::TOKEN_ARRAY_END, tokenStream);
 }
 
 
-inline void Reader::Parse(StringNode*& string, Reader::TokenStream& tokenStream, TextCoordinate aBaseOfs)
+inline void Reader::Parse(StringNode*& string, TokenStream& tokenStream, TextCoordinate aBaseOfs)
 {
-   TextRange lTokRange(tokenStream.Peek().locBegin-aBaseOfs, tokenStream.Peek().locEnd-aBaseOfs);
-   string = new StringNode(MatchExpectedToken(Token::TOKEN_STRING, tokenStream));
+   TextRange lTokRange(tokenStream.Peek().locBegin.relativeTo(aBaseOfs), tokenStream.Peek().locEnd.relativeTo(aBaseOfs));
+   string = new StringNode(MatchExpectedToken(Token::TOKEN_STRING, tokenStream).sValue);
    string->textRange = lTokRange;
 }
 
 
-inline void Reader::Parse(NumberNode*& number, Reader::TokenStream& tokenStream, TextCoordinate aBaseOfs)
+inline void Reader::Parse(NumberNode*& number, TokenStream& tokenStream, TextCoordinate aBaseOfs)
 {
    const Token& currentToken = tokenStream.Peek(); // might need this later for throwing exception
-   TextRange lTokRange(currentToken.locBegin-aBaseOfs, currentToken.locEnd-aBaseOfs);
+   TextRange lTokRange(currentToken.locBegin.relativeTo(aBaseOfs),
+                       currentToken.locEnd.relativeTo(aBaseOfs));
     
-   const std::wstring& sValue = MatchExpectedToken(Token::TOKEN_NUMBER, tokenStream);
+   const std::wstring& sValue = MatchExpectedToken(Token::TOKEN_NUMBER, tokenStream).sValue;
 
    std::wistringstream iStr(sValue);
    double dValue;
@@ -620,26 +625,28 @@ inline void Reader::Parse(NumberNode*& number, Reader::TokenStream& tokenStream,
 }
 
 
-inline void Reader::Parse(BooleanNode*& boolean, Reader::TokenStream& tokenStream, TextCoordinate aBaseOfs)
+inline void Reader::Parse(BooleanNode*& boolean, TokenStream& tokenStream, TextCoordinate aBaseOfs)
 {
-   TextRange lTokRange(tokenStream.Peek().locBegin-aBaseOfs, tokenStream.Peek().locEnd-aBaseOfs);
-   const std::wstring& sValue = MatchExpectedToken(Token::TOKEN_BOOLEAN, tokenStream);
+   TextRange lTokRange(tokenStream.Peek().locBegin.relativeTo(aBaseOfs),
+                       tokenStream.Peek().locEnd.relativeTo(aBaseOfs));
+   const std::wstring& sValue = MatchExpectedToken(Token::TOKEN_BOOLEAN, tokenStream).sValue;
    
    boolean = new BooleanNode(sValue == L"true");
    boolean->textRange = lTokRange;
 }
 
 
-inline void Reader::Parse(NullNode*& aNull, Reader::TokenStream& tokenStream, TextCoordinate aBaseOfs)
+inline void Reader::Parse(NullNode*& aNull, TokenStream& tokenStream, TextCoordinate aBaseOfs)
 {
-   TextRange lTokRange(tokenStream.Peek().locBegin-aBaseOfs, tokenStream.Peek().locEnd-aBaseOfs);
+   TextRange lTokRange(tokenStream.Peek().locBegin.relativeTo(aBaseOfs),
+                       tokenStream.Peek().locEnd.relativeTo(aBaseOfs));
    MatchExpectedToken(Token::TOKEN_NULL, tokenStream);
    aNull = new NullNode();
    aNull->textRange = lTokRange;
 }
 
 
-inline const std::wstring& Reader::MatchExpectedToken(Token::Type nExpected, Reader::TokenStream& tokenStream)
+inline Token Reader::MatchExpectedToken(Token::Type nExpected, TokenStream& tokenStream)
 {
    static wstring lEmptyStr;
    
@@ -647,7 +654,7 @@ inline const std::wstring& Reader::MatchExpectedToken(Token::Type nExpected, Rea
    {
       std::string sMessage = "Unexpected end of token stream";
       listener->Error(TextCoordinate(), PARSER_ERROR_UNEXPECTED_EOS, "Unexpected end of token stream");
-      return lEmptyStr;
+      return Token();
    }
 
    const Token& token = tokenStream.Peek();
@@ -673,7 +680,7 @@ inline const std::wstring& Reader::MatchExpectedToken(Token::Type nExpected, Rea
       tokenStream.Get();
    }
    
-   return token.sValue;
+   return token;
 }
 
 } // End namespace

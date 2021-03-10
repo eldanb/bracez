@@ -26,7 +26,7 @@ bool SyntaxHighlightJsonVisitor::visitNode(const Node *aNode)
 {
   if(dynamic_cast<const ObjectNode*>(aNode))
   {
-     int lOfs = aNode->GetAbsTextRange().start;
+     int lOfs = aNode->GetAbsTextRange().start.getAddress();
      
      const ObjectNode *lObjNode = dynamic_cast<const ObjectNode*>(aNode);
      int lChildCount = lObjNode->GetChildCount();
@@ -34,7 +34,7 @@ bool SyntaxHighlightJsonVisitor::visitNode(const Node *aNode)
      for(int lChildIdx = 0; lChildIdx<lChildCount; lChildIdx++)
      {
         const ObjectNode::Member *lMember = lObjNode->GetChildMemberAt(lChildIdx);
-        NSRange lKeyRange = NSIntersectionRange(NSMakeRange(lMember->nameRange.start+lOfs, lMember->nameRange.length()), hilightRange);
+        NSRange lKeyRange = NSIntersectionRange(NSMakeRange((lMember->nameRange.start+lOfs).getAddress(), lMember->nameRange.length()), hilightRange);
         if(lKeyRange.length>0)
         {
            [textStorage addAttribute:NSForegroundColorAttributeName value:[colors keyColor] range:lKeyRange];
@@ -44,8 +44,10 @@ bool SyntaxHighlightJsonVisitor::visitNode(const Node *aNode)
      NSColor *lNodeColor = [colors colorForNodeType:aNode->GetNodeTypeId()];
      
      json::TextRange lNodeRange = aNode->GetAbsTextRange();
-    
-     NSRange lRange = NSIntersectionRange(NSMakeRange(lNodeRange.start, lNodeRange.length()),
+      if(lNodeRange.end.infinite()) {
+          lNodeRange.end = TextCoordinate(hilightRange.location + hilightRange.length);
+      }
+     NSRange lRange = NSIntersectionRange(NSMakeRange(lNodeRange.start.getAddress(), lNodeRange.length()),
                                             hilightRange);
      if(lRange.length!=0)
      {

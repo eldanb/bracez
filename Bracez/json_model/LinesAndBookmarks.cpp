@@ -16,7 +16,7 @@ using namespace std;
 LinesAndBookmarks::LinesAndBookmarks()
 {
     lineStarts.clear();
-    lineStarts.appendMarker(BaseMarker(0));
+    lineStarts.appendMarker(BaseMarker(TextCoordinate(0)));
 }
 
 LinesAndBookmarks::~LinesAndBookmarks()
@@ -42,7 +42,7 @@ bool LinesAndBookmarks::findNextBookmark(int &aLine) const
    TextCoordinate lCoord = (TextCoordinate)aLine;
    
    lRet = bookmarks.nextMarker(lCoord)!=NULL;
-   aLine = (int)lCoord;
+   aLine = lCoord.getAddress();
    
    return lRet;
 }
@@ -53,7 +53,7 @@ bool LinesAndBookmarks::findPrevBookmark(int &aLine) const
    TextCoordinate lCoord = (TextCoordinate)aLine;
    
    lRet = bookmarks.prevMarker(lCoord)!=NULL;
-   aLine = (int)lCoord;
+   aLine = lCoord.getAddress();
    
    return lRet;
 }
@@ -108,7 +108,7 @@ void LinesAndBookmarks::updateLineOffsetsAfterSplice(TextCoordinate aOffsetStart
     
     for(const wchar_t *cur = updatedText; cur != updateEnd; cur++) {
         if(*cur == L'\n') {
-            newLines.appendMarker(cur - updatedText + aOffsetStart);
+            newLines.appendMarker(aOffsetStart + (unsigned int)(cur - updatedText) );
         }
     }
 
@@ -118,7 +118,7 @@ void LinesAndBookmarks::updateLineOffsetsAfterSplice(TextCoordinate aOffsetStart
                                         &lLineDelStart,
                                         &lLineDelLen))
     {
-        updateBookmarksByLineSplice(lLineDelStart+1, lLineDelLen,
+        updateBookmarksByLineSplice(TextCoordinate(lLineDelStart+1), lLineDelLen,
                                     newLines.size() // TODO new lines
                                     );
     }
@@ -126,7 +126,8 @@ void LinesAndBookmarks::updateLineOffsetsAfterSplice(TextCoordinate aOffsetStart
 
 void LinesAndBookmarks::getCoordinateRowCol(TextCoordinate aCoord, unsigned long &aRow, unsigned long &aCol) const
 {
-   if(aCoord)
+    int coordAddress = aCoord.getAddress();
+    if(coordAddress)
    {
       SimpleMarkerList::const_iterator iter = lower_bound(lineStarts.begin(), lineStarts.end(), aCoord);
       
@@ -139,7 +140,7 @@ void LinesAndBookmarks::getCoordinateRowCol(TextCoordinate aCoord, unsigned long
       if(iter == lineStarts.begin())
       {
          aRow = 1;
-         aCol = aCoord + 1;
+         aCol = coordAddress + 1;
          return;
       }
 

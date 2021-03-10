@@ -17,7 +17,7 @@
 #include <vector>
 #include <stdexcept>
 #include "assert.h"
-
+#include "Exception.hpp"
 #include "marker_list.h"
 namespace json
 {
@@ -35,6 +35,14 @@ namespace json
 
       TextLength length() const { return end-start; }
       
+       TextRange intersectWith(TextRange other) const {
+           TextRange ret;
+           ret.start = start > other.start ? start : other.start;
+           ret.end = end < other.end ? end : other.end;
+           
+           return ret;
+       }
+       
       TextCoordinate start;   // First character in range
       TextCoordinate end; // One past last charcter in range
    };
@@ -103,10 +111,10 @@ namespace json
       virtual const Node *GetChildAt(int aIdx) const = 0;
       virtual void RemoveChildAt(int aIdx);
 
-      virtual int GetIndexOfChild(Node *aChild);
+      virtual int GetIndexOfChild(const Node *aChild) const;
 
       virtual int FindChildEndingAfter(const TextCoordinate &aDocOffset) const = 0;
-      virtual int FindChildContaining(const TextCoordinate &aDocOffset) const;
+      virtual int FindChildContaining(const TextCoordinate &aDocOffset, bool strict) const;
       
       
       virtual void DetachChildAt(int aIdx, Node **aNode) = 0;
@@ -313,15 +321,6 @@ namespace json
    typedef ValueNode<double, ntNumber> NumberNode;
    typedef ValueNode<bool, ntBoolean> BooleanNode;
 
-   /////////////////////////////////////////////////////////////////////////
-   // Exception - base class for all JSON-related runtime errors
-
-   class Exception : public std::runtime_error
-   {
-   public:
-      Exception(const std::string& sMessage);
-   };
-
    struct JsonFileChangeListener
    {
       virtual void notifyTextSpliced(JsonFile *aSender, TextCoordinate aOldOffset, 
@@ -374,7 +373,9 @@ namespace json
       DocumentNode *getDom();
       const DocumentNode *getDom() const;
         
-      bool FindPathContaining(unsigned int aDocOffset, JsonPath &aRet) const;
+      bool FindPathContaining(TextCoordinate aDocOffset, JsonPath &aRet) const;
+      const json::Node *FindNodeContaining(TextCoordinate aDocOffset, JsonPath *path, bool strict = false) const;
+
       bool FindPathForJsonPathString(std::wstring aPathString, JsonPath &aRet);
              
       void addListener(JsonFileChangeListener *aListener);

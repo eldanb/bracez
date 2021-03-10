@@ -96,13 +96,18 @@
     
     if(!syncingNodeAndTextSel)
     {
-        [self recordNavigationPointBeforeNavGroup:NAVGROUP_NONE];
+        if(!document.isSemanticModelUpdateInProgress) {
+            [self recordNavigationPointBeforeNavGroup:NAVGROUP_NONE];
         
-        syncingNodeAndTextSel = true;
-        json::TextRange lNodeRange = [lLastNode textRange];
-        [textView setSelectedRange:NSMakeRange(lNodeRange.start, lNodeRange.end - lNodeRange.start)];
-        [textView scrollRangeToVisible:NSMakeRange(lNodeRange.start, 0)];
-        syncingNodeAndTextSel = false;
+            syncingNodeAndTextSel = true;
+            json::TextRange lNodeRange = [lLastNode textRange].intersectWith(document.jsonFile->getDom()->GetTextRange());
+            
+            NSRange range = NSMakeRange(lNodeRange.start.getAddress(), lNodeRange.end - lNodeRange.start);
+
+            [textView setSelectedRange:range];
+            [textView scrollRangeToVisible:NSMakeRange(lNodeRange.start.getAddress(), 0)];
+            syncingNodeAndTextSel = false;
+        }
     }
 }
 
@@ -145,8 +150,8 @@
     {
         lTogo = [lSelMarker coordinate];
         
-        [textView setSelectedRange:NSMakeRange(lTogo, 0)];
-        [textView scrollRangeToVisible:NSMakeRange(lTogo, 0)];
+        [textView setSelectedRange:NSMakeRange(lTogo.getAddress(), 0)];
+        [textView scrollRangeToVisible:NSMakeRange(lTogo.getAddress(), 0)];
         
         lastNavGroup = NAVGROUP_NONE;
         
@@ -272,6 +277,12 @@
 }
 
 
+-(void)pathViewRequestMoveToParent:(PathView*)pathView {
+    if(self.canGoParentNode) {
+        [self goParentNode:self];
+    }
+}
+
 - (NSArray<NSString *> *)pathView:(PathView *)aPathView proposeCompletionsForString:(NSString *)extensionString {
     
     NSArray* lPathArr = pathView.shownPath;
@@ -315,11 +326,11 @@
 -(void)refreshSelectionFromTextView;
 {
     NSUInteger lRow, lCol;
-    [document translateCoordinate:[textView selectedRange].location toRow:&lRow col:&lCol];
+    [document translateCoordinate:TextCoordinate([textView selectedRange].location) toRow:&lRow col:&lCol];
     [coordView setCoordinateRow:lRow col:lCol];
     
     if(!document.isSemanticModelDirty) {
-        NSIndexPath *lNewSelIndexPath = [document findPathContaining:[textView selectedRange].location];
+        NSIndexPath *lNewSelIndexPath = [document findPathContaining:TextCoordinate([textView selectedRange].location)];
         [treeController setSelectionIndexPath:lNewSelIndexPath];
     }
 }
@@ -329,7 +340,7 @@
     using convert_type = std::codecvt_utf8<wchar_t>;
     static std::wstring_convert<convert_type, wchar_t> wide_utf8_converter;
 
-    NSIndexPath *selIndexPath = [document findPathContaining:[textView selectedRange].location];
+    NSIndexPath *selIndexPath = [document findPathContaining:TextCoordinate([textView selectedRange].location)];
     JsonCocoaNode *curNode = document.rootNode;
     NSMutableString *path = [NSMutableString stringWithString:@"$"];
     
@@ -470,15 +481,15 @@
     
     inhibitHistoryRecord = true;
     
-    TextCoordinate lCurCoord = [textView selectedRange].location;
+    TextCoordinate lCurCoord = TextCoordinate([textView selectedRange].location);
     
     forwardNavs.push_back(lCurCoord);
     
     TextCoordinate lTogo = backNavs.back();
     backNavs.pop_back();
     
-    [textView setSelectedRange:NSMakeRange(lTogo, 0)];
-    [textView scrollRangeToVisible:NSMakeRange(lTogo, 0)];
+    [textView setSelectedRange:NSMakeRange(lTogo.getAddress(), 0)];
+    [textView scrollRangeToVisible:NSMakeRange(lTogo.getAddress(), 0)];
     
     lastNavGroup = NAVGROUP_NONE;
     
@@ -499,15 +510,15 @@
     
     inhibitHistoryRecord = true;
     
-    TextCoordinate lCurCoord = [textView selectedRange].location;
+    TextCoordinate lCurCoord = TextCoordinate([textView selectedRange].location);
     
     backNavs.push_back(lCurCoord);
     
     TextCoordinate lTogo = forwardNavs.back();
     forwardNavs.pop_back();
     
-    [textView setSelectedRange:NSMakeRange(lTogo, 0)];
-    [textView scrollRangeToVisible:NSMakeRange(lTogo, 0)];
+    [textView setSelectedRange:NSMakeRange(lTogo.getAddress(), 0)];
+    [textView scrollRangeToVisible:NSMakeRange(lTogo.getAddress(), 0)];
     
     lastNavGroup = NAVGROUP_NONE;
     
@@ -524,7 +535,7 @@
     if(lastNavGroup<0 ||
        aGroup != lastNavGroup)
     {
-        TextCoordinate lCurCoord = [textView selectedRange].location;
+        TextCoordinate lCurCoord = TextCoordinate([textView selectedRange].location);
         
         forwardNavs.clear();
         backNavs.push_back(lCurCoord);
@@ -549,9 +560,9 @@
     int lLine = [self lineNumberForCharacterIndex:[textView selectedRange].location];
     if(document.bookmarks.findNextBookmark(lLine))
     {
-        TextCoordinate lLineStart = [document bookmarks].getLineStart(lLine);
-        [textView setSelectedRange:NSMakeRange(lLineStart, 0)];
-        [textView scrollRangeToVisible:NSMakeRange(lLineStart, 0)];
+        TextCoordinate lLineStart = [document bookmarks].getLineFirstCharacter(lLine);
+        [textView setSelectedRange:NSMakeRange(lLineStart.getAddress(), 0)];
+        [textView scrollRangeToVisible:NSMakeRange(lLineStart.getAddress(), 0)];
         [[textView window] makeFirstResponder:textView];
     }
 }
@@ -561,9 +572,9 @@
     int lLine = [self lineNumberForCharacterIndex:[textView selectedRange].location];
     if(document.bookmarks.findPrevBookmark(lLine))
     {
-        TextCoordinate lLineStart = document.bookmarks.getLineStart(lLine);
-        [textView setSelectedRange:NSMakeRange(lLineStart, 0)];
-        [textView scrollRangeToVisible:NSMakeRange(lLineStart, 0)];
+        TextCoordinate lLineStart = document.bookmarks.getLineFirstCharacter(lLine);
+        [textView setSelectedRange:NSMakeRange(lLineStart.getAddress(), 0)];
+        [textView scrollRangeToVisible:NSMakeRange(lLineStart.getAddress(), 0)];
         [[textView window] makeFirstResponder:textView];
     }
 }
@@ -592,13 +603,13 @@
 {
     NSUInteger lRow, lCol;
     
-    [document translateCoordinate:aIdx toRow:&lRow col:&lCol];
+    [document translateCoordinate:TextCoordinate(aIdx) toRow:&lRow col:&lCol];
     
     return lRow;
 }
 
-- (UInt32)characterIndexForStartOfLine:(int)aIdx {
-    return [document characterIndexForStartOfLine:aIdx];
+- (UInt32)characterIndexForFirstCharOfLine:(int)aIdx {
+    return [document characterIndexForFirstCharOfLine:aIdx];
 }
 
 

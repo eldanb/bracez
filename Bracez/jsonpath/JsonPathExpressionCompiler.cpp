@@ -100,7 +100,7 @@ auto const end_subscript_token = tokenise(accept(is_char(']')));
  * Grammar: JSON
  */
 class parse_json {
-    class IsErrorParseListener : public json::Reader::ParseListener {
+    class IsErrorParseListener : public json::ParseListener {
     public:
         bool error = false;
         

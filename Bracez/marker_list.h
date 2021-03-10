@@ -9,9 +9,122 @@
 #define marker_list_h
 
 #include <vector>
+#include "Exception.hpp"
 
-typedef unsigned int TextCoordinate;
+#define TEXT_COORDINATE_INFINITY ((unsigned int)-1)
+
 typedef unsigned int TextLength;
+
+class TextCoordinate {
+
+public:
+    explicit TextCoordinate(unsigned int coord = 0) : coord(coord) {}
+    
+    inline TextCoordinate &operator+=(int other) {
+        if(!infinite()) {
+            coord += other;
+        }
+        
+        return *this;
+    }
+
+    inline TextCoordinate operator+(int ofs) const {
+        if(!infinite()) {
+            return TextCoordinate(coord + ofs);
+        } else {
+            return *this;
+        }
+    }
+
+    inline TextCoordinate operator+(TextLength ofs) const {
+        if(!infinite()) {
+            return TextCoordinate(coord + ofs);
+        } else {
+            return *this;
+        }
+    }
+
+    inline TextCoordinate operator-(int ofs) const {
+        if(infinite()) {
+            return *this;
+        }
+        return TextCoordinate(coord - ofs);
+    }
+
+    inline unsigned int getAddress() const {
+        if(infinite()) {
+            throw Exception("Can't get address for infinite");
+        }
+        
+        return coord;
+    }
+    
+    inline operator unsigned int() const {
+        return getAddress();
+    }
+    
+    inline TextLength operator-(TextCoordinate other) const {
+        if(infinite() || other.infinite()) {
+            throw Exception("Can't compute length between infinites");
+        }
+        
+        return coord - other.coord;
+    }
+
+    inline bool operator<(TextCoordinate other) const {
+        return coord < other.coord;
+    }
+
+    inline bool operator<=(TextCoordinate other) const {
+        return coord <= other.coord;
+    }
+
+    inline bool operator==(TextCoordinate other) const {
+        return coord == other.coord;
+    }
+
+    inline bool operator!=(TextCoordinate other) const {
+        return coord != other.coord;
+    }
+
+    inline bool operator>=(TextCoordinate other) const {
+        return coord >= other.coord;
+    }
+
+    inline bool operator>(TextCoordinate other) const {
+        return coord > other.coord;
+    }
+
+    TextCoordinate &operator=(TextCoordinate other) {
+        coord = other.coord;
+        return *this;
+    }
+    
+    bool infinite() const {
+        return coord == TEXT_COORDINATE_INFINITY;
+    }
+
+    TextCoordinate relativeTo(TextCoordinate other) const {
+        if(other.infinite()) {
+            throw Exception("Can't devise coordinate relative to infinite");
+        }
+        
+        if(infinite()) {
+            return *this;
+        }
+        
+        return TextCoordinate(coord - other.coord);
+    }
+    
+
+    
+public:
+    static TextCoordinate infinity;
+    
+private:
+    unsigned int coord;
+};
+
 
 class BaseMarker
 {
@@ -20,8 +133,13 @@ public:
    
    inline operator TextCoordinate() const { return coordinate; }
    
+    TextCoordinate getCoordinate() const { return coordinate; }
    inline bool operator<(const BaseMarker &aOther) const { return coordinate < aOther.coordinate; }
+   inline bool operator==(const BaseMarker &aOther) const { return coordinate == aOther.coordinate; }
+   inline bool operator<=(const BaseMarker &aOther) const { return coordinate <= aOther.coordinate; }
+    
    inline bool operator<(const TextCoordinate &aOther) const { return coordinate < aOther; }
+   inline bool operator>=(const TextCoordinate &aOther) const { return coordinate >= aOther; }
 
    inline void adjustCoordinate(int aOfs) { coordinate += aOfs; };
       
@@ -169,7 +287,7 @@ bool MarkerList<MARKER_TYPE>::spliceCoordinatesList(TextCoordinate aOffsetStart,
    iterator delend_iter = iter;
    
    // Find last element to delete in lines list
-   while(iter!=markers.end() && *iter >= aOffsetStart && *iter<aOffsetStart + aLen)
+   while(iter!=markers.end() && *iter >= aOffsetStart && *iter < aOffsetStart + aLen)
    {
       iter++;
       delend_iter = iter;

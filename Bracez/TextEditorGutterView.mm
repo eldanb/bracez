@@ -25,6 +25,9 @@
       [marginAttributes setObject:[NSFont boldSystemFontOfSize:8] forKey: NSFontAttributeName];
       [marginAttributes setObject:[NSColor lightGrayColor] forKey: NSForegroundColorAttributeName];
 
+       marginAttributesWithMarkers = [marginAttributes mutableCopy];
+       [marginAttributesWithMarkers setObject:[NSColor whiteColor] forKey: NSForegroundColorAttributeName];
+       
       shouldShowLineNumbers = NO;
       shownFlagsMask = 0xffffffff;
        
@@ -140,12 +143,12 @@
    lCurLineRect.origin.y -= documentVisibleRect.origin.y;
    while(lCurLineRect.origin.y <= aRect.origin.y+aRect.size.height)
    {
-       int charIndex = [model characterIndexForStartOfLine:lCurLineNo];
+       int charIndex = [model characterIndexForFirstCharOfLine:lCurLineNo];
        int glyphIndex = [layoutManager glyphIndexForCharacterAtIndex:charIndex];
        if(glyphIndex<layoutManager.numberOfGlyphs) {
            lCurLineRect = [layoutManager lineFragmentRectForGlyphAtIndex:glyphIndex effectiveRange:nil];
        } else {
-           lCurLineRect.origin.y = (lCurLineNo-1) * lDefaultLineHeight;
+           lCurLineRect.origin.y = lCurLineNo * lDefaultLineHeight;
            lCurLineRect.size.height = lDefaultLineHeight;
        }
 
@@ -168,7 +171,7 @@
 
       if(shouldShowLineNumbers)
       {
-         [self _drawOneNumberInMargin:lCurLineNo inRect:lCurLineRect];
+         [self _drawOneNumberInMargin:lCurLineNo inRect:lCurLineRect withFlags:lCurLineFlags];
       }
             
       lCurLineNo ++;
@@ -184,9 +187,9 @@
    
    NSBezierPath *lMarker = [NSBezierPath bezierPath];
    
-   [lMarker moveToPoint:NSMakePoint(aRect.origin.x+4, aRect.origin.y+1)];      
-   [lMarker lineToPoint:NSMakePoint(aRect.origin.x+aRect.size.width - 7, aRect.origin.y+1)];
-   [lMarker lineToPoint:NSMakePoint(aRect.origin.x+aRect.size.width - 2, aRect.origin.y+aRect.size.height/2-1)];
+   [lMarker moveToPoint:NSMakePoint(aRect.origin.x+4, aRect.origin.y+2)];
+   [lMarker lineToPoint:NSMakePoint(aRect.origin.x+aRect.size.width - 7, aRect.origin.y+2)];
+   [lMarker lineToPoint:NSMakePoint(aRect.origin.x+aRect.size.width - 2, aRect.origin.y+aRect.size.height/2)];
    [lMarker lineToPoint:NSMakePoint(aRect.origin.x+aRect.size.width - 7, aRect.origin.y+aRect.size.height-2)];
    [lMarker lineToPoint:NSMakePoint(aRect.origin.x+4, aRect.origin.y+aRect.size.height-2)];
    [lMarker closePath];
@@ -200,7 +203,7 @@
 {
    if(aFlags&1)
    {
-      [self _drawMarkerWithColor:[NSColor colorForControlTint:NSBlueControlTint] inRect:aRect];
+      [self _drawMarkerWithColor:[NSColor blueColor] inRect:aRect];
    }
 
    if(aFlags&2)
@@ -209,18 +212,20 @@
    }
 }
 
--(void)_drawOneNumberInMargin:(unsigned) aNumber inRect:(NSRect)r
+-(void)_drawOneNumberInMargin:(unsigned) aNumber inRect:(NSRect)r withFlags:(int)flags
 {
    NSString    *s;
    NSSize      stringSize;
    
+    NSDictionary *lineNumberAttributes = flags ? marginAttributesWithMarkers : marginAttributes;
+    
    s = [NSString stringWithFormat:@"%d", aNumber, nil];
-   stringSize = [s sizeWithAttributes:marginAttributes];
+   stringSize = [s sizeWithAttributes:lineNumberAttributes];
    
    // Simple algorithm to center the line number next to the glyph.
    [s drawAtPoint: NSMakePoint( r.origin.x + r.size.width - 6 - stringSize.width, 
                                r.origin.y + ((r.size.height / 2) - (stringSize.height / 2))) 
-      withAttributes:marginAttributes];
+      withAttributes:lineNumberAttributes];
 }
 
 @end
