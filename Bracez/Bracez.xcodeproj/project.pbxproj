@@ -8,68 +8,65 @@
 
 /* Begin PBXBuildFile section */
 		1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1DDD58140DA1D0A300B32029 /* MainMenu.xib */; };
-		256AC3DA0F4B6AC300CF3369 /* JsonMockupAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 256AC3D90F4B6AC300CF3369 /* JsonMockupAppDelegate.mm */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
-		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		B90EEE5025E9017A008B14BE /* HistoryAndFavoritesEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = B90EEE4E25E9017A008B14BE /* HistoryAndFavoritesEditor.m */; };
-		B90EEE5125E9017A008B14BE /* HistoryAndFavoritesEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = B90EEE4F25E9017A008B14BE /* HistoryAndFavoritesEditor.xib */; };
 		B9264D9812A2D7C00037AD39 /* JsonFileListenerObjCBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9264D9712A2D7C00037AD39 /* JsonFileListenerObjCBridge.mm */; };
-		B930EB271202105400C8BE4B /* JsonTreeDataSource.mm in Sources */ = {isa = PBXBuildFile; fileRef = B930EB261202105400C8BE4B /* JsonTreeDataSource.mm */; };
 		B934AD19121C7503005B06D6 /* NSIndexPathAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = B934AD18121C7502005B06D6 /* NSIndexPathAdditions.m */; };
-		B934ADF412205C19005B06D6 /* KvoAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = B934ADF312205C19005B06D6 /* KvoAnimation.m */; };
-		B934AE0112205F6C005B06D6 /* SplitterAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = B934AE0012205F6C005B06D6 /* SplitterAnimation.m */; };
-		B934B0DC122464DF005B06D6 /* PreferencesDefaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = B934B0DB122464DF005B06D6 /* PreferencesDefaults.plist */; };
-		B934B53B122EF40F005B06D6 /* NodeTypeToColorTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = B934B53A122EF40F005B06D6 /* NodeTypeToColorTransformer.mm */; };
-		B94381F725C5333E00247A36 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = B94381E625C5333E00247A36 /* LICENSE */; };
-		B94381F825C5333E00247A36 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = B94381E825C5333E00247A36 /* Makefile */; };
-		B94381FB25C5333E00247A36 /* .gitmodules in Resources */ = {isa = PBXBuildFile; fileRef = B94381EB25C5333E00247A36 /* .gitmodules */; };
-		B94381FC25C5333E00247A36 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B94381EC25C5333E00247A36 /* README.md */; };
-		B943820A25C533A300247A36 /* JsonPathExpressionNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B943820825C533A300247A36 /* JsonPathExpressionNode.cpp */; };
-		B943821425C5519600247A36 /* JsonPathExpressionCompiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B943820C25C533CD00247A36 /* JsonPathExpressionCompiler.cpp */; };
-		B945F8961192A79100DCFAAE /* PathView.m in Sources */ = {isa = PBXBuildFile; fileRef = B945F8951192A79100DCFAAE /* PathView.m */; };
 		B945F9001192DAC800DCFAAE /* reader.inl in Resources */ = {isa = PBXBuildFile; fileRef = B945F8FB1192DAC800DCFAAE /* reader.inl */; };
 		B945F91C1192DDAC00DCFAAE /* json_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B945F91B1192DDAC00DCFAAE /* json_file.cpp */; };
 		B945F9311192E0A800DCFAAE /* JsonCocoaNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = B945F9301192E0A800DCFAAE /* JsonCocoaNode.mm */; };
-		B945FA271192FD9500DCFAAE /* GuiModeControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B945FA261192FD9500DCFAAE /* GuiModeControl.m */; };
-		B945FB6F11937A3200DCFAAE /* JSONWindow.mm in Sources */ = {isa = PBXBuildFile; fileRef = B945FB6E11937A3200DCFAAE /* JSONWindow.mm */; };
 		B945FD57119E832B00DCFAAE /* JsonDocument.mm in Sources */ = {isa = PBXBuildFile; fileRef = B945FD56119E832B00DCFAAE /* JsonDocument.mm */; };
-		B945FDC6119E899D00DCFAAE /* NodeSelectionController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B945FDC5119E899D00DCFAAE /* NodeSelectionController.mm */; };
 		B94D2A0112B2C316007B9DA2 /* JsonMarker.mm in Sources */ = {isa = PBXBuildFile; fileRef = B94D2A0012B2C316007B9DA2 /* JsonMarker.mm */; };
-		B952A460254C0010005BFB1C /* NSString+WStringUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = B952A45F254BFEA7005BFB1C /* NSString+WStringUtils.mm */; };
-		B952A4652550A5CA005BFB1C /* MarkerTableCellView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B952A4642550A5CA005BFB1C /* MarkerTableCellView.xib */; };
-		B952A4692550A5F1005BFB1C /* MarkerTableCellView.mm in Sources */ = {isa = PBXBuildFile; fileRef = B952A4682550A5F1005BFB1C /* MarkerTableCellView.mm */; };
-		B97B3C4C253B257000D19FF0 /* ButtonToolbarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B97B3C4B253B257000D19FF0 /* ButtonToolbarItem.m */; };
-		B97B3C56253B2E9C00D19FF0 /* ViewModelEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = B97B3C55253B2E9C00D19FF0 /* ViewModelEditor.m */; };
-		B97B3C59253B2EAF00D19FF0 /* ViewModelEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = B97B3C58253B2EAF00D19FF0 /* ViewModelEditor.xib */; };
-		B984A95125EC35EE00452256 /* BracezTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = B984A95025EC35EE00452256 /* BracezTextView.m */; };
 		B984A95525ED8A6600452256 /* JsonIndentFormatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B984A95325ED8A6600452256 /* JsonIndentFormatter.cpp */; };
-		B98781DC11C4D91B00435107 /* PreferencesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B98781DB11C4D91B00435107 /* PreferencesWindow.xib */; };
-		B987820A11C4DE9600435107 /* PreferencesDialogController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B987820911C4DE9600435107 /* PreferencesDialogController.mm */; };
-		B987825911C535D800435107 /* JsonPreferencesDialogController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B987825811C535D800435107 /* JsonPreferencesDialogController.mm */; };
-		B98ACCA411A3E42300C4F114 /* BrowserView.png in Resources */ = {isa = PBXBuildFile; fileRef = B98ACCA011A3E42300C4F114 /* BrowserView.png */; };
-		B98ACCA511A3E42300C4F114 /* TextView.png in Resources */ = {isa = PBXBuildFile; fileRef = B98ACCA111A3E42300C4F114 /* TextView.png */; };
-		B98ACCA611A3E42300C4F114 /* TreeView.png in Resources */ = {isa = PBXBuildFile; fileRef = B98ACCA211A3E42300C4F114 /* TreeView.png */; };
-		B98ACCA711A3E42300C4F114 /* VertSplit.png in Resources */ = {isa = PBXBuildFile; fileRef = B98ACCA311A3E42300C4F114 /* VertSplit.png */; };
-		B98ACD5611A6E6B100C4F114 /* CoordView.m in Sources */ = {isa = PBXBuildFile; fileRef = B98ACD5511A6E6B100C4F114 /* CoordView.m */; };
-		B98ACDD911A6F12A00C4F114 /* EditorWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B98ACDD811A6F12A00C4F114 /* EditorWindow.xib */; };
-		B99B5A5D11C6CB7E00A33231 /* AnimatingTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = B99B5A5C11C6CB7E00A33231 /* AnimatingTabView.m */; };
 		B99B5A7311C6DF0000A33231 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B99B5A7211C6DF0000A33231 /* QuartzCore.framework */; };
-		B99B5C4111CBCC2F00A33231 /* TextEditorGutterView.mm in Sources */ = {isa = PBXBuildFile; fileRef = B99B5C4011CBCC2F00A33231 /* TextEditorGutterView.mm */; };
-		B99B5ED611CD5D2800A33231 /* PreferencesWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B99B5ED411CD5D2800A33231 /* PreferencesWindow.m */; };
 		B99D0DD725BC989C0006EA1F /* libjq.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B99D0DD625BC98810006EA1F /* libjq.a */; };
 		B9AADFFD253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9AADFFC253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm */; };
-		B9BA73F825E5A0AA00094D8F /* HistoryAndFavoritesControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B9BA73F725E5A0AA00094D8F /* HistoryAndFavoritesControl.m */; };
 		B9BBFDF0120D2CBE00E4E9AE /* LinesAndBookmarks.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9BBFDEE120D2CBE00E4E9AE /* LinesAndBookmarks.cpp */; };
-		B9D510B92540B13400B2286B /* NumberNonZeroValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = B9D510B82540B13400B2286B /* NumberNonZeroValueTransformer.m */; };
-		B9EC0CA225D5D92B0003C65A /* PathCompletionListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9EC0CA125D5D92B0003C65A /* PathCompletionListCell.xib */; };
-		B9F4AD4B12E8DA8C00BF8233 /* ToolbarBookmarksTemplate.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B9F4AD4A12E8DA8C00BF8233 /* ToolbarBookmarksTemplate.pdf */; };
-		B9F4AD5612E8DB7C00BF8233 /* SearchPaneView.m in Sources */ = {isa = PBXBuildFile; fileRef = B9F4AD5512E8DB7C00BF8233 /* SearchPaneView.m */; };
-		B9F4AECD1303376000BF8233 /* DarkDiviterSplitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B9F4AECC1303376000BF8233 /* DarkDiviterSplitter.m */; };
-		B9FC2A9125F8C14B00484EA3 /* marker_list.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2A8F25F8B89B00484EA3 /* marker_list.cpp */; };
 		B9FC2A9325F8C14F00484EA3 /* Exception.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2A8C25F8B0A400484EA3 /* Exception.cpp */; };
-		B9FF94F925E022A60056B37C /* JsonPathSearchController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9FF94F825E022A50056B37C /* JsonPathSearchController.mm */; };
-		B9FF94FE25E026400056B37C /* BracezPreferences.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9FF94FD25E026400056B37C /* BracezPreferences.mm */; };
+		B9FC2A9725F907E300484EA3 /* TextCoordinate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2A9525F907E200484EA3 /* TextCoordinate.cpp */; };
+		B9FC2AB225F908FC00484EA3 /* JsonPathExpressionCompiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2A9C25F908FC00484EA3 /* JsonPathExpressionCompiler.cpp */; };
+		B9FC2AB325F908FC00484EA3 /* JsonPathExpressionNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2A9D25F908FC00484EA3 /* JsonPathExpressionNode.cpp */; };
+		B9FC2AB425F908FC00484EA3 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = B9FC2AA125F908FC00484EA3 /* LICENSE */; };
+		B9FC2AB525F908FC00484EA3 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2AA325F908FC00484EA3 /* Makefile */; };
+		B9FC2AB825F908FC00484EA3 /* .gitmodules in Resources */ = {isa = PBXBuildFile; fileRef = B9FC2AA625F908FC00484EA3 /* .gitmodules */; };
+		B9FC2AB925F908FC00484EA3 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B9FC2AA725F908FC00484EA3 /* README.md */; };
+		B9FC2AEC25F90AA300484EA3 /* NSString+WStringUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2AE525F90AA300484EA3 /* NSString+WStringUtils.mm */; };
+		B9FC2AED25F90AA300484EA3 /* NodeTypeToColorTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2AE825F90AA300484EA3 /* NodeTypeToColorTransformer.mm */; };
+		B9FC2AEE25F90AA300484EA3 /* NumberNonZeroValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2AEB25F90AA300484EA3 /* NumberNonZeroValueTransformer.m */; };
+		B9FC2AFA25F90B9B00484EA3 /* ToolbarBookmarksTemplate.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B9FC2AF525F90B9B00484EA3 /* ToolbarBookmarksTemplate.pdf */; };
+		B9FC2AFB25F90B9B00484EA3 /* BrowserView.png in Resources */ = {isa = PBXBuildFile; fileRef = B9FC2AF625F90B9B00484EA3 /* BrowserView.png */; };
+		B9FC2AFC25F90B9B00484EA3 /* TextView.png in Resources */ = {isa = PBXBuildFile; fileRef = B9FC2AF725F90B9B00484EA3 /* TextView.png */; };
+		B9FC2AFD25F90B9B00484EA3 /* VertSplit.png in Resources */ = {isa = PBXBuildFile; fileRef = B9FC2AF825F90B9B00484EA3 /* VertSplit.png */; };
+		B9FC2AFE25F90B9B00484EA3 /* TreeView.png in Resources */ = {isa = PBXBuildFile; fileRef = B9FC2AF925F90B9B00484EA3 /* TreeView.png */; };
+		B9FC2B2F25F90D6000484EA3 /* JsonPathSearchController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2B0325F90D6000484EA3 /* JsonPathSearchController.mm */; };
+		B9FC2B3025F90D6000484EA3 /* PathView.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2B0425F90D6000484EA3 /* PathView.m */; };
+		B9FC2B3125F90D6000484EA3 /* MarkerTableCellView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9FC2B0725F90D6000484EA3 /* MarkerTableCellView.xib */; };
+		B9FC2B3225F90D6000484EA3 /* PathCompletionListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9FC2B0A25F90D6000484EA3 /* PathCompletionListCell.xib */; };
+		B9FC2B3325F90D6000484EA3 /* BracezTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2B0C25F90D6000484EA3 /* BracezTextView.m */; };
+		B9FC2B3425F90D6000484EA3 /* CoordView.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2B0D25F90D6000484EA3 /* CoordView.m */; };
+		B9FC2B3525F90D6000484EA3 /* GuiModeControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2B0F25F90D6000484EA3 /* GuiModeControl.m */; };
+		B9FC2B3625F90D6000484EA3 /* TextEditorGutterView.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2B1025F90D6000484EA3 /* TextEditorGutterView.mm */; };
+		B9FC2B3725F90D6000484EA3 /* JsonTreeDataSource.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2B1325F90D6000484EA3 /* JsonTreeDataSource.mm */; };
+		B9FC2B3825F90D6000484EA3 /* JSONWindow.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2B1425F90D6000484EA3 /* JSONWindow.mm */; };
+		B9FC2B3925F90D6000484EA3 /* NodeSelectionController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2B1625F90D6000484EA3 /* NodeSelectionController.mm */; };
+		B9FC2B3A25F90D6000484EA3 /* MarkerTableCellView.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2B1825F90D6000484EA3 /* MarkerTableCellView.mm */; };
+		B9FC2B3B25F90D6000484EA3 /* JsonPreferencesDialogController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2B1A25F90D6000484EA3 /* JsonPreferencesDialogController.mm */; };
+		B9FC2B3C25F90D6000484EA3 /* PreferencesWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2B1B25F90D6000484EA3 /* PreferencesWindow.m */; };
+		B9FC2B3D25F90D6000484EA3 /* PreferencesWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9FC2B1D25F90D6000484EA3 /* PreferencesWindow.xib */; };
+		B9FC2B3E25F90D6000484EA3 /* PreferencesDialogController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2B1F25F90D6000484EA3 /* PreferencesDialogController.mm */; };
+		B9FC2B3F25F90D6000484EA3 /* AnimatingTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2B2325F90D6000484EA3 /* AnimatingTabView.m */; };
+		B9FC2B4025F90D6000484EA3 /* HistoryAndFavoritesControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2B2625F90D6000484EA3 /* HistoryAndFavoritesControl.m */; };
+		B9FC2B4125F90D6000484EA3 /* HistoryAndFavoritesEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9FC2B2725F90D6000484EA3 /* HistoryAndFavoritesEditor.xib */; };
+		B9FC2B4225F90D6000484EA3 /* KvoAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2B2825F90D6000484EA3 /* KvoAnimation.m */; };
+		B9FC2B4325F90D6000484EA3 /* SplitterAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2B2A25F90D6000484EA3 /* SplitterAnimation.m */; };
+		B9FC2B4425F90D6000484EA3 /* DarkDiviterSplitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2B2B25F90D6000484EA3 /* DarkDiviterSplitter.m */; };
+		B9FC2B4525F90D6000484EA3 /* HistoryAndFavoritesEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2B2C25F90D6000484EA3 /* HistoryAndFavoritesEditor.m */; };
+		B9FC2B4C25F90DE300484EA3 /* EditorWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9FC2B4B25F90DE300484EA3 /* EditorWindow.xib */; };
+		B9FC2B5025F90E0200484EA3 /* BracezPreferences.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2B4F25F90E0200484EA3 /* BracezPreferences.mm */; };
+		B9FC2BB825F90F7100484EA3 /* PreferencesDefaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = B9FC2BB725F90F7100484EA3 /* PreferencesDefaults.plist */; };
+		B9FC2BBB25F9107C00484EA3 /* Bracez-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B9FC2BBA25F9107C00484EA3 /* Bracez-Info.plist */; };
+		B9FC2BC425F910F600484EA3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2BC025F910F600484EA3 /* main.m */; };
+		B9FC2BC525F910F600484EA3 /* JsonMockupAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2BC225F910F600484EA3 /* JsonMockupAppDelegate.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -77,127 +74,116 @@
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		1DDD58150DA1D0A300B32029 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		256AC3D80F4B6AC300CF3369 /* JsonMockupAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JsonMockupAppDelegate.h; sourceTree = "<group>"; };
-		256AC3D90F4B6AC300CF3369 /* JsonMockupAppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JsonMockupAppDelegate.mm; sourceTree = "<group>"; };
-		256AC3F00F4B6AF500CF3369 /* Bracez_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bracez_Prefix.pch; sourceTree = "<group>"; };
-		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		8D1107310486CEB800E47090 /* Bracez-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Bracez-Info.plist"; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Bracez.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bracez.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B90EEE4D25E9017A008B14BE /* HistoryAndFavoritesEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HistoryAndFavoritesEditor.h; sourceTree = "<group>"; };
-		B90EEE4E25E9017A008B14BE /* HistoryAndFavoritesEditor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HistoryAndFavoritesEditor.m; sourceTree = "<group>"; };
-		B90EEE4F25E9017A008B14BE /* HistoryAndFavoritesEditor.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HistoryAndFavoritesEditor.xib; sourceTree = "<group>"; };
 		B9264D9612A2D7C00037AD39 /* JsonFileListenerObjCBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsonFileListenerObjCBridge.h; path = json_cocoa_model/JsonFileListenerObjCBridge.h; sourceTree = "<group>"; };
 		B9264D9712A2D7C00037AD39 /* JsonFileListenerObjCBridge.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = JsonFileListenerObjCBridge.mm; path = json_cocoa_model/JsonFileListenerObjCBridge.mm; sourceTree = "<group>"; };
-		B930EB251202105400C8BE4B /* JsonTreeDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JsonTreeDataSource.h; sourceTree = "<group>"; };
-		B930EB261202105400C8BE4B /* JsonTreeDataSource.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JsonTreeDataSource.mm; sourceTree = "<group>"; };
 		B934AD17121C7502005B06D6 /* NSIndexPathAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSIndexPathAdditions.h; path = Util/NSIndexPathAdditions.h; sourceTree = "<group>"; };
 		B934AD18121C7502005B06D6 /* NSIndexPathAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NSIndexPathAdditions.m; path = Util/NSIndexPathAdditions.m; sourceTree = "<group>"; };
-		B934ADF212205C19005B06D6 /* KvoAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KvoAnimation.h; path = Util/KvoAnimation.h; sourceTree = "<group>"; };
-		B934ADF312205C19005B06D6 /* KvoAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KvoAnimation.m; path = Util/KvoAnimation.m; sourceTree = "<group>"; };
-		B934ADFF12205F6C005B06D6 /* SplitterAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SplitterAnimation.h; path = Util/SplitterAnimation.h; sourceTree = "<group>"; };
-		B934AE0012205F6C005B06D6 /* SplitterAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SplitterAnimation.m; path = Util/SplitterAnimation.m; sourceTree = "<group>"; };
-		B934B0DB122464DF005B06D6 /* PreferencesDefaults.plist */ = {isa = PBXFileReference; explicitFileType = text.plist.xml; path = PreferencesDefaults.plist; sourceTree = "<group>"; };
-		B934B539122EF40F005B06D6 /* NodeTypeToColorTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTypeToColorTransformer.h; sourceTree = "<group>"; };
-		B934B53A122EF40F005B06D6 /* NodeTypeToColorTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NodeTypeToColorTransformer.mm; sourceTree = "<group>"; };
-		B94381E525C5333E00247A36 /* prolog.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = prolog.hpp; sourceTree = "<group>"; };
-		B94381E625C5333E00247A36 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		B94381E725C5333E00247A36 /* templateio.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = templateio.hpp; sourceTree = "<group>"; };
-		B94381E825C5333E00247A36 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
-		B94381E925C5333E00247A36 /* example_expression.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = example_expression.cpp; sourceTree = "<group>"; };
-		B94381EA25C5333E00247A36 /* test_simple.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_simple.cpp; sourceTree = "<group>"; };
-		B94381EB25C5333E00247A36 /* .gitmodules */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitmodules; sourceTree = "<group>"; };
-		B94381EC25C5333E00247A36 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		B94381ED25C5333E00247A36 /* mkcsv.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mkcsv.cpp; sourceTree = "<group>"; };
-		B94381EE25C5333E00247A36 /* profile.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = profile.hpp; sourceTree = "<group>"; };
-		B94381F025C5333E00247A36 /* parser_combinators.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = parser_combinators.hpp; sourceTree = "<group>"; };
-		B94381F125C5333E00247A36 /* mkexp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mkexp.cpp; sourceTree = "<group>"; };
-		B94381F225C5333E00247A36 /* function_traits.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = function_traits.hpp; sourceTree = "<group>"; };
-		B94381F325C5333E00247A36 /* prolog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = prolog.cpp; sourceTree = "<group>"; };
-		B94381F425C5333E00247A36 /* parser_simple.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = parser_simple.hpp; sourceTree = "<group>"; };
-		B94381F525C5333E00247A36 /* test_combinators.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = test_combinators.cpp; sourceTree = "<group>"; };
-		B94381F625C5333E00247A36 /* stream_iterator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = stream_iterator.hpp; sourceTree = "<group>"; };
-		B943820825C533A300247A36 /* JsonPathExpressionNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = JsonPathExpressionNode.cpp; sourceTree = "<group>"; };
-		B943820925C533A300247A36 /* JsonPathExpressionNode.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = JsonPathExpressionNode.hpp; sourceTree = "<group>"; };
-		B943820C25C533CD00247A36 /* JsonPathExpressionCompiler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = JsonPathExpressionCompiler.cpp; sourceTree = "<group>"; };
-		B943820D25C533CD00247A36 /* JsonPathExpressionCompiler.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = JsonPathExpressionCompiler.hpp; sourceTree = "<group>"; };
-		B945F8941192A79100DCFAAE /* PathView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathView.h; sourceTree = "<group>"; };
-		B945F8951192A79100DCFAAE /* PathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PathView.m; sourceTree = "<group>"; };
 		B945F8FA1192DAC800DCFAAE /* reader.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.h; name = reader.h; path = json_model/reader.h; sourceTree = "<group>"; tabWidth = 4; usesTabs = 0; };
 		B945F8FB1192DAC800DCFAAE /* reader.inl */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = text; name = reader.inl; path = json_model/reader.inl; sourceTree = "<group>"; tabWidth = 4; usesTabs = 0; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		B945F91A1192DDAC00DCFAAE /* json_file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = json_file.h; path = json_model/json_file.h; sourceTree = "<group>"; };
 		B945F91B1192DDAC00DCFAAE /* json_file.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = json_file.cpp; path = json_model/json_file.cpp; sourceTree = "<group>"; };
 		B945F92F1192E0A800DCFAAE /* JsonCocoaNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsonCocoaNode.h; path = json_cocoa_model/JsonCocoaNode.h; sourceTree = "<group>"; };
 		B945F9301192E0A800DCFAAE /* JsonCocoaNode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = JsonCocoaNode.mm; path = json_cocoa_model/JsonCocoaNode.mm; sourceTree = "<group>"; };
-		B945FA251192FD9500DCFAAE /* GuiModeControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GuiModeControl.h; sourceTree = "<group>"; };
-		B945FA261192FD9500DCFAAE /* GuiModeControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GuiModeControl.m; sourceTree = "<group>"; };
-		B945FB6D11937A3200DCFAAE /* JSONWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONWindow.h; sourceTree = "<group>"; };
-		B945FB6E11937A3200DCFAAE /* JSONWindow.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JSONWindow.mm; sourceTree = "<group>"; };
 		B945FD55119E832B00DCFAAE /* JsonDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsonDocument.h; path = json_cocoa_model/JsonDocument.h; sourceTree = "<group>"; };
 		B945FD56119E832B00DCFAAE /* JsonDocument.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = JsonDocument.mm; path = json_cocoa_model/JsonDocument.mm; sourceTree = "<group>"; };
-		B945FDC4119E899D00DCFAAE /* NodeSelectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeSelectionController.h; sourceTree = "<group>"; };
-		B945FDC5119E899D00DCFAAE /* NodeSelectionController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NodeSelectionController.mm; sourceTree = "<group>"; };
 		B94D29FF12B2C316007B9DA2 /* JsonMarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsonMarker.h; path = json_cocoa_model/JsonMarker.h; sourceTree = "<group>"; };
 		B94D2A0012B2C316007B9DA2 /* JsonMarker.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = JsonMarker.mm; path = json_cocoa_model/JsonMarker.mm; sourceTree = "<group>"; };
-		B952A45E254BFEA7005BFB1C /* NSString+WStringUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+WStringUtils.h"; sourceTree = "<group>"; };
-		B952A45F254BFEA7005BFB1C /* NSString+WStringUtils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = "NSString+WStringUtils.mm"; sourceTree = "<group>"; };
-		B952A4642550A5CA005BFB1C /* MarkerTableCellView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MarkerTableCellView.xib; sourceTree = "<group>"; };
-		B952A4672550A5F1005BFB1C /* MarkerTableCellView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MarkerTableCellView.h; sourceTree = "<group>"; };
-		B952A4682550A5F1005BFB1C /* MarkerTableCellView.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = MarkerTableCellView.mm; sourceTree = "<group>"; };
-		B97B3C4A253B257000D19FF0 /* ButtonToolbarItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ButtonToolbarItem.h; sourceTree = "<group>"; };
-		B97B3C4B253B257000D19FF0 /* ButtonToolbarItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ButtonToolbarItem.m; sourceTree = "<group>"; };
-		B97B3C54253B2E9C00D19FF0 /* ViewModelEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewModelEditor.h; sourceTree = "<group>"; };
-		B97B3C55253B2E9C00D19FF0 /* ViewModelEditor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewModelEditor.m; sourceTree = "<group>"; };
-		B97B3C58253B2EAF00D19FF0 /* ViewModelEditor.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ViewModelEditor.xib; sourceTree = "<group>"; };
-		B984A94F25EC35EE00452256 /* BracezTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BracezTextView.h; sourceTree = "<group>"; };
-		B984A95025EC35EE00452256 /* BracezTextView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BracezTextView.m; sourceTree = "<group>"; };
 		B984A95325ED8A6600452256 /* JsonIndentFormatter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = JsonIndentFormatter.cpp; path = json_model/JsonIndentFormatter.cpp; sourceTree = "<group>"; };
 		B984A95425ED8A6600452256 /* JsonIndentFormatter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = JsonIndentFormatter.hpp; path = json_model/JsonIndentFormatter.hpp; sourceTree = "<group>"; };
-		B98781DB11C4D91B00435107 /* PreferencesWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PreferencesWindow.xib; sourceTree = "<group>"; };
-		B987820811C4DE9600435107 /* PreferencesDialogController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferencesDialogController.h; sourceTree = "<group>"; };
-		B987820911C4DE9600435107 /* PreferencesDialogController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PreferencesDialogController.mm; sourceTree = "<group>"; };
-		B987825711C535D800435107 /* JsonPreferencesDialogController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JsonPreferencesDialogController.h; sourceTree = "<group>"; };
-		B987825811C535D800435107 /* JsonPreferencesDialogController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JsonPreferencesDialogController.mm; sourceTree = "<group>"; };
-		B98ACCA011A3E42300C4F114 /* BrowserView.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = BrowserView.png; sourceTree = "<group>"; };
-		B98ACCA111A3E42300C4F114 /* TextView.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TextView.png; sourceTree = "<group>"; };
-		B98ACCA211A3E42300C4F114 /* TreeView.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TreeView.png; sourceTree = "<group>"; };
-		B98ACCA311A3E42300C4F114 /* VertSplit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VertSplit.png; sourceTree = "<group>"; };
-		B98ACD5411A6E6B100C4F114 /* CoordView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoordView.h; sourceTree = "<group>"; };
-		B98ACD5511A6E6B100C4F114 /* CoordView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoordView.m; sourceTree = "<group>"; };
-		B98ACDD811A6F12A00C4F114 /* EditorWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EditorWindow.xib; sourceTree = "<group>"; };
-		B99B5A5B11C6CB7E00A33231 /* AnimatingTabView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimatingTabView.h; sourceTree = "<group>"; };
-		B99B5A5C11C6CB7E00A33231 /* AnimatingTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnimatingTabView.m; sourceTree = "<group>"; };
 		B99B5A7211C6DF0000A33231 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		B99B5C3F11CBCC2F00A33231 /* TextEditorGutterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextEditorGutterView.h; sourceTree = "<group>"; };
-		B99B5C4011CBCC2F00A33231 /* TextEditorGutterView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TextEditorGutterView.mm; sourceTree = "<group>"; };
-		B99B5ED411CD5D2800A33231 /* PreferencesWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferencesWindow.m; sourceTree = "<group>"; };
-		B99B5ED511CD5D2800A33231 /* PreferencesWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferencesWindow.h; sourceTree = "<group>"; };
 		B99D0DD125BC98600006EA1F /* libjq.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjq.1.dylib; path = ../../../../../../usr/local/Cellar/jq/1.6/lib/libjq.1.dylib; sourceTree = "<group>"; };
 		B99D0DD625BC98810006EA1F /* libjq.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjq.a; path = ../../../../../../usr/local/Cellar/jq/1.6/lib/libjq.a; sourceTree = "<group>"; };
 		B9AADFFB253A19AD00DE2559 /* SyntaxHilightJsonVisitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SyntaxHilightJsonVisitor.h; path = json_cocoa_model/SyntaxHilightJsonVisitor.h; sourceTree = "<group>"; };
 		B9AADFFC253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = SyntaxHilightJsonVisitor.mm; path = json_cocoa_model/SyntaxHilightJsonVisitor.mm; sourceTree = "<group>"; };
-		B9AAE003253AB2FA00DE2559 /* marker_list.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = marker_list.h; sourceTree = "<group>"; };
-		B9BA73F625E5A0AA00094D8F /* HistoryAndFavoritesControl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HistoryAndFavoritesControl.h; sourceTree = "<group>"; };
-		B9BA73F725E5A0AA00094D8F /* HistoryAndFavoritesControl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HistoryAndFavoritesControl.m; sourceTree = "<group>"; };
 		B9BBFDEE120D2CBE00E4E9AE /* LinesAndBookmarks.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LinesAndBookmarks.cpp; path = json_model/LinesAndBookmarks.cpp; sourceTree = "<group>"; };
 		B9BBFDEF120D2CBE00E4E9AE /* LinesAndBookmarks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LinesAndBookmarks.h; path = json_model/LinesAndBookmarks.h; sourceTree = "<group>"; };
-		B9D510B72540B13400B2286B /* NumberNonZeroValueTransformer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NumberNonZeroValueTransformer.h; sourceTree = "<group>"; };
-		B9D510B82540B13400B2286B /* NumberNonZeroValueTransformer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NumberNonZeroValueTransformer.m; sourceTree = "<group>"; };
-		B9EC0CA125D5D92B0003C65A /* PathCompletionListCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PathCompletionListCell.xib; sourceTree = "<group>"; };
-		B9F4AD4A12E8DA8C00BF8233 /* ToolbarBookmarksTemplate.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = ToolbarBookmarksTemplate.pdf; sourceTree = "<group>"; };
-		B9F4AD5412E8DB7C00BF8233 /* SearchPaneView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchPaneView.h; sourceTree = "<group>"; };
-		B9F4AD5512E8DB7C00BF8233 /* SearchPaneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchPaneView.m; sourceTree = "<group>"; };
-		B9F4ADED12E96E1400BF8233 /* stopwatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stopwatch.h; sourceTree = "<group>"; };
-		B9F4AECB1303376000BF8233 /* DarkDiviterSplitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DarkDiviterSplitter.h; path = Util/DarkDiviterSplitter.h; sourceTree = "<group>"; };
-		B9F4AECC1303376000BF8233 /* DarkDiviterSplitter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DarkDiviterSplitter.m; path = Util/DarkDiviterSplitter.m; sourceTree = "<group>"; };
 		B9FC2A8C25F8B0A400484EA3 /* Exception.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Exception.cpp; path = json_model/Exception.cpp; sourceTree = "<group>"; };
 		B9FC2A8D25F8B0A400484EA3 /* Exception.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Exception.hpp; path = json_model/Exception.hpp; sourceTree = "<group>"; };
-		B9FC2A8F25F8B89B00484EA3 /* marker_list.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = marker_list.cpp; path = json_model/marker_list.cpp; sourceTree = "<group>"; };
-		B9FF94F725E022A50056B37C /* JsonPathSearchController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JsonPathSearchController.h; sourceTree = "<group>"; };
-		B9FF94F825E022A50056B37C /* JsonPathSearchController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = JsonPathSearchController.mm; sourceTree = "<group>"; };
-		B9FF94FC25E026400056B37C /* BracezPreferences.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BracezPreferences.h; sourceTree = "<group>"; };
-		B9FF94FD25E026400056B37C /* BracezPreferences.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = BracezPreferences.mm; sourceTree = "<group>"; };
+		B9FC2A9525F907E200484EA3 /* TextCoordinate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = TextCoordinate.cpp; path = json_model/TextCoordinate.cpp; sourceTree = "<group>"; };
+		B9FC2A9625F907E200484EA3 /* TextCoordinate.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = TextCoordinate.hpp; path = json_model/TextCoordinate.hpp; sourceTree = "<group>"; };
+		B9FC2A9B25F908FC00484EA3 /* JsonPathExpressionNode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JsonPathExpressionNode.hpp; sourceTree = "<group>"; };
+		B9FC2A9C25F908FC00484EA3 /* JsonPathExpressionCompiler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JsonPathExpressionCompiler.cpp; sourceTree = "<group>"; };
+		B9FC2A9D25F908FC00484EA3 /* JsonPathExpressionNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JsonPathExpressionNode.cpp; sourceTree = "<group>"; };
+		B9FC2A9E25F908FC00484EA3 /* JsonPathExpressionCompiler.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JsonPathExpressionCompiler.hpp; sourceTree = "<group>"; };
+		B9FC2AA125F908FC00484EA3 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		B9FC2AA225F908FC00484EA3 /* templateio.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = templateio.hpp; sourceTree = "<group>"; };
+		B9FC2AA325F908FC00484EA3 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		B9FC2AA625F908FC00484EA3 /* .gitmodules */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitmodules; sourceTree = "<group>"; };
+		B9FC2AA725F908FC00484EA3 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		B9FC2AA925F908FC00484EA3 /* profile.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = profile.hpp; sourceTree = "<group>"; };
+		B9FC2AAB25F908FC00484EA3 /* parser_combinators.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = parser_combinators.hpp; sourceTree = "<group>"; };
+		B9FC2AAD25F908FC00484EA3 /* function_traits.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = function_traits.hpp; sourceTree = "<group>"; };
+		B9FC2AAF25F908FC00484EA3 /* parser_simple.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = parser_simple.hpp; sourceTree = "<group>"; };
+		B9FC2AB125F908FC00484EA3 /* stream_iterator.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = stream_iterator.hpp; sourceTree = "<group>"; };
+		B9FC2AE525F90AA300484EA3 /* NSString+WStringUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = "NSString+WStringUtils.mm"; path = "Util/NSString+WStringUtils.mm"; sourceTree = "<group>"; };
+		B9FC2AE625F90AA300484EA3 /* NodeTypeToColorTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NodeTypeToColorTransformer.h; path = Util/NodeTypeToColorTransformer.h; sourceTree = "<group>"; };
+		B9FC2AE725F90AA300484EA3 /* NSString+WStringUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+WStringUtils.h"; path = "Util/NSString+WStringUtils.h"; sourceTree = "<group>"; };
+		B9FC2AE825F90AA300484EA3 /* NodeTypeToColorTransformer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = NodeTypeToColorTransformer.mm; path = Util/NodeTypeToColorTransformer.mm; sourceTree = "<group>"; };
+		B9FC2AE925F90AA300484EA3 /* stopwatch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = stopwatch.h; path = Util/stopwatch.h; sourceTree = "<group>"; };
+		B9FC2AEA25F90AA300484EA3 /* NumberNonZeroValueTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NumberNonZeroValueTransformer.h; path = Util/NumberNonZeroValueTransformer.h; sourceTree = "<group>"; };
+		B9FC2AEB25F90AA300484EA3 /* NumberNonZeroValueTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NumberNonZeroValueTransformer.m; path = Util/NumberNonZeroValueTransformer.m; sourceTree = "<group>"; };
+		B9FC2AF525F90B9B00484EA3 /* ToolbarBookmarksTemplate.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = ToolbarBookmarksTemplate.pdf; sourceTree = "<group>"; };
+		B9FC2AF625F90B9B00484EA3 /* BrowserView.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = BrowserView.png; sourceTree = "<group>"; };
+		B9FC2AF725F90B9B00484EA3 /* TextView.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TextView.png; sourceTree = "<group>"; };
+		B9FC2AF825F90B9B00484EA3 /* VertSplit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = VertSplit.png; sourceTree = "<group>"; };
+		B9FC2AF925F90B9B00484EA3 /* TreeView.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TreeView.png; sourceTree = "<group>"; };
+		B9FC2B0325F90D6000484EA3 /* JsonPathSearchController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JsonPathSearchController.mm; sourceTree = "<group>"; };
+		B9FC2B0425F90D6000484EA3 /* PathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PathView.m; sourceTree = "<group>"; };
+		B9FC2B0525F90D6000484EA3 /* GuiModeControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GuiModeControl.h; sourceTree = "<group>"; };
+		B9FC2B0625F90D6000484EA3 /* JsonPathSearchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JsonPathSearchController.h; sourceTree = "<group>"; };
+		B9FC2B0725F90D6000484EA3 /* MarkerTableCellView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MarkerTableCellView.xib; sourceTree = "<group>"; };
+		B9FC2B0825F90D6000484EA3 /* TextEditorGutterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextEditorGutterView.h; sourceTree = "<group>"; };
+		B9FC2B0925F90D6000484EA3 /* NodeSelectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeSelectionController.h; sourceTree = "<group>"; };
+		B9FC2B0A25F90D6000484EA3 /* PathCompletionListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PathCompletionListCell.xib; sourceTree = "<group>"; };
+		B9FC2B0B25F90D6000484EA3 /* JSONWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONWindow.h; sourceTree = "<group>"; };
+		B9FC2B0C25F90D6000484EA3 /* BracezTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BracezTextView.m; sourceTree = "<group>"; };
+		B9FC2B0D25F90D6000484EA3 /* CoordView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoordView.m; sourceTree = "<group>"; };
+		B9FC2B0E25F90D6000484EA3 /* JsonTreeDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JsonTreeDataSource.h; sourceTree = "<group>"; };
+		B9FC2B0F25F90D6000484EA3 /* GuiModeControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GuiModeControl.m; sourceTree = "<group>"; };
+		B9FC2B1025F90D6000484EA3 /* TextEditorGutterView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TextEditorGutterView.mm; sourceTree = "<group>"; };
+		B9FC2B1125F90D6000484EA3 /* PathView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PathView.h; sourceTree = "<group>"; };
+		B9FC2B1225F90D6000484EA3 /* MarkerTableCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarkerTableCellView.h; sourceTree = "<group>"; };
+		B9FC2B1325F90D6000484EA3 /* JsonTreeDataSource.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JsonTreeDataSource.mm; sourceTree = "<group>"; };
+		B9FC2B1425F90D6000484EA3 /* JSONWindow.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JSONWindow.mm; sourceTree = "<group>"; };
+		B9FC2B1525F90D6000484EA3 /* BracezTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BracezTextView.h; sourceTree = "<group>"; };
+		B9FC2B1625F90D6000484EA3 /* NodeSelectionController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NodeSelectionController.mm; sourceTree = "<group>"; };
+		B9FC2B1725F90D6000484EA3 /* CoordView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoordView.h; sourceTree = "<group>"; };
+		B9FC2B1825F90D6000484EA3 /* MarkerTableCellView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MarkerTableCellView.mm; sourceTree = "<group>"; };
+		B9FC2B1A25F90D6000484EA3 /* JsonPreferencesDialogController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = JsonPreferencesDialogController.mm; sourceTree = "<group>"; };
+		B9FC2B1B25F90D6000484EA3 /* PreferencesWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferencesWindow.m; sourceTree = "<group>"; };
+		B9FC2B1C25F90D6000484EA3 /* PreferencesDialogController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferencesDialogController.h; sourceTree = "<group>"; };
+		B9FC2B1D25F90D6000484EA3 /* PreferencesWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PreferencesWindow.xib; sourceTree = "<group>"; };
+		B9FC2B1E25F90D6000484EA3 /* PreferencesWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferencesWindow.h; sourceTree = "<group>"; };
+		B9FC2B1F25F90D6000484EA3 /* PreferencesDialogController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PreferencesDialogController.mm; sourceTree = "<group>"; };
+		B9FC2B2025F90D6000484EA3 /* JsonPreferencesDialogController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JsonPreferencesDialogController.h; sourceTree = "<group>"; };
+		B9FC2B2225F90D6000484EA3 /* SplitterAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplitterAnimation.h; sourceTree = "<group>"; };
+		B9FC2B2325F90D6000484EA3 /* AnimatingTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnimatingTabView.m; sourceTree = "<group>"; };
+		B9FC2B2425F90D6000484EA3 /* HistoryAndFavoritesEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryAndFavoritesEditor.h; sourceTree = "<group>"; };
+		B9FC2B2525F90D6000484EA3 /* DarkDiviterSplitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DarkDiviterSplitter.h; sourceTree = "<group>"; };
+		B9FC2B2625F90D6000484EA3 /* HistoryAndFavoritesControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryAndFavoritesControl.m; sourceTree = "<group>"; };
+		B9FC2B2725F90D6000484EA3 /* HistoryAndFavoritesEditor.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HistoryAndFavoritesEditor.xib; sourceTree = "<group>"; };
+		B9FC2B2825F90D6000484EA3 /* KvoAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KvoAnimation.m; sourceTree = "<group>"; };
+		B9FC2B2925F90D6000484EA3 /* AnimatingTabView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimatingTabView.h; sourceTree = "<group>"; };
+		B9FC2B2A25F90D6000484EA3 /* SplitterAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplitterAnimation.m; sourceTree = "<group>"; };
+		B9FC2B2B25F90D6000484EA3 /* DarkDiviterSplitter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DarkDiviterSplitter.m; sourceTree = "<group>"; };
+		B9FC2B2C25F90D6000484EA3 /* HistoryAndFavoritesEditor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HistoryAndFavoritesEditor.m; sourceTree = "<group>"; };
+		B9FC2B2D25F90D6000484EA3 /* KvoAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KvoAnimation.h; sourceTree = "<group>"; };
+		B9FC2B2E25F90D6000484EA3 /* HistoryAndFavoritesControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryAndFavoritesControl.h; sourceTree = "<group>"; };
+		B9FC2B4825F90D8800484EA3 /* marker_list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = marker_list.h; path = json_model/marker_list.h; sourceTree = "<group>"; };
+		B9FC2B4B25F90DE300484EA3 /* EditorWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditorWindow.xib; sourceTree = "<group>"; };
+		B9FC2B4E25F90E0200484EA3 /* BracezPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BracezPreferences.h; path = Util/BracezPreferences.h; sourceTree = "<group>"; };
+		B9FC2B4F25F90E0200484EA3 /* BracezPreferences.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = BracezPreferences.mm; path = Util/BracezPreferences.mm; sourceTree = "<group>"; };
+		B9FC2B9125F90EE300484EA3 /* jv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jv.h; sourceTree = "<group>"; };
+		B9FC2B9225F90EE300484EA3 /* jq.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jq.h; sourceTree = "<group>"; };
+		B9FC2BB725F90F7100484EA3 /* PreferencesDefaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PreferencesDefaults.plist; path = res/PreferencesDefaults.plist; sourceTree = "<group>"; };
+		B9FC2BBA25F9107C00484EA3 /* Bracez-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Bracez-Info.plist"; path = "res/Bracez-Info.plist"; sourceTree = "<group>"; };
+		B9FC2BC025F910F600484EA3 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = main.m; path = /Users/eldan/dev/priv/bracez/Bracez/main.m; sourceTree = "<absolute>"; };
+		B9FC2BC125F910F600484EA3 /* JsonMockupAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JsonMockupAppDelegate.h; path = /Users/eldan/dev/priv/bracez/Bracez/JsonMockupAppDelegate.h; sourceTree = "<absolute>"; };
+		B9FC2BC225F910F600484EA3 /* JsonMockupAppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = JsonMockupAppDelegate.mm; path = /Users/eldan/dev/priv/bracez/Bracez/JsonMockupAppDelegate.mm; sourceTree = "<absolute>"; };
+		B9FC2BC325F910F600484EA3 /* Bracez_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Bracez_Prefix.pch; path = /Users/eldan/dev/priv/bracez/Bracez/Bracez_Prefix.pch; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -214,15 +200,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		080E96DDFE201D6D7F000001 /* Classes */ = {
-			isa = PBXGroup;
-			children = (
-				256AC3D80F4B6AC300CF3369 /* JsonMockupAppDelegate.h */,
-				256AC3D90F4B6AC300CF3369 /* JsonMockupAppDelegate.mm */,
-			);
-			name = Classes;
-			sourceTree = "<group>";
-		};
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -252,14 +229,16 @@
 		29B97314FDCFA39411CA2CEA /* JsonMockup */ = {
 			isa = PBXGroup;
 			children = (
-				B94381E325C5333E00247A36 /* jsonpath */,
-				B934AD16121C74B0005B06D6 /* Util */,
-				B945FA241192FD4B00DCFAAE /* Gui */,
-				B945F9031192DD6800DCFAAE /* JsonCocoaModel */,
-				B945F8F71192DAB200DCFAAE /* JsonModel */,
-				080E96DDFE201D6D7F000001 /* Classes */,
-				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				B9FC2BC325F910F600484EA3 /* Bracez_Prefix.pch */,
+				B9FC2BC125F910F600484EA3 /* JsonMockupAppDelegate.h */,
+				B9FC2BC225F910F600484EA3 /* JsonMockupAppDelegate.mm */,
+				B9FC2BC025F910F600484EA3 /* main.m */,
+				B9FC2AC725F90A6600484EA3 /* ui */,
+				B934AD16121C74B0005B06D6 /* util */,
+				B945F9031192DD6800DCFAAE /* json_cocoa_model */,
+				B945F8F71192DAB200DCFAAE /* json_model */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
+				B9FC2B8725F90EE300484EA3 /* extlib */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				B99B5A7211C6DF0000A33231 /* QuartzCore.framework */,
@@ -267,29 +246,14 @@
 			name = JsonMockup;
 			sourceTree = "<group>";
 		};
-		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
-			isa = PBXGroup;
-			children = (
-				256AC3F00F4B6AF500CF3369 /* Bracez_Prefix.pch */,
-				29B97316FDCFA39411CA2CEA /* main.m */,
-			);
-			name = "Other Sources";
-			sourceTree = "<group>";
-		};
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				B934B0DB122464DF005B06D6 /* PreferencesDefaults.plist */,
-				B98ACC9F11A3E42300C4F114 /* ViewIcons */,
-				8D1107310486CEB800E47090 /* Bracez-Info.plist */,
+				B9FC2BBA25F9107C00484EA3 /* Bracez-Info.plist */,
+				B9FC2BB725F90F7100484EA3 /* PreferencesDefaults.plist */,
+				B9FC2AF425F90B9B00484EA3 /* ViewIcons */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
-				B952A4642550A5CA005BFB1C /* MarkerTableCellView.xib */,
 				1DDD58140DA1D0A300B32029 /* MainMenu.xib */,
-				B98ACDD811A6F12A00C4F114 /* EditorWindow.xib */,
-				B98781DB11C4D91B00435107 /* PreferencesWindow.xib */,
-				B90EEE4F25E9017A008B14BE /* HistoryAndFavoritesEditor.xib */,
-				B97B3C58253B2EAF00D19FF0 /* ViewModelEditor.xib */,
-				B9EC0CA125D5D92B0003C65A /* PathCompletionListCell.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -305,86 +269,46 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		B934AD16121C74B0005B06D6 /* Util */ = {
+		B934AD16121C74B0005B06D6 /* util */ = {
 			isa = PBXGroup;
 			children = (
+				B9FC2B4E25F90E0200484EA3 /* BracezPreferences.h */,
+				B9FC2B4F25F90E0200484EA3 /* BracezPreferences.mm */,
+				B9FC2AE625F90AA300484EA3 /* NodeTypeToColorTransformer.h */,
+				B9FC2AE825F90AA300484EA3 /* NodeTypeToColorTransformer.mm */,
+				B9FC2AE725F90AA300484EA3 /* NSString+WStringUtils.h */,
+				B9FC2AE525F90AA300484EA3 /* NSString+WStringUtils.mm */,
+				B9FC2AEA25F90AA300484EA3 /* NumberNonZeroValueTransformer.h */,
+				B9FC2AEB25F90AA300484EA3 /* NumberNonZeroValueTransformer.m */,
+				B9FC2AE925F90AA300484EA3 /* stopwatch.h */,
 				B934AD17121C7502005B06D6 /* NSIndexPathAdditions.h */,
 				B934AD18121C7502005B06D6 /* NSIndexPathAdditions.m */,
-				B934ADF212205C19005B06D6 /* KvoAnimation.h */,
-				B934ADF312205C19005B06D6 /* KvoAnimation.m */,
-				B934ADFF12205F6C005B06D6 /* SplitterAnimation.h */,
-				B934AE0012205F6C005B06D6 /* SplitterAnimation.m */,
-				B9F4ADED12E96E1400BF8233 /* stopwatch.h */,
-				B952A45E254BFEA7005BFB1C /* NSString+WStringUtils.h */,
-				B952A45F254BFEA7005BFB1C /* NSString+WStringUtils.mm */,
 			);
-			name = Util;
+			name = util;
 			sourceTree = "<group>";
 		};
-		B94381E325C5333E00247A36 /* jsonpath */ = {
+		B945F8F71192DAB200DCFAAE /* json_model */ = {
 			isa = PBXGroup;
 			children = (
-				B94381E425C5333E00247A36 /* Parser-Combinators */,
-				B943820825C533A300247A36 /* JsonPathExpressionNode.cpp */,
-				B943820925C533A300247A36 /* JsonPathExpressionNode.hpp */,
-				B943820C25C533CD00247A36 /* JsonPathExpressionCompiler.cpp */,
-				B943820D25C533CD00247A36 /* JsonPathExpressionCompiler.hpp */,
-			);
-			path = jsonpath;
-			sourceTree = "<group>";
-		};
-		B94381E425C5333E00247A36 /* Parser-Combinators */ = {
-			isa = PBXGroup;
-			children = (
-				B94381E525C5333E00247A36 /* prolog.hpp */,
-				B94381E625C5333E00247A36 /* LICENSE */,
-				B94381E725C5333E00247A36 /* templateio.hpp */,
-				B94381E825C5333E00247A36 /* Makefile */,
-				B94381E925C5333E00247A36 /* example_expression.cpp */,
-				B94381EA25C5333E00247A36 /* test_simple.cpp */,
-				B94381EB25C5333E00247A36 /* .gitmodules */,
-				B94381EC25C5333E00247A36 /* README.md */,
-				B94381ED25C5333E00247A36 /* mkcsv.cpp */,
-				B94381EE25C5333E00247A36 /* profile.hpp */,
-				B94381EF25C5333E00247A36 /* File-Vector */,
-				B94381F025C5333E00247A36 /* parser_combinators.hpp */,
-				B94381F125C5333E00247A36 /* mkexp.cpp */,
-				B94381F225C5333E00247A36 /* function_traits.hpp */,
-				B94381F325C5333E00247A36 /* prolog.cpp */,
-				B94381F425C5333E00247A36 /* parser_simple.hpp */,
-				B94381F525C5333E00247A36 /* test_combinators.cpp */,
-				B94381F625C5333E00247A36 /* stream_iterator.hpp */,
-			);
-			path = "Parser-Combinators";
-			sourceTree = "<group>";
-		};
-		B94381EF25C5333E00247A36 /* File-Vector */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = "File-Vector";
-			sourceTree = "<group>";
-		};
-		B945F8F71192DAB200DCFAAE /* JsonModel */ = {
-			isa = PBXGroup;
-			children = (
+				B9FC2B4825F90D8800484EA3 /* marker_list.h */,
+				B9FC2A9A25F908FC00484EA3 /* jsonpath */,
 				B9BBFDEE120D2CBE00E4E9AE /* LinesAndBookmarks.cpp */,
 				B9BBFDEF120D2CBE00E4E9AE /* LinesAndBookmarks.h */,
 				B945F8FA1192DAC800DCFAAE /* reader.h */,
 				B945F8FB1192DAC800DCFAAE /* reader.inl */,
 				B945F91A1192DDAC00DCFAAE /* json_file.h */,
 				B945F91B1192DDAC00DCFAAE /* json_file.cpp */,
-				B9AAE003253AB2FA00DE2559 /* marker_list.h */,
 				B984A95325ED8A6600452256 /* JsonIndentFormatter.cpp */,
 				B984A95425ED8A6600452256 /* JsonIndentFormatter.hpp */,
 				B9FC2A8C25F8B0A400484EA3 /* Exception.cpp */,
 				B9FC2A8D25F8B0A400484EA3 /* Exception.hpp */,
-				B9FC2A8F25F8B89B00484EA3 /* marker_list.cpp */,
+				B9FC2A9525F907E200484EA3 /* TextCoordinate.cpp */,
+				B9FC2A9625F907E200484EA3 /* TextCoordinate.hpp */,
 			);
-			name = JsonModel;
+			name = json_model;
 			sourceTree = "<group>";
 		};
-		B945F9031192DD6800DCFAAE /* JsonCocoaModel */ = {
+		B945F9031192DD6800DCFAAE /* json_cocoa_model */ = {
 			isa = PBXGroup;
 			children = (
 				B945F92F1192E0A800DCFAAE /* JsonCocoaNode.h */,
@@ -398,72 +322,157 @@
 				B9AADFFB253A19AD00DE2559 /* SyntaxHilightJsonVisitor.h */,
 				B9AADFFC253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm */,
 			);
-			name = JsonCocoaModel;
+			name = json_cocoa_model;
 			sourceTree = "<group>";
 		};
-		B945FA241192FD4B00DCFAAE /* Gui */ = {
+		B9FC2A9A25F908FC00484EA3 /* jsonpath */ = {
 			isa = PBXGroup;
 			children = (
-				B99B5ED411CD5D2800A33231 /* PreferencesWindow.m */,
-				B99B5ED511CD5D2800A33231 /* PreferencesWindow.h */,
-				B945F8941192A79100DCFAAE /* PathView.h */,
-				B945F8951192A79100DCFAAE /* PathView.m */,
-				B945FB6D11937A3200DCFAAE /* JSONWindow.h */,
-				B945FB6E11937A3200DCFAAE /* JSONWindow.mm */,
-				B98ACD5411A6E6B100C4F114 /* CoordView.h */,
-				B98ACD5511A6E6B100C4F114 /* CoordView.m */,
-				B99B5A5B11C6CB7E00A33231 /* AnimatingTabView.h */,
-				B99B5A5C11C6CB7E00A33231 /* AnimatingTabView.m */,
-				B99B5C3F11CBCC2F00A33231 /* TextEditorGutterView.h */,
-				B99B5C4011CBCC2F00A33231 /* TextEditorGutterView.mm */,
-				B945FA251192FD9500DCFAAE /* GuiModeControl.h */,
-				B945FA261192FD9500DCFAAE /* GuiModeControl.m */,
-				B945FDC4119E899D00DCFAAE /* NodeSelectionController.h */,
-				B945FDC5119E899D00DCFAAE /* NodeSelectionController.mm */,
-				B987820811C4DE9600435107 /* PreferencesDialogController.h */,
-				B987820911C4DE9600435107 /* PreferencesDialogController.mm */,
-				B987825711C535D800435107 /* JsonPreferencesDialogController.h */,
-				B987825811C535D800435107 /* JsonPreferencesDialogController.mm */,
-				B930EB251202105400C8BE4B /* JsonTreeDataSource.h */,
-				B930EB261202105400C8BE4B /* JsonTreeDataSource.mm */,
-				B934B539122EF40F005B06D6 /* NodeTypeToColorTransformer.h */,
-				B934B53A122EF40F005B06D6 /* NodeTypeToColorTransformer.mm */,
-				B9F4AD5412E8DB7C00BF8233 /* SearchPaneView.h */,
-				B9F4AD5512E8DB7C00BF8233 /* SearchPaneView.m */,
-				B9F4AECB1303376000BF8233 /* DarkDiviterSplitter.h */,
-				B9F4AECC1303376000BF8233 /* DarkDiviterSplitter.m */,
-				B97B3C4A253B257000D19FF0 /* ButtonToolbarItem.h */,
-				B97B3C4B253B257000D19FF0 /* ButtonToolbarItem.m */,
-				B97B3C54253B2E9C00D19FF0 /* ViewModelEditor.h */,
-				B97B3C55253B2E9C00D19FF0 /* ViewModelEditor.m */,
-				B9D510B72540B13400B2286B /* NumberNonZeroValueTransformer.h */,
-				B9D510B82540B13400B2286B /* NumberNonZeroValueTransformer.m */,
-				B952A4672550A5F1005BFB1C /* MarkerTableCellView.h */,
-				B952A4682550A5F1005BFB1C /* MarkerTableCellView.mm */,
-				B9FF94F725E022A50056B37C /* JsonPathSearchController.h */,
-				B9FF94F825E022A50056B37C /* JsonPathSearchController.mm */,
-				B9FF94FC25E026400056B37C /* BracezPreferences.h */,
-				B9FF94FD25E026400056B37C /* BracezPreferences.mm */,
-				B9BA73F625E5A0AA00094D8F /* HistoryAndFavoritesControl.h */,
-				B9BA73F725E5A0AA00094D8F /* HistoryAndFavoritesControl.m */,
-				B90EEE4D25E9017A008B14BE /* HistoryAndFavoritesEditor.h */,
-				B90EEE4E25E9017A008B14BE /* HistoryAndFavoritesEditor.m */,
-				B984A94F25EC35EE00452256 /* BracezTextView.h */,
-				B984A95025EC35EE00452256 /* BracezTextView.m */,
+				B9FC2A9B25F908FC00484EA3 /* JsonPathExpressionNode.hpp */,
+				B9FC2A9C25F908FC00484EA3 /* JsonPathExpressionCompiler.cpp */,
+				B9FC2A9D25F908FC00484EA3 /* JsonPathExpressionNode.cpp */,
+				B9FC2A9E25F908FC00484EA3 /* JsonPathExpressionCompiler.hpp */,
+				B9FC2A9F25F908FC00484EA3 /* Parser-Combinators */,
 			);
-			name = Gui;
+			name = jsonpath;
+			path = json_model/jsonpath;
 			sourceTree = "<group>";
 		};
-		B98ACC9F11A3E42300C4F114 /* ViewIcons */ = {
+		B9FC2A9F25F908FC00484EA3 /* Parser-Combinators */ = {
 			isa = PBXGroup;
 			children = (
-				B9F4AD4A12E8DA8C00BF8233 /* ToolbarBookmarksTemplate.pdf */,
-				B98ACCA011A3E42300C4F114 /* BrowserView.png */,
-				B98ACCA111A3E42300C4F114 /* TextView.png */,
-				B98ACCA211A3E42300C4F114 /* TreeView.png */,
-				B98ACCA311A3E42300C4F114 /* VertSplit.png */,
+				B9FC2AA125F908FC00484EA3 /* LICENSE */,
+				B9FC2AA225F908FC00484EA3 /* templateio.hpp */,
+				B9FC2AA325F908FC00484EA3 /* Makefile */,
+				B9FC2AA625F908FC00484EA3 /* .gitmodules */,
+				B9FC2AA725F908FC00484EA3 /* README.md */,
+				B9FC2AA925F908FC00484EA3 /* profile.hpp */,
+				B9FC2AAA25F908FC00484EA3 /* File-Vector */,
+				B9FC2AAB25F908FC00484EA3 /* parser_combinators.hpp */,
+				B9FC2AAD25F908FC00484EA3 /* function_traits.hpp */,
+				B9FC2AAF25F908FC00484EA3 /* parser_simple.hpp */,
+				B9FC2AB125F908FC00484EA3 /* stream_iterator.hpp */,
 			);
-			path = ViewIcons;
+			path = "Parser-Combinators";
+			sourceTree = "<group>";
+		};
+		B9FC2AAA25F908FC00484EA3 /* File-Vector */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "File-Vector";
+			sourceTree = "<group>";
+		};
+		B9FC2AC725F90A6600484EA3 /* ui */ = {
+			isa = PBXGroup;
+			children = (
+				B9FC2B2125F90D6000484EA3 /* common */,
+				B9FC2B0225F90D6000484EA3 /* editor */,
+				B9FC2B1925F90D6000484EA3 /* preferences */,
+			);
+			path = ui;
+			sourceTree = "<group>";
+		};
+		B9FC2AF425F90B9B00484EA3 /* ViewIcons */ = {
+			isa = PBXGroup;
+			children = (
+				B9FC2AF525F90B9B00484EA3 /* ToolbarBookmarksTemplate.pdf */,
+				B9FC2AF625F90B9B00484EA3 /* BrowserView.png */,
+				B9FC2AF725F90B9B00484EA3 /* TextView.png */,
+				B9FC2AF825F90B9B00484EA3 /* VertSplit.png */,
+				B9FC2AF925F90B9B00484EA3 /* TreeView.png */,
+			);
+			name = ViewIcons;
+			path = res/ViewIcons;
+			sourceTree = "<group>";
+		};
+		B9FC2B0225F90D6000484EA3 /* editor */ = {
+			isa = PBXGroup;
+			children = (
+				B9FC2B4B25F90DE300484EA3 /* EditorWindow.xib */,
+				B9FC2B0325F90D6000484EA3 /* JsonPathSearchController.mm */,
+				B9FC2B0425F90D6000484EA3 /* PathView.m */,
+				B9FC2B0525F90D6000484EA3 /* GuiModeControl.h */,
+				B9FC2B0625F90D6000484EA3 /* JsonPathSearchController.h */,
+				B9FC2B0725F90D6000484EA3 /* MarkerTableCellView.xib */,
+				B9FC2B0825F90D6000484EA3 /* TextEditorGutterView.h */,
+				B9FC2B0925F90D6000484EA3 /* NodeSelectionController.h */,
+				B9FC2B0A25F90D6000484EA3 /* PathCompletionListCell.xib */,
+				B9FC2B0B25F90D6000484EA3 /* JSONWindow.h */,
+				B9FC2B0C25F90D6000484EA3 /* BracezTextView.m */,
+				B9FC2B0D25F90D6000484EA3 /* CoordView.m */,
+				B9FC2B0E25F90D6000484EA3 /* JsonTreeDataSource.h */,
+				B9FC2B0F25F90D6000484EA3 /* GuiModeControl.m */,
+				B9FC2B1025F90D6000484EA3 /* TextEditorGutterView.mm */,
+				B9FC2B1125F90D6000484EA3 /* PathView.h */,
+				B9FC2B1225F90D6000484EA3 /* MarkerTableCellView.h */,
+				B9FC2B1325F90D6000484EA3 /* JsonTreeDataSource.mm */,
+				B9FC2B1425F90D6000484EA3 /* JSONWindow.mm */,
+				B9FC2B1525F90D6000484EA3 /* BracezTextView.h */,
+				B9FC2B1625F90D6000484EA3 /* NodeSelectionController.mm */,
+				B9FC2B1725F90D6000484EA3 /* CoordView.h */,
+				B9FC2B1825F90D6000484EA3 /* MarkerTableCellView.mm */,
+			);
+			path = editor;
+			sourceTree = "<group>";
+		};
+		B9FC2B1925F90D6000484EA3 /* preferences */ = {
+			isa = PBXGroup;
+			children = (
+				B9FC2B1A25F90D6000484EA3 /* JsonPreferencesDialogController.mm */,
+				B9FC2B1B25F90D6000484EA3 /* PreferencesWindow.m */,
+				B9FC2B1C25F90D6000484EA3 /* PreferencesDialogController.h */,
+				B9FC2B1D25F90D6000484EA3 /* PreferencesWindow.xib */,
+				B9FC2B1E25F90D6000484EA3 /* PreferencesWindow.h */,
+				B9FC2B1F25F90D6000484EA3 /* PreferencesDialogController.mm */,
+				B9FC2B2025F90D6000484EA3 /* JsonPreferencesDialogController.h */,
+			);
+			path = preferences;
+			sourceTree = "<group>";
+		};
+		B9FC2B2125F90D6000484EA3 /* common */ = {
+			isa = PBXGroup;
+			children = (
+				B9FC2B2225F90D6000484EA3 /* SplitterAnimation.h */,
+				B9FC2B2325F90D6000484EA3 /* AnimatingTabView.m */,
+				B9FC2B2425F90D6000484EA3 /* HistoryAndFavoritesEditor.h */,
+				B9FC2B2525F90D6000484EA3 /* DarkDiviterSplitter.h */,
+				B9FC2B2625F90D6000484EA3 /* HistoryAndFavoritesControl.m */,
+				B9FC2B2725F90D6000484EA3 /* HistoryAndFavoritesEditor.xib */,
+				B9FC2B2825F90D6000484EA3 /* KvoAnimation.m */,
+				B9FC2B2925F90D6000484EA3 /* AnimatingTabView.h */,
+				B9FC2B2A25F90D6000484EA3 /* SplitterAnimation.m */,
+				B9FC2B2B25F90D6000484EA3 /* DarkDiviterSplitter.m */,
+				B9FC2B2C25F90D6000484EA3 /* HistoryAndFavoritesEditor.m */,
+				B9FC2B2D25F90D6000484EA3 /* KvoAnimation.h */,
+				B9FC2B2E25F90D6000484EA3 /* HistoryAndFavoritesControl.h */,
+			);
+			path = common;
+			sourceTree = "<group>";
+		};
+		B9FC2B8725F90EE300484EA3 /* extlib */ = {
+			isa = PBXGroup;
+			children = (
+				B9FC2B8825F90EE300484EA3 /* jq */,
+			);
+			path = extlib;
+			sourceTree = "<group>";
+		};
+		B9FC2B8825F90EE300484EA3 /* jq */ = {
+			isa = PBXGroup;
+			children = (
+				B9FC2B9025F90EE300484EA3 /* include */,
+			);
+			path = jq;
+			sourceTree = "<group>";
+		};
+		B9FC2B9025F90EE300484EA3 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				B9FC2B9125F90EE300484EA3 /* jv.h */,
+				B9FC2B9225F90EE300484EA3 /* jq.h */,
+			);
+			path = include;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -518,24 +527,24 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B9FC2B4C25F90DE300484EA3 /* EditorWindow.xib in Resources */,
+				B9FC2BBB25F9107C00484EA3 /* Bracez-Info.plist in Resources */,
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
+				B9FC2BB825F90F7100484EA3 /* PreferencesDefaults.plist in Resources */,
 				1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */,
 				B945F9001192DAC800DCFAAE /* reader.inl in Resources */,
-				B90EEE5125E9017A008B14BE /* HistoryAndFavoritesEditor.xib in Resources */,
-				B97B3C59253B2EAF00D19FF0 /* ViewModelEditor.xib in Resources */,
-				B98ACCA411A3E42300C4F114 /* BrowserView.png in Resources */,
-				B952A4652550A5CA005BFB1C /* MarkerTableCellView.xib in Resources */,
-				B94381FC25C5333E00247A36 /* README.md in Resources */,
-				B9EC0CA225D5D92B0003C65A /* PathCompletionListCell.xib in Resources */,
-				B98ACCA511A3E42300C4F114 /* TextView.png in Resources */,
-				B98ACCA611A3E42300C4F114 /* TreeView.png in Resources */,
-				B98ACCA711A3E42300C4F114 /* VertSplit.png in Resources */,
-				B98ACDD911A6F12A00C4F114 /* EditorWindow.xib in Resources */,
-				B94381F725C5333E00247A36 /* LICENSE in Resources */,
-				B98781DC11C4D91B00435107 /* PreferencesWindow.xib in Resources */,
-				B94381FB25C5333E00247A36 /* .gitmodules in Resources */,
-				B934B0DC122464DF005B06D6 /* PreferencesDefaults.plist in Resources */,
-				B9F4AD4B12E8DA8C00BF8233 /* ToolbarBookmarksTemplate.pdf in Resources */,
+				B9FC2AFC25F90B9B00484EA3 /* TextView.png in Resources */,
+				B9FC2AB925F908FC00484EA3 /* README.md in Resources */,
+				B9FC2AB425F908FC00484EA3 /* LICENSE in Resources */,
+				B9FC2AFB25F90B9B00484EA3 /* BrowserView.png in Resources */,
+				B9FC2B4125F90D6000484EA3 /* HistoryAndFavoritesEditor.xib in Resources */,
+				B9FC2B3225F90D6000484EA3 /* PathCompletionListCell.xib in Resources */,
+				B9FC2AFA25F90B9B00484EA3 /* ToolbarBookmarksTemplate.pdf in Resources */,
+				B9FC2AFD25F90B9B00484EA3 /* VertSplit.png in Resources */,
+				B9FC2AB825F908FC00484EA3 /* .gitmodules in Resources */,
+				B9FC2B3D25F90D6000484EA3 /* PreferencesWindow.xib in Resources */,
+				B9FC2AFE25F90B9B00484EA3 /* TreeView.png in Resources */,
+				B9FC2B3125F90D6000484EA3 /* MarkerTableCellView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -546,48 +555,45 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B9FC2B4025F90D6000484EA3 /* HistoryAndFavoritesControl.m in Sources */,
 				B984A95525ED8A6600452256 /* JsonIndentFormatter.cpp in Sources */,
-				8D11072D0486CEB800E47090 /* main.m in Sources */,
-				B9FF94F925E022A60056B37C /* JsonPathSearchController.mm in Sources */,
-				256AC3DA0F4B6AC300CF3369 /* JsonMockupAppDelegate.mm in Sources */,
-				B945F8961192A79100DCFAAE /* PathView.m in Sources */,
+				B9FC2B4525F90D6000484EA3 /* HistoryAndFavoritesEditor.m in Sources */,
+				B9FC2B3B25F90D6000484EA3 /* JsonPreferencesDialogController.mm in Sources */,
+				B9FC2B3A25F90D6000484EA3 /* MarkerTableCellView.mm in Sources */,
 				B945F91C1192DDAC00DCFAAE /* json_file.cpp in Sources */,
+				B9FC2B4425F90D6000484EA3 /* DarkDiviterSplitter.m in Sources */,
+				B9FC2B3F25F90D6000484EA3 /* AnimatingTabView.m in Sources */,
+				B9FC2BC425F910F600484EA3 /* main.m in Sources */,
 				B945F9311192E0A800DCFAAE /* JsonCocoaNode.mm in Sources */,
-				B945FA271192FD9500DCFAAE /* GuiModeControl.m in Sources */,
-				B94381F825C5333E00247A36 /* Makefile in Sources */,
-				B945FB6F11937A3200DCFAAE /* JSONWindow.mm in Sources */,
 				B9AADFFD253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm in Sources */,
+				B9FC2B3425F90D6000484EA3 /* CoordView.m in Sources */,
+				B9FC2B3325F90D6000484EA3 /* BracezTextView.m in Sources */,
+				B9FC2B3525F90D6000484EA3 /* GuiModeControl.m in Sources */,
+				B9FC2AEE25F90AA300484EA3 /* NumberNonZeroValueTransformer.m in Sources */,
 				B945FD57119E832B00DCFAAE /* JsonDocument.mm in Sources */,
-				B945FDC6119E899D00DCFAAE /* NodeSelectionController.mm in Sources */,
-				B98ACD5611A6E6B100C4F114 /* CoordView.m in Sources */,
-				B90EEE5025E9017A008B14BE /* HistoryAndFavoritesEditor.m in Sources */,
-				B984A95125EC35EE00452256 /* BracezTextView.m in Sources */,
-				B987820A11C4DE9600435107 /* PreferencesDialogController.mm in Sources */,
-				B987825911C535D800435107 /* JsonPreferencesDialogController.mm in Sources */,
-				B943821425C5519600247A36 /* JsonPathExpressionCompiler.cpp in Sources */,
-				B99B5A5D11C6CB7E00A33231 /* AnimatingTabView.m in Sources */,
-				B952A460254C0010005BFB1C /* NSString+WStringUtils.mm in Sources */,
-				B99B5C4111CBCC2F00A33231 /* TextEditorGutterView.mm in Sources */,
-				B9BA73F825E5A0AA00094D8F /* HistoryAndFavoritesControl.m in Sources */,
-				B99B5ED611CD5D2800A33231 /* PreferencesWindow.m in Sources */,
-				B97B3C4C253B257000D19FF0 /* ButtonToolbarItem.m in Sources */,
+				B9FC2B4325F90D6000484EA3 /* SplitterAnimation.m in Sources */,
+				B9FC2AB525F908FC00484EA3 /* Makefile in Sources */,
+				B9FC2A9725F907E300484EA3 /* TextCoordinate.cpp in Sources */,
 				B9FC2A9325F8C14F00484EA3 /* Exception.cpp in Sources */,
-				B952A4692550A5F1005BFB1C /* MarkerTableCellView.mm in Sources */,
-				B930EB271202105400C8BE4B /* JsonTreeDataSource.mm in Sources */,
+				B9FC2AB225F908FC00484EA3 /* JsonPathExpressionCompiler.cpp in Sources */,
+				B9FC2B3625F90D6000484EA3 /* TextEditorGutterView.mm in Sources */,
 				B9BBFDF0120D2CBE00E4E9AE /* LinesAndBookmarks.cpp in Sources */,
-				B97B3C56253B2E9C00D19FF0 /* ViewModelEditor.m in Sources */,
-				B943820A25C533A300247A36 /* JsonPathExpressionNode.cpp in Sources */,
 				B934AD19121C7503005B06D6 /* NSIndexPathAdditions.m in Sources */,
-				B934ADF412205C19005B06D6 /* KvoAnimation.m in Sources */,
-				B934AE0112205F6C005B06D6 /* SplitterAnimation.m in Sources */,
-				B934B53B122EF40F005B06D6 /* NodeTypeToColorTransformer.mm in Sources */,
-				B9FC2A9125F8C14B00484EA3 /* marker_list.cpp in Sources */,
+				B9FC2B3925F90D6000484EA3 /* NodeSelectionController.mm in Sources */,
+				B9FC2AEC25F90AA300484EA3 /* NSString+WStringUtils.mm in Sources */,
+				B9FC2B2F25F90D6000484EA3 /* JsonPathSearchController.mm in Sources */,
 				B9264D9812A2D7C00037AD39 /* JsonFileListenerObjCBridge.mm in Sources */,
+				B9FC2AB325F908FC00484EA3 /* JsonPathExpressionNode.cpp in Sources */,
+				B9FC2B3025F90D6000484EA3 /* PathView.m in Sources */,
+				B9FC2B3E25F90D6000484EA3 /* PreferencesDialogController.mm in Sources */,
+				B9FC2AED25F90AA300484EA3 /* NodeTypeToColorTransformer.mm in Sources */,
+				B9FC2B3C25F90D6000484EA3 /* PreferencesWindow.m in Sources */,
 				B94D2A0112B2C316007B9DA2 /* JsonMarker.mm in Sources */,
-				B9D510B92540B13400B2286B /* NumberNonZeroValueTransformer.m in Sources */,
-				B9F4AD5612E8DB7C00BF8233 /* SearchPaneView.m in Sources */,
-				B9F4AECD1303376000BF8233 /* DarkDiviterSplitter.m in Sources */,
-				B9FF94FE25E026400056B37C /* BracezPreferences.mm in Sources */,
+				B9FC2B5025F90E0200484EA3 /* BracezPreferences.mm in Sources */,
+				B9FC2B3725F90D6000484EA3 /* JsonTreeDataSource.mm in Sources */,
+				B9FC2B3825F90D6000484EA3 /* JSONWindow.mm in Sources */,
+				B9FC2B4225F90D6000484EA3 /* KvoAnimation.m in Sources */,
+				B9FC2BC525F910F600484EA3 /* JsonMockupAppDelegate.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -625,7 +631,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Bracez_Prefix.pch;
-				INFOPLIST_FILE = "Bracez-Info.plist";
+				INFOPLIST_FILE = "res/Bracez-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -647,7 +653,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Bracez_Prefix.pch;
-				INFOPLIST_FILE = "Bracez-Info.plist";
+				INFOPLIST_FILE = "res/Bracez-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
