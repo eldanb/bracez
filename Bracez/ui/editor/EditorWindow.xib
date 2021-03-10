@@ -321,7 +321,7 @@
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="UTc-dM-0dl">
                                                                             <rect key="frame" x="0.0" y="0.0" width="261" height="360"/>
-                                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                            <autoresizingMask key="autoresizingMask"/>
                                                                             <subviews>
                                                                                 <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="40" viewBased="YES" id="637" userLabel="BookmarksView">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="261" height="360"/>
@@ -847,7 +847,7 @@
             </view>
             <toolbar key="toolbar" implicitIdentifier="DAAFECAE-1850-420E-8CEA-3E27B76E810F" autosavesConfiguration="NO" displayMode="iconOnly" sizeMode="regular" id="157">
                 <allowedToolbarItems>
-                    <toolbarItem implicitItemIdentifier="A83D36F3-A960-4977-B76C-28F701E73885" label="Back" paletteLabel="Back" image="NSGoBackTemplate" sizingBehavior="auto" navigational="YES" id="bmf-2x-UJf" customClass="ButtonToolbarItem">
+                    <toolbarItem implicitItemIdentifier="A83D36F3-A960-4977-B76C-28F701E73885" label="Back" paletteLabel="Back" image="NSGoBackTemplate" sizingBehavior="auto" navigational="YES" id="bmf-2x-UJf">
                         <nil key="toolTip"/>
                         <button key="view" verticalHuggingPriority="750" id="F8n-J4-L5l">
                             <rect key="frame" x="6" y="14" width="22" height="23"/>
@@ -885,7 +885,7 @@
                     <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="210"/>
                     <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="209"/>
                     <toolbarItem implicitItemIdentifier="NSToolbarCustomizeToolbarItem" id="208"/>
-                    <toolbarItem implicitItemIdentifier="1C1A6AF8-AF02-4D6D-B620-55CE9F7DD55E" label="Delete" paletteLabel="Delete" image="NSStopProgressTemplate" sizingBehavior="auto" id="1hl-u1-DMO" customClass="ButtonToolbarItem">
+                    <toolbarItem implicitItemIdentifier="1C1A6AF8-AF02-4D6D-B620-55CE9F7DD55E" label="Delete" paletteLabel="Delete" image="NSStopProgressTemplate" sizingBehavior="auto" id="1hl-u1-DMO">
                         <nil key="toolTip"/>
                         <button key="view" verticalHuggingPriority="750" id="WBj-4P-rfo">
                             <rect key="frame" x="8" y="14" width="26" height="23"/>

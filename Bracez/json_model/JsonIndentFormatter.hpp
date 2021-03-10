@@ -14,7 +14,9 @@
 #include "reader.h"
 
 struct TokenStreamAndUnderlying {
-    TokenStreamAndUnderlying(const std::wstring &text, int startOffset, int startRow, int startCol)
+    TokenStreamAndUnderlying(const std::wstring &text,
+                             int startOffset,
+                             int startRow, int startCol)
         : stringStream(text),
           inputStream(stringStream, NULL, TextCoordinate(startOffset)),
           tokenStream(inputStream, NULL, false, startRow, startCol)
@@ -38,9 +40,6 @@ public:
     static JsonIndentationContext approximateBySingleLine(const std::wstring &text, LinesAndBookmarks &linesAndBookmarks,
                                                           TextCoordinate aOffset);
     static JsonIndentationContext approximateWithTokenStream(json::TokenStream &aTokStream, TextCoordinate aOffset);
-    
-/*    static JsonIndentationContext computeForOffset(const std::wstring &text,
-                                                   TextCoordinate aOffsetStart, TextLength aLen);*/
     
 private:
     JsonIndentationContext();

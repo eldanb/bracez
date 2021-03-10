@@ -24,8 +24,10 @@ static TokenStreamAndUnderlying tokenStreamAtBeginningOfLine(const std::wstring 
  * JsonIndentFormatter
  */
 
-JsonIndentFormatter::JsonIndentFormatter(const std::wstring &text, LinesAndBookmarks &linesAndBookmarks,
-                                         TextCoordinate aOffsetStart, TextLength aLen)
+JsonIndentFormatter::JsonIndentFormatter(const std::wstring &text,
+                                         LinesAndBookmarks &linesAndBookmarks,
+                                         TextCoordinate aOffsetStart,
+                                         TextLength aLen)
     : tokStreamAndCo(tokenStreamAtBeginningOfLine(text, linesAndBookmarks, aOffsetStart)),
       indentationContext(JsonIndentationContext::approximateWithTokenStream(tokStreamAndCo.tokenStream, aOffsetStart))
 {
@@ -192,12 +194,6 @@ JsonIndentationContext JsonIndentationContext::approximateWithTokenStream(json::
     
     return ret;
 }
-    
-/*JsonIndentationContext JsonIndentationContext::computeForOffset(const std::wstring &text,
-                                                                       TextCoordinate aOffsetStart,
-                                                                       TextLength aLen) {
-    
-}*/
 
 void JsonIndentationContext::pushIndentLevel() {
     indentLevelStack.push_back(indentLevelStack.back() + 3);

@@ -19,7 +19,7 @@
 #import "BracezTextView.h"
 
 extern "C" {
-#include "extlib/jq/include/jq.h"
+#include "jq.h"
 }
 
 @interface JSONWindow () <BracezTextViewDelegate> {

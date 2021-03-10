@@ -2,6 +2,18 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:/Users/eldan/dev/priv/bracez/Bracez/Bracez_Prefix.pch">
+   </FileRef>
+   <FileRef
+      location = "group:/Users/eldan/dev/priv/bracez/Bracez/JsonMockupAppDelegate.h">
+   </FileRef>
+   <FileRef
+      location = "group:/Users/eldan/dev/priv/bracez/Bracez/JsonMockupAppDelegate.mm">
+   </FileRef>
+   <FileRef
+      location = "group:/Users/eldan/dev/priv/bracez/Bracez/main.m">
+   </FileRef>
+   <FileRef
       location = "self:">
    </FileRef>
 </Workspace>

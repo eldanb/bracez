@@ -391,7 +391,7 @@ TextCoordinate getContainerStartColumnAddr(const json::ContainerNode *containerN
 -(int)suggestCloserIndentAt:(TextCoordinate)where getLineStart:(int*)lineStart {
     unsigned long row, col;
     linesAndBookmarks.getCoordinateRowCol(where, row, col);
-    *lineStart = linesAndBookmarks.getLineStart(row-1).getAddress();
+    *lineStart = linesAndBookmarks.getLineStart(row).getAddress();
         
     const json::Node *n = file->FindNodeContaining(where, NULL);
     const json::ContainerNode *container = dynamic_cast<const json::ContainerNode*>(n);
