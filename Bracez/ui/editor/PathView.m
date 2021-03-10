@@ -70,7 +70,7 @@
 
 -(void)mouseDown:(NSEvent *)theEvent
 {
-   int lModifiers = [theEvent modifierFlags];
+   NSEventModifierFlags lModifiers = [theEvent modifierFlags];
    if((lModifiers & NSEventModifierFlagControl) == 0)
    {
       NSPoint lClickPoint = [self convertPoint:[theEvent locationInWindow] fromView:nil];
@@ -93,12 +93,12 @@
    NSRect lPathElementFrame;
    PathViewComponentCell *lPathElement =  [self hitTestPathElement:lClickPoint andGetFrame:&lPathElementFrame];
 
-   int lIdx = [_pathCells indexOfObject:lPathElement];
+   NSUInteger lIdx = [_pathCells indexOfObject:lPathElement];
    
    if(lIdx!=NSNotFound)
    {
       NSMenu *lMenu = NULL;
-      [_delegate pathView:self preparePopupMenu:&lMenu forIndex:lIdx];
+      [_delegate pathView:self preparePopupMenu:&lMenu forIndex:(int)lIdx];
 
       if(lMenu)
       {
@@ -114,10 +114,10 @@
    if(_currentHilightedCell)
    {
       [_currentHilightedCell setHighlighted:NO];
-      int lIdx = [_pathCells indexOfObject:_currentHilightedCell];
-      if(lIdx>=0)
+      NSUInteger lIdx = [_pathCells indexOfObject:_currentHilightedCell];
+      if(lIdx!=NSNotFound)
       {
-         [_delegate pathView:self didClickOnPathComponentIndex:lIdx];
+         [_delegate pathView:self didClickOnPathComponentIndex:(int)lIdx];
       }
       
       _currentHilightedCell = nil;
@@ -184,7 +184,7 @@
 
         case NSDownArrowFunctionKey:
             if(_completionTableView.selectedRow < [_completionTableView.dataSource numberOfRowsInTableView:_completionTableView]-1) {
-                int selectedRow = _completionTableView.selectedRow+1;
+                NSUInteger selectedRow = _completionTableView.selectedRow+1;
                 [_completionTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:selectedRow]
                                   byExtendingSelection:NO];
                 [_completionTableView scrollRowToVisible:selectedRow];
@@ -193,7 +193,7 @@
             
         case NSUpArrowFunctionKey:
             if(_completionTableView.selectedRow > 0) {
-                int selectedRow = _completionTableView.selectedRow-1;
+                NSUInteger selectedRow = _completionTableView.selectedRow-1;
                 [_completionTableView selectRowIndexes:[NSIndexSet indexSetWithIndex:selectedRow]
                                   byExtendingSelection:NO];
                 [_completionTableView scrollRowToVisible:selectedRow];
@@ -281,7 +281,7 @@
    
    CGFloat lWidthLim = lCurFrame.size.width - (lLastCell?[lLastCell cellSize].width:0) - (lPreLastCell?[lPreLastCell cellSize].width:0) - [_ellipsisCell cellSize].width;
    
-   for (int lCellIdx=0; lCellIdx<[_pathCells count]; lCellIdx++) {
+   for (NSUInteger lCellIdx=0; lCellIdx<[_pathCells count]; lCellIdx++) {
       NSCell *lCell = [_pathCells objectAtIndex:lCellIdx];
       lCurFrame.size.width = [lCell cellSize].width;      
       
@@ -356,7 +356,7 @@
     NSRange selection = [editor.selectedRanges.firstObject rangeValue];
     NSLayoutManager *layoutManager = editor.layoutManager;
 
-    int glyphIdx = [layoutManager glyphIndexForCharacterAtIndex:selection.location];
+    NSUInteger glyphIdx = [layoutManager glyphIndexForCharacterAtIndex:selection.location];
     CGRect glyphLineFrag = [layoutManager lineFragmentRectForGlyphAtIndex:glyphIdx effectiveRange:nil];
     CGPoint glyphPos = [layoutManager locationForGlyphAtIndex:glyphIdx];
     glyphPos.x += glyphLineFrag.origin.x;
@@ -487,7 +487,7 @@
 
    NSBezierPath* lArrow = [NSBezierPath bezierPath];
  
-   [[NSColor windowFrameColor] setStroke];
+   [[NSColor gridColor] setStroke];
 
    [lArrow setLineWidth:1];
    [lArrow moveToPoint:NSMakePoint(cellFrame.origin.x+cellFrame.size.width-8, cellFrame.origin.y+cellFrame.size.height-2)];

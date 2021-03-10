@@ -54,7 +54,7 @@ class JsonPathExpressionNode: public JsonPathInspectable {
 public:
     virtual ~JsonPathExpressionNode() {}
     
-    virtual JsonPathExpressionNodeEvalResult evaluate(JsonPathExpressionNodeEvalContext &context) {} // TODO PURE
+    virtual JsonPathExpressionNodeEvalResult evaluate(JsonPathExpressionNodeEvalContext &context) = 0;
 } ;
 
 class JsonPathExpressionNodeNavPipelineStep: public JsonPathInspectable {

@@ -15,8 +15,8 @@
     self = [super initWithFrame:frame];
     if (self) {
       _btnCell = [[NSButtonCell alloc] init];
-      [_btnCell setBezelStyle:NSSmallSquareBezelStyle];
-      [_btnCell setAlignment:NSCenterTextAlignment];
+      [_btnCell setBezelStyle:NSBezelStyleSmallSquare];
+      [_btnCell setAlignment:NSTextAlignmentCenter];
       [_btnCell setFont:[NSFont userFontOfSize:11.0]];
       [_btnCell setWraps:NO];
     }
@@ -29,7 +29,9 @@
 
 -(void)setCoordinateRow:(NSUInteger)aRow col:(NSUInteger)aCol;
 {
-   [_btnCell setTitle:[NSString stringWithFormat:@"%d : %d", aRow, aCol]];
+   [_btnCell setTitle:[NSString stringWithFormat:@"%lu : %lu",
+                       (unsigned long)aRow,
+                       (unsigned long)aCol]];
    [self setNeedsDisplay:YES];
 }
 

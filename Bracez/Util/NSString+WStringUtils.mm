@@ -22,7 +22,7 @@
 }
 
 -(std::wstring)cStringWstring {
-    unsigned int len = self.length;
+    NSUInteger len = self.length;
     std::wstring ret(len, 0);
     
     NSUInteger usedLen;

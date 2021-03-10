@@ -42,7 +42,7 @@ public:
    LineMarkerList::const_iterator begin() const;
    LineMarkerList::const_iterator end() const;
 
-    void getCoordinateRowCol(TextCoordinate aCoord, unsigned long &aRow, unsigned long &aCol) const;
+    void getCoordinateRowCol(TextCoordinate aCoord, int &aRow, int &aCol) const;
     inline TextCoordinate getLineStart(unsigned long aRow) const {
         if(aRow <= 1) {
             return TextCoordinate(0);
@@ -50,7 +50,7 @@ public:
         if(aRow-2 > lineStarts.size()) {
             return TextCoordinate::infinity;
         } else {
-            return (TextCoordinate)lineStarts[aRow-2];
+            return (TextCoordinate)lineStarts[(int)(aRow-2)];
         }
     }
     
@@ -60,14 +60,14 @@ public:
     
     inline TextCoordinate getLineEnd(unsigned long aRow) const {
         if(aRow-1 < lineStarts.size()) {
-            return TextCoordinate(lineStarts[aRow-1].getCoordinate()-1);
+            return TextCoordinate(lineStarts[(int)(aRow-1)].getCoordinate()-1);
         } else {
             return endOffset;
         }
     }
 
 
-    int numLines() { return lineStarts.size()+1; }
+    unsigned long numLines() { return lineStarts.size()+1; }
     void updateLineOffsetsAfterSplice(TextCoordinate aOffsetStart,
                                       TextLength aLen,
                                       TextLength aNewLen,

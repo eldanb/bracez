@@ -132,7 +132,7 @@ private:
           lIter != linesAndBookmarks.end();
           lIter++)
       {
-          int bookmarkLine = lIter->getCoordinate().getAddress();
+          unsigned long bookmarkLine = lIter->getCoordinate().getAddress();
           TextCoordinate lineStart = linesAndBookmarks.getLineFirstCharacter( bookmarkLine );
           NSString *textStorageString = self.textStorage.string;
           
@@ -142,7 +142,7 @@ private:
           NSString *lineDesc = [trimmedLineContent substringWithRange:NSIntersectionRange(NSMakeRange(0, trimmedLineContent.length),
                                                                                           NSMakeRange(0, 50))];
           
-          [lMarkerArray addObject:[[JsonMarker alloc] initWithLine:lIter->getCoordinate().getAddress()
+          [lMarkerArray addObject:[[JsonMarker alloc] initWithLine:(int)(lIter->getCoordinate().getAddress())
                                                        description:lineDesc
                                                         markerType:JsonMarkerTypeBookmark
                                                          parentDoc:self]];
@@ -232,17 +232,17 @@ private:
     }
 }
 
--(void)translateCoordinate:(TextCoordinate)aCoord toRow:(NSUInteger*)aRow col:(NSUInteger*)aCol
+-(void)translateCoordinate:(TextCoordinate)aCoord toRow:(int*)aRow col:(int*)aCol
 {
-   unsigned long lRow;
-   unsigned long lCol;
+   int lRow;
+   int lCol;
    linesAndBookmarks.getCoordinateRowCol(aCoord, lRow, lCol);
    
    *aRow = lRow;
    *aCol = lCol;
 }
 
--(UInt32)characterIndexForFirstCharOfLine:(UInt32)lineNumber {
+-(NSUInteger)characterIndexForFirstCharOfLine:(UInt32)lineNumber {
     return (lineNumber-1)<linesAndBookmarks.numLines() ?
                 linesAndBookmarks.getLineFirstCharacter(lineNumber).getAddress() :
                 -1;
@@ -346,9 +346,9 @@ private:
 }
 
 
--(void)reindentStartingAt:(int)aOffsetStart len:(TextLength)aLen {
+-(void)reindentStartingAt:(TextCoordinate)aOffsetStart len:(TextLength)aLen {
     std::wstring jsonText = _textStorage.string.cStringWstring;
-    JsonIndentFormatter fixer(jsonText, linesAndBookmarks, TextCoordinate(aOffsetStart), aLen);
+    JsonIndentFormatter fixer(jsonText, linesAndBookmarks, aOffsetStart, aLen);
     const std::wstring &indent = fixer.getIndented();
         
     [_textStorage replaceCharactersInRange:NSMakeRange(aOffsetStart, aLen) withString:[NSString stringWithWstring:indent]];
@@ -383,21 +383,21 @@ TextCoordinate getContainerStartColumnAddr(const json::ContainerNode *containerN
     }
     
     TextCoordinate containerStartColAddr = getContainerStartColumnAddr(container);
-    unsigned long containerStartCol, containerStartRow;
+    int containerStartCol, containerStartRow;
     linesAndBookmarks.getCoordinateRowCol(containerStartColAddr, containerStartRow, containerStartCol);
     return containerStartCol-1 + 3;
 }
 
--(int)suggestCloserIndentAt:(TextCoordinate)where getLineStart:(int*)lineStart {
-    unsigned long row, col;
+-(int)suggestCloserIndentAt:(TextCoordinate)where getLineStart:(TextCoordinate*)lineStart {
+    int row, col;
     linesAndBookmarks.getCoordinateRowCol(where, row, col);
-    *lineStart = linesAndBookmarks.getLineStart(row).getAddress();
+    *lineStart = linesAndBookmarks.getLineStart(row);
         
     const json::Node *n = file->FindNodeContaining(where, NULL);
     const json::ContainerNode *container = dynamic_cast<const json::ContainerNode*>(n);
     if(container) {
         TextCoordinate containerStartColAddr = getContainerStartColumnAddr(container);
-        unsigned long containerStartCol, containerStartRow;
+        int containerStartCol, containerStartRow;
         linesAndBookmarks.getCoordinateRowCol(containerStartColAddr, containerStartRow, containerStartCol);
         return containerStartCol-1;
     } else {
@@ -436,7 +436,7 @@ TextCoordinate getContainerStartColumnAddr(const json::ContainerNode *containerN
 
         //sleep(3);
         dispatch_async(dispatch_get_main_queue(), ^{
-            if(modelRefreshTag == _lastRequestedSemanticModelRefresh) {
+            if(modelRefreshTag == self->_lastRequestedSemanticModelRefresh) {
                 [self updateSemanticModel:tfile];
             } else {
                 delete tfile;

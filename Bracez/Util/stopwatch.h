@@ -14,7 +14,7 @@ public:
    stopwatch(const char *aName = NULL)
    {
       name=aName;
-      memset(&lapTime, 0, sizeof(lapTime));
+      lapTime = 0;
       restart();
    }
    
@@ -26,21 +26,21 @@ public:
    void restart()
    {
       stopped = false;
-      startTime = UpTime();
+      startTime = clock_gettime_nsec_np(CLOCK_UPTIME_RAW);
    }
    
    void lap(const char *aDesc)
    {
-      AbsoluteTime lCurTime = UpTime();
+       __uint64_t lCurTime = clock_gettime_nsec_np(CLOCK_UPTIME_RAW);
       
-      if(lapTime.hi!=0 || lapTime.lo!=0)
+      if(lapTime != 0)
       {
          printf("[stopwatch] %s: %s @ %d millisec (%d millisecs from previous lap)\n", 
                name.c_str(), aDesc, 
-               (int)(AbsoluteDeltaToNanoseconds(lCurTime, startTime).lo/1000/1000),
-               (int)(AbsoluteDeltaToNanoseconds(lCurTime, lapTime).lo/1000/1000));
+               (int)((lCurTime-startTime)/1000/1000),
+               (int)((lCurTime-lapTime)/1000/1000));
       } else {
-         printf("[stopwatch] %s: %s @ %d millisec\n", name.c_str(), aDesc, (int)(AbsoluteDeltaToNanoseconds(lCurTime, startTime).lo/1000/1000));
+         printf("[stopwatch] %s: %s @ %d millisec\n", name.c_str(), aDesc, (int)((lCurTime-startTime)/1000/1000));
       }
 
       
@@ -57,8 +57,8 @@ public:
    }
    
 private:
-   AbsoluteTime startTime;
-   AbsoluteTime lapTime;
+   __int64_t startTime;
+   __int64_t lapTime;
    bool stopped;
    std::string name;
 } ;

@@ -12,7 +12,7 @@ static TokenStreamAndUnderlying tokenStreamAtBeginningOfLine(const std::wstring 
                                                              LinesAndBookmarks &linesAndBookmarks,
                                                              TextCoordinate aOffset) {
     
-    unsigned long row, col;
+    int row, col;
     linesAndBookmarks.getCoordinateRowCol(aOffset, row, col);
     
     TextCoordinate inputOffset = linesAndBookmarks.getLineStart(row) + (row > 1 ? 1 : 0);
@@ -31,7 +31,7 @@ JsonIndentFormatter::JsonIndentFormatter(const std::wstring &text,
     : tokStreamAndCo(tokenStreamAtBeginningOfLine(text, linesAndBookmarks, aOffsetStart)),
       indentationContext(JsonIndentationContext::approximateWithTokenStream(tokStreamAndCo.tokenStream, aOffsetStart))
 {
-    int textLen = text.length();
+    TextLength textLen = (TextLength)text.length();
     startOffset = aOffsetStart;
 
     if(startOffset+aLen > TextCoordinate(textLen)) {

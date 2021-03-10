@@ -14,7 +14,7 @@ NSString * const JsonNodePboardType=@"JsonNode";
 @implementation JsonTreeDataSource
 - (BOOL) outlineView: (NSOutlineView *)ov isItemExpandable: (id)item { return NO; }
 - (NSInteger) outlineView: (NSOutlineView *)ov numberOfChildrenOfItem:(id)item { return 0; }
-- (id) outlineView: (NSOutlineView *)ov child:(int)index ofItem:(id)item { return nil; }
+- (id) outlineView: (NSOutlineView *)ov child:(long)index ofItem:(id)item { return nil; }
 - (id)   outlineView: (NSOutlineView *)ov objectValueForTableColumn:(NSTableColumn*)col byItem:(id)item { return nil; }
 
 - (BOOL) outlineView: (NSOutlineView *)ov
@@ -29,7 +29,7 @@ NSString * const JsonNodePboardType=@"JsonNode";
    
    if(lNode && *lNode && lParentNode && *lParentNode)
    {
-      [*lNode moveToNode:[item representedObject] atIndex:index fromParent:*lParentNode];
+      [*lNode moveToNode:[item representedObject] atIndex:(int)index fromParent:*lParentNode];
    }
    
    return YES;
@@ -58,7 +58,7 @@ NSString * const JsonNodePboardType=@"JsonNode";
 {
    if([[inItem representedObject] isContainer])
    {
-      return NSDragOperationAll;
+      return NSDragOperationEvery;
    } else 
    {
       return NSDragOperationNone;

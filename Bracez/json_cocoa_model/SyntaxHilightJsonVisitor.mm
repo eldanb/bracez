@@ -26,7 +26,7 @@ bool SyntaxHighlightJsonVisitor::visitNode(const Node *aNode)
 {
   if(dynamic_cast<const ObjectNode*>(aNode))
   {
-     int lOfs = aNode->GetAbsTextRange().start.getAddress();
+     unsigned long lOfs = aNode->GetAbsTextRange().start.getAddress();
      
      const ObjectNode *lObjNode = dynamic_cast<const ObjectNode*>(aNode);
      int lChildCount = lObjNode->GetChildCount();
@@ -45,7 +45,7 @@ bool SyntaxHighlightJsonVisitor::visitNode(const Node *aNode)
      
      json::TextRange lNodeRange = aNode->GetAbsTextRange();
       if(lNodeRange.end.infinite()) {
-          lNodeRange.end = TextCoordinate(hilightRange.location + hilightRange.length);
+          lNodeRange.end = TextCoordinate((unsigned int)(hilightRange.location + hilightRange.length));
       }
      NSRange lRange = NSIntersectionRange(NSMakeRange(lNodeRange.start.getAddress(), lNodeRange.length()),
                                             hilightRange);

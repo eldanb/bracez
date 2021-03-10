@@ -26,7 +26,7 @@ public:
    inline bool operator<(const TextCoordinate &aOther) const { return coordinate < aOther; }
    inline bool operator>=(const TextCoordinate &aOther) const { return coordinate >= aOther; }
 
-   inline void adjustCoordinate(int aOfs) { coordinate += aOfs; };
+   inline void adjustCoordinate(long aOfs) { coordinate += aOfs; };
       
 protected:
 
@@ -180,7 +180,7 @@ bool MarkerList<MARKER_TYPE>::spliceCoordinatesList(TextCoordinate aOffsetStart,
    
    // Adjust elements past deletion range
    lChanged = lChanged || iter!=markers.end();
-   int lLenDiff = aNewLen - aLen;
+   long lLenDiff = aNewLen - aLen;
    while(iter != markers.end())
    {
       iter->adjustCoordinate(lLenDiff);
@@ -189,8 +189,8 @@ bool MarkerList<MARKER_TYPE>::spliceCoordinatesList(TextCoordinate aOffsetStart,
    
    // Delete deletion range
    lChanged = lChanged || delstart_iter!=delend_iter;
-   if(aOutEraseStart) *aOutEraseStart = delstart_iter - markers.begin();
-   if(aOutEraseLen) *aOutEraseLen = delend_iter - delstart_iter;
+   if(aOutEraseStart) *aOutEraseStart = (int)(delstart_iter - markers.begin());
+   if(aOutEraseLen) *aOutEraseLen = (int)(delend_iter - delstart_iter);
    
    markers.erase(delstart_iter, delend_iter);
    

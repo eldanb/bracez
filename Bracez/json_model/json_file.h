@@ -123,7 +123,7 @@ namespace json
       bool ValueLt(Node *other) const;
 
    protected:
-      virtual void AdjustChildRangeAt(int aIdx, int aDiff);
+      virtual void AdjustChildRangeAt(int aIdx, long aDiff);
       virtual void StoreChildAt(int aIdx, Node *aNode) = 0;
 
       friend class JsonFile;
@@ -226,7 +226,7 @@ namespace json
       bool ValueEquals(Node *other) const;
 
    protected:
-      void AdjustChildRangeAt(int aIdx, int aDiff);
+      void AdjustChildRangeAt(int aIdx, long aDiff);
       virtual void StoreChildAt(int aIdx, Node *aNode);
 
    private:
@@ -355,6 +355,8 @@ namespace json
       class Notification
       {
       public:
+          virtual ~Notification() {};
+          
          virtual void deliverToListener(JsonFile *aSender, JsonFileChangeListener *aListener) const = 0;
          virtual Notification *clone() const = 0;
       } ;

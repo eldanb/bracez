@@ -143,7 +143,7 @@ using namespace json;
 {
     json::ObjectNode *objContainer = dynamic_cast<json::ObjectNode *>(proxiedElement->GetParent());
     if(objContainer) {
-        long indexInParent = objContainer->GetIndexOfChild(proxiedElement);
+        int indexInParent = objContainer->GetIndexOfChild(proxiedElement);
         objContainer->RenameMemberAt(indexInParent, wide_utf8_converter.from_bytes(nodeName.UTF8String));
         name = nodeName;
     }
@@ -156,7 +156,7 @@ using namespace json;
 -(int)countOfChildren
 {
    [self _prepChildren];   
-   return [children count];
+   return (int)[children count];
 }
 
 -(JsonCocoaNode*)objectInChildrenAtIndex:(int)aIdx

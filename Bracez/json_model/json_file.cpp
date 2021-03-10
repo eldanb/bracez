@@ -219,7 +219,7 @@ void ContainerNode::RemoveChildAt(int aIdx)
 }
 
 
-void ContainerNode::AdjustChildRangeAt(int aIdx, int aDiff)
+void ContainerNode::AdjustChildRangeAt(int aIdx, long aDiff)
 {
     Node *lNode = GetChildAt(aIdx);
     
@@ -274,7 +274,7 @@ ArrayNode::const_iterator ArrayNode::End() const
 
 int ArrayNode::GetChildCount() const
 {
-    return elements.size();
+    return (int)elements.size();
 }
 
 Node *ArrayNode::GetChildAt(int aIdx)
@@ -322,8 +322,8 @@ void ArrayNode::InsertMemberAt(int aIdx, Node *aElement, const wstring *aElement
     // Don't send notifications till we're thru
     DeferNotificationsInBlock lDnib(GetDocument()->GetOwner());
     
-    int lElemAddr;
-    int lChangeAddr;
+    unsigned long lElemAddr;
+    unsigned long lChangeAddr;
     
     bool lIsLast;
     
@@ -331,7 +331,7 @@ void ArrayNode::InsertMemberAt(int aIdx, Node *aElement, const wstring *aElement
     Elements::iterator lIter;
     if(aIdx < 0 || aIdx >= elements.size())
     {
-        aIdx = elements.size();
+        aIdx = (int)elements.size();
         lElemAddr = textRange.length()-1;
         lIter = elements.end();
         lIsLast = true;
@@ -355,7 +355,7 @@ void ArrayNode::InsertMemberAt(int aIdx, Node *aElement, const wstring *aElement
     }
     
     // Next -- element text
-    int lElementTextLen;
+    size_t lElementTextLen;
     if(aElementText)
     {
         lCalculatedText += *aElementText;
@@ -380,7 +380,7 @@ void ArrayNode::InsertMemberAt(int aIdx, Node *aElement, const wstring *aElement
     elements.insert(lIter, aElement);
     
     aElement->textRange.start = TextCoordinate(lElemAddr);
-    aElement->textRange.end = TextCoordinate(lElemAddr + lElementTextLen);
+    aElement->textRange.end = TextCoordinate(lElemAddr + (unsigned int)lElementTextLen);
 }
 
 struct ArrayMemberTextRangeOrdering 
@@ -405,7 +405,7 @@ int ArrayNode::FindChildEndingAfter(const TextCoordinate &aDocOffset) const
     if(lContainingElement == elements.end())
         return -1;
     
-    return lContainingElement - elements.begin();
+    return (int)(lContainingElement - elements.begin());
 }
 
 
@@ -467,7 +467,7 @@ ObjectNode::const_iterator ObjectNode::End() const
 
 int ObjectNode::GetChildCount() const
 {
-    return members.size();
+    return (int)members.size();
 }
 
 Node *ObjectNode::GetChildAt(int aIdx)
@@ -485,7 +485,7 @@ int ObjectNode::GetIndexOfMemberWithName(const wstring &name) const {
         iter != members.end();
         iter++) {
         if(iter->name == name) {
-            return iter - members.begin();
+            return (int)(iter - members.begin());
         }
     }
     
@@ -501,7 +501,7 @@ void ObjectNode::StoreChildAt(int aIdx, Node *aNode) {
     members[aIdx].node = aNode;
 }
 
-void ObjectNode::AdjustChildRangeAt(int aIdx, int aDiff)
+void ObjectNode::AdjustChildRangeAt(int aIdx, long aDiff)
 {
     Member &lMember = members[aIdx];
     
@@ -535,7 +535,7 @@ int ObjectNode::FindChildEndingAfter(const TextCoordinate &aDocOffset) const
         return -1;
     
     //   printf("Child ending after %d is '%s\n", aDocOffset, lContainingElement->name.c_str());
-    return lContainingElement - members.begin();
+    return (int)(lContainingElement - members.begin());
 }
 
 const wstring &ObjectNode::GetMemberNameAt(int aIdx) const
@@ -565,8 +565,8 @@ ObjectNode::Member &ObjectNode::InsertMemberAt(int aIdx, const wstring &aName, N
     // Don't send notifications till we're thru
     DeferNotificationsInBlock lDnib(GetDocument()->GetOwner());
     
-    int lNameAddr;
-    int lChangeAddr;
+    unsigned long lNameAddr;
+    unsigned long lChangeAddr;
     
     Member lMember(aName, aElement);
     bool lIsLast;
@@ -576,7 +576,7 @@ ObjectNode::Member &ObjectNode::InsertMemberAt(int aIdx, const wstring &aName, N
     
     if(aIdx < 0 || aIdx >= members.size())
     {
-        aIdx = members.size();
+        aIdx = (int)members.size();
         lNameAddr = textRange.length()-1;
         lIter = members.end();
         lIsLast = true;
@@ -594,7 +594,7 @@ ObjectNode::Member &ObjectNode::InsertMemberAt(int aIdx, const wstring &aName, N
     
     // Calculate element text: start with name
     wstring lCalculatedText;
-    int lNameLen;
+    unsigned long lNameLen;
     
     lCalculatedText = jsonizeString(lMember.name);
     lNameLen = lCalculatedText.length();
@@ -608,10 +608,10 @@ ObjectNode::Member &ObjectNode::InsertMemberAt(int aIdx, const wstring &aName, N
     lCalculatedText += L": ";
     
     // (Update node start address to skip name)
-    int lElemAddr = lChangeAddr + lCalculatedText.length();
+    unsigned long lElemAddr = lChangeAddr + lCalculatedText.length();
     
     // Next -- element text
-    int lElementTextLen;
+    unsigned long lElementTextLen;
     if(aElementText)
     {
         lCalculatedText += *aElementText;
@@ -961,12 +961,12 @@ bool JsonFile::FindPathForJsonPathString(std::wstring aPathString, JsonPath &aRe
         } else
             if(ArrayNode *lCurArrayNode = dynamic_cast<ArrayNode*>(lCurNode)) {
                 wchar_t * p;
-                int lArrayIndex = wcstol(lPathComponent.c_str(), &p, 10);
+                int lArrayIndex = (int)wcstol(lPathComponent.c_str(), &p, 10);
                 if(*p != 0) {
                     return false;
                 }
                 aRet.push_back(lArrayIndex);
-                lCurNode = lCurArrayNode->GetChildAt(lArrayIndex);
+                lCurNode = lCurArrayNode->GetChildAt((int)lArrayIndex);
             } else {
                 return false;
             }
@@ -1024,15 +1024,15 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
     // Adjust splice range to not include non-modified regions.
     // E.g on MacOS the text system my specific a longer range
     // than actually changed.
-    int newTextLen = aNewText.length();
-    int trimLeft = 0;
+    unsigned long newTextLen = aNewText.length();
+    unsigned long trimLeft = 0;
     while(trimLeft < aLen &&
           trimLeft < newTextLen &&
           aNewText[trimLeft] == jsonText[aOffsetStart + trimLeft]) {
         trimLeft++;
     }
     
-    int trimRight = 0;
+    unsigned long trimRight = 0;
     while(trimRight < (aLen-trimLeft) &&
           trimRight < newTextLen &&
           aNewText[newTextLen - 1 - trimRight] == jsonText[aOffsetStart + aLen - 1 - trimRight]) {
@@ -1123,7 +1123,7 @@ void JsonFile::spliceJsonTextByDomChange(TextCoordinate aOffsetStart, TextLength
     
     stopwatch lSpliceTime("spliceJsonTextByDomChange");
     
-    int lNewLen = aNewText.length();
+    unsigned long lNewLen = aNewText.length();
     
     // Update text and line lengths
     jsonText.insert(aOffsetStart, aNewText);
@@ -1143,7 +1143,7 @@ void JsonFile::spliceJsonTextByDomChange(TextCoordinate aOffsetStart, TextLength
 void JsonFile::updateTreeOffsetsAfterSplice(TextCoordinate aOffsetStart, TextLength aLen, TextLength aNewLen)
 {
     // Update offsets in json tree; start in top most level
-    int lLenDiff = aNewLen - aLen;
+    long lLenDiff = aNewLen - aLen;
     ContainerNode *lCurContainer = jsonDom;
     ContainerNode *lNextContainer = NULL;
     jsonDom->textRange.end += lLenDiff;

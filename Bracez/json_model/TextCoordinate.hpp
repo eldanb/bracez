@@ -14,14 +14,14 @@
 
 #define TEXT_COORDINATE_INFINITY ((unsigned int)-1)
 
-typedef unsigned int TextLength;
+typedef unsigned long TextLength;
 
 class TextCoordinate {
 
 public:
-    explicit TextCoordinate(unsigned int coord = 0) : coord(coord) {}
+    explicit TextCoordinate(unsigned long coord = 0) : coord(coord) {}
     
-    inline TextCoordinate &operator+=(int other) {
+    inline TextCoordinate &operator+=(long other) {
         if(!infinite()) {
             coord += other;
         }
@@ -51,8 +51,15 @@ public:
         }
         return TextCoordinate(coord - ofs);
     }
+    
+    inline TextCoordinate operator-(TextLength ofs) const {
+        if(infinite()) {
+            return *this;
+        }
+        return TextCoordinate(coord - ofs);
+    }
 
-    inline unsigned int getAddress() const {
+    inline unsigned long getAddress() const {
         if(infinite()) {
             throw Exception("Can't get address for infinite");
         }
@@ -60,7 +67,7 @@ public:
         return coord;
     }
     
-    inline operator unsigned int() const {
+    inline operator unsigned long() const {
         return getAddress();
     }
     
@@ -123,7 +130,7 @@ public:
     static TextCoordinate infinity;
     
 private:
-    unsigned int coord;
+    unsigned long coord;
 };
 
 

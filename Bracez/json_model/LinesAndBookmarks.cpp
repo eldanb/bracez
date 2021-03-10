@@ -42,7 +42,7 @@ bool LinesAndBookmarks::findNextBookmark(int &aLine) const
    TextCoordinate lCoord = (TextCoordinate)aLine;
    
    lRet = bookmarks.nextMarker(lCoord)!=NULL;
-   aLine = lCoord.getAddress();
+   aLine = (int)lCoord.getAddress();
    
    return lRet;
 }
@@ -53,7 +53,7 @@ bool LinesAndBookmarks::findPrevBookmark(int &aLine) const
    TextCoordinate lCoord = (TextCoordinate)aLine;
    
    lRet = bookmarks.prevMarker(lCoord)!=NULL;
-   aLine = lCoord.getAddress();
+   aLine = (int)lCoord.getAddress();
    
    return lRet;
 }
@@ -108,7 +108,7 @@ void LinesAndBookmarks::updateLineOffsetsAfterSplice(TextCoordinate aOffsetStart
     
     for(const wchar_t *cur = updatedText; cur != updateEnd; cur++) {
         if(*cur == L'\n') {
-            newLines.appendMarker(aOffsetStart + (unsigned int)(cur - updatedText) );
+            newLines.appendMarker(aOffsetStart + (unsigned long)(cur - updatedText) );
         }
     }
 
@@ -118,35 +118,30 @@ void LinesAndBookmarks::updateLineOffsetsAfterSplice(TextCoordinate aOffsetStart
                                         &lLineDelStart,
                                         &lLineDelLen))
     {
-        updateBookmarksByLineSplice(TextCoordinate(lLineDelStart+1), lLineDelLen,
-                                    newLines.size() // TODO new lines
+        updateBookmarksByLineSplice(TextCoordinate(lLineDelStart+1),
+                                    lLineDelLen,
+                                    (TextLength)newLines.size() // TODO new lines
                                     );
     }
 }
 
-void LinesAndBookmarks::getCoordinateRowCol(TextCoordinate aCoord, unsigned long &aRow, unsigned long &aCol) const
+void LinesAndBookmarks::getCoordinateRowCol(TextCoordinate aCoord, int &aRow, int &aCol) const
 {
-    int coordAddress = aCoord.getAddress();
+    unsigned long coordAddress = aCoord.getAddress();
     if(coordAddress)
    {
       SimpleMarkerList::const_iterator iter = lower_bound(lineStarts.begin(), lineStarts.end(), aCoord);
-      
-      /*if(iter!=lineStarts.end() &&
-         *iter == aCoord)
-      {
-         iter++;
-      }*/
-      
-      if(iter == lineStarts.begin())
+
+       if(iter == lineStarts.begin())
       {
          aRow = 1;
-         aCol = coordAddress + 1;
+         aCol = (int)(coordAddress + 1);
          return;
       }
 
-      aRow = iter - lineStarts.begin() + 1;
+      aRow = (int)(iter - lineStarts.begin() + 1);
       iter--;
-      aCol = aCoord - *iter;
+      aCol = (int)(aCoord - *iter);
    } else
    {
       aRow = 1;

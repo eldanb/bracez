@@ -39,10 +39,9 @@
     inhibitHistoryRecord = false;
 }
 
--(void)finalize
+-(void)dealloc
 {
     delete docListenerBridge;
-    [super finalize];
 }
 
 -(NSArray<NSString*>*)_nodeNamesForIndexPath:(NSIndexPath*)path lastNodeInto:(JsonCocoaNode**)lastNode {
@@ -51,14 +50,14 @@
         // Selection indexes of tree controller were changed.
         
         JsonCocoaNode *lNode = [treeController.content objectAtIndex:0];
-        int lPathCompLen = [path length];
+        NSUInteger lPathCompLen = [path length];
         
         NSMutableArray *lPathArr = [NSMutableArray arrayWithObject:@"root"];
         
         // Find node
         for(int lPathCompIdx=1; lPathCompIdx<lPathCompLen; lPathCompIdx++)
         {
-            lNode = [lNode objectInChildrenAtIndex:[path indexAtPosition:lPathCompIdx]];
+            lNode = [lNode objectInChildrenAtIndex:(int)[path indexAtPosition:lPathCompIdx]];
             
             [lPathArr addObject:[lNode nodeName]];
         }
@@ -120,7 +119,6 @@
         NSUInteger * lIndices = new NSUInteger[ [lPath length] ];
         [lPath getIndexes:lIndices];
         
-        NSString *curPathDescription = [aPathView pathStringAtIndex:aIdx];
         [treeController setSelectionIndexPath:[NSIndexPath indexPathWithIndexes:lIndices length:aIdx]];
         [aPathView startPathExtensionEntryWithDefault:@""];
         delete [] lIndices;
@@ -173,10 +171,10 @@
     JsonCocoaNode *lNode = [[treeController content] objectAtIndex:0];
     for(int lPathCompIdx=1; lPathCompIdx<aIdx; lPathCompIdx++)
     {
-        lNode = [lNode objectInChildrenAtIndex:[lPath indexAtPosition:lPathCompIdx]];
+        lNode = [lNode objectInChildrenAtIndex:(int)[lPath indexAtPosition:lPathCompIdx]];
     }
     
-    int lSelIdx = [lPath indexAtPosition:aIdx];
+    NSUInteger lSelIdx = [lPath indexAtPosition:aIdx];
     
     // Prepare data for checking and building alternate paths
     NSUInteger *lPathIndices = new NSUInteger[[lPath length]];
@@ -227,7 +225,7 @@
             NSMenuItem *lItem = [[NSMenuItem alloc] initWithTitle:lIdxPathDesc action:@selector(pathMenuItemSelected:) keyEquivalent:@""];
             [lItem setRepresentedObject:lIdxPath];
             [lItem setTarget:self];
-            [lItem setState:lSiblingIdx == lSelIdx ? NSOnState : NSOffState];
+            [lItem setState:lSiblingIdx == lSelIdx ? NSControlStateValueOn : NSControlStateValueOff];
             [lMenu addItem:lItem];
         }
         
@@ -241,10 +239,10 @@
         if(lGotPathSuffix) // This is an alternate item if we've got a suffix
         {
             [lItem setAlternate:YES];
-            [lItem setKeyEquivalentModifierMask:NSAlternateKeyMask];
+            [lItem setKeyEquivalentModifierMask:NSEventModifierFlagOption];
         }
         
-        [lItem setState:lSiblingIdx == lSelIdx ? NSOnState : NSOffState];
+        [lItem setState:lSiblingIdx == lSelIdx ? NSControlStateValueOn : NSControlStateValueOff];
         [lMenu addItem:lItem];
     }
     
@@ -325,7 +323,7 @@
 
 -(void)refreshSelectionFromTextView;
 {
-    NSUInteger lRow, lCol;
+    int lRow, lCol;
     [document translateCoordinate:TextCoordinate([textView selectedRange].location) toRow:&lRow col:&lCol];
     [coordView setCoordinateRow:lRow col:lCol];
     
@@ -345,7 +343,7 @@
     NSMutableString *path = [NSMutableString stringWithString:@"$"];
     
     for(int i=1; i<selIndexPath.length; i++) {
-        int curIndex = [selIndexPath indexAtPosition:i];
+        int curIndex = (int)[selIndexPath indexAtPosition:i];
         JsonCocoaNode *nextNode = [curNode objectInChildrenAtIndex:curIndex];
         if(curNode.nodeType == ntArray) {
             [path appendFormat:@"[%d]", curIndex];
@@ -599,16 +597,16 @@
     gutterView = aGutterView;
 }
 
-- (int)lineNumberForCharacterIndex:(int)aIdx
+- (int)lineNumberForCharacterIndex:(NSUInteger)aIdx
 {
-    NSUInteger lRow, lCol;
+    int lRow, lCol;
     
     [document translateCoordinate:TextCoordinate(aIdx) toRow:&lRow col:&lCol];
     
     return lRow;
 }
 
-- (UInt32)characterIndexForFirstCharOfLine:(int)aIdx {
+- (NSUInteger)characterIndexForFirstCharOfLine:(int)aIdx {
     return [document characterIndexForFirstCharOfLine:aIdx];
 }
 

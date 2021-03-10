@@ -54,7 +54,7 @@ inline bool InputStream::VerifyString(const std::wstring &sExpected)
                                itEnd(sExpected.end());
   for ( ; lRet && it != itEnd; ++it) {
       if (EOS() ||      // did we reach the end before finding what we're looking for...
-          (lPerformedGetCount++, m_iStr.get()) != *it) // ...or did we find something different?
+          (static_cast<void>(lPerformedGetCount++), m_iStr.get()) != *it) // ...or did we find something different?
       {
          lRet=false;
       }
@@ -525,7 +525,8 @@ inline void Reader::Parse(ObjectNode*& object, TokenStream& tokenStream, TextCoo
        
       Token lTok;
       while(!tokenStream.EOS() &&
-            (lTok = tokenStream.Peek(), lTok.nType != Token::TOKEN_NEXT_ELEMENT && lTok.nType != Token::TOKEN_OBJECT_END))
+            (static_cast<void>(lTok = tokenStream.Peek()),
+             lTok.nType != Token::TOKEN_NEXT_ELEMENT && lTok.nType != Token::TOKEN_OBJECT_END))
       {
          listener->Error(lTok.locBegin, PARSER_ERROR_UNEXPECTED_TOKEN, "Expecting \",\" or \"}\"");
          tokenStream.Get();

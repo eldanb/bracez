@@ -66,7 +66,7 @@
 
 - (void)getFirstShownLineNumber:(int*)aNumber andRect:(NSRect*)aRect
 {
-	UInt32		index, lineNumber;
+	NSUInteger  index, lineNumber;
 	NSRange		lineRange;
 	NSRect		lineRect;
    
@@ -81,13 +81,13 @@
    
    if(model)
    {
-      int lCharIdx = [layoutManager characterIndexForGlyphAtIndex:glyphRange.location];
+      NSUInteger lCharIdx = [layoutManager characterIndexForGlyphAtIndex:glyphRange.location];
       *aNumber = [model lineNumberForCharacterIndex:lCharIdx];
       *aRect = [layoutManager lineFragmentRectForGlyphAtIndex:glyphRange.location effectiveRange:nil];
    } else
    {
       // Calculate the start and end indexes for the glyphs	
-      unsigned start_index = glyphRange.location;
+      unsigned long start_index = glyphRange.location;
       
       index = 0;
       lineNumber = 0;
@@ -100,7 +100,7 @@
          ++lineNumber;
       } while (index < start_index);
 
-      *aNumber = lineNumber;
+      *aNumber = (int)lineNumber;
       *aRect = lineRect;
    }
 }
@@ -143,8 +143,8 @@
    lCurLineRect.origin.y -= documentVisibleRect.origin.y;
    while(lCurLineRect.origin.y <= aRect.origin.y+aRect.size.height)
    {
-       int charIndex = [model characterIndexForFirstCharOfLine:lCurLineNo];
-       int glyphIndex = [layoutManager glyphIndexForCharacterAtIndex:charIndex];
+       NSUInteger charIndex = [model characterIndexForFirstCharOfLine:lCurLineNo];
+       NSUInteger glyphIndex = [layoutManager glyphIndexForCharacterAtIndex:charIndex];
        if(glyphIndex<layoutManager.numberOfGlyphs) {
            lCurLineRect = [layoutManager lineFragmentRectForGlyphAtIndex:glyphIndex effectiveRange:nil];
        } else {

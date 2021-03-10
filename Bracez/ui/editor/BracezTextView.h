@@ -12,13 +12,13 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol BracezTextViewDelegate
 
 -(void)bracezTextView:(id)sender
-         forNewLineAt:(int)where
-        suggestIndent:(int*)indent;
+         forNewLineAt:(NSUInteger)where
+        suggestIndent:(NSUInteger*)indent;
 
 -(void)bracezTextView:(id)sender
-      forCloseParenAt:(int)where
-        suggestIndent:(int*)indent
-         getLineStart:(int*)lineStart;
+      forCloseParenAt:(NSUInteger)where
+        suggestIndent:(NSUInteger*)indent
+         getLineStart:(NSUInteger*)lineStart;
 
 @end
 

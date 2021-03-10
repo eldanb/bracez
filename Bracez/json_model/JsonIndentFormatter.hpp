@@ -15,12 +15,12 @@
 
 struct TokenStreamAndUnderlying {
     TokenStreamAndUnderlying(const std::wstring &text,
-                             int startOffset,
+                             unsigned long startOffset,
                              int startRow, int startCol)
         : stringStream(text),
           inputStream(stringStream, NULL, TextCoordinate(startOffset)),
           tokenStream(inputStream, NULL, false, startRow, startCol)
-    {
+    { 
         stringStream.seekg(startOffset);
     }
     

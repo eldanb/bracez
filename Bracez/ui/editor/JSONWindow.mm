@@ -308,14 +308,14 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
                      forView:((NSToolbarItem*)sender).view];
 }
 
--(void)bracezTextView:(id)sender forNewLineAt:(int)where suggestIndent:(int *)indent {
+-(void)bracezTextView:(id)sender forNewLineAt:(NSUInteger)where suggestIndent:(NSUInteger *)indent {
     *indent = [self.document suggestIdentForNewLineAt:TextCoordinate(where)];
 }
 
 -(void)bracezTextView:(id)sender
-      forCloseParenAt:(int)where
-        suggestIndent:(int*)indent
-         getLineStart:(int*)lineStart {
+      forCloseParenAt:(NSUInteger)where
+        suggestIndent:(NSUInteger*)indent
+         getLineStart:(NSUInteger*)lineStart {
     TextCoordinate c;
     *indent = [self.document suggestCloserIndentAt:TextCoordinate(where) getLineStart:&c];
     *lineStart = c.getAddress();

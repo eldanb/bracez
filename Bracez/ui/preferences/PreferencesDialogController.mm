@@ -26,7 +26,7 @@
 
 - (void)loadFromNib
 {
-   [nibFile instantiateNibWithOwner:self topLevelObjects:nil];
+   [nibFile instantiateWithOwner:self topLevelObjects:nil];
 }
 
 - (void)showDialog

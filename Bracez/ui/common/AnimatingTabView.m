@@ -62,6 +62,11 @@ static void ClearBitmapImageRep(NSBitmapImageRep *bitmap) {
     }
 }
 
+@interface AnimatingTabView () <NSAnimationDelegate> {
+}
+
+@end
+
 @implementation AnimatingTabView
 
 // Initializes the attributes that AnimatingTabView adds to NSTabView.  This method is called by -initWithFrame:, and is also used by our Interface Builder palette.
@@ -109,7 +114,7 @@ static void ClearBitmapImageRep(NSBitmapImageRep *bitmap) {
         CIImage *outputCIImage = [transitionFilter valueForKey:@"outputImage"];
 
         // Composite the outputImage into the view (which triggers on-demand rendering of the result).
-        [outputCIImage drawInRect:self.bounds fromRect:[outputCIImage extent] operation:NSCompositeSourceOver fraction:1.0];
+        [outputCIImage drawInRect:self.bounds fromRect:[outputCIImage extent] operation:NSCompositingOperationSourceOver fraction:1.0];
     }
 }
 
@@ -203,16 +208,11 @@ static void ClearBitmapImageRep(NSBitmapImageRep *bitmap) {
 
     // Render the initialContentView to a bitmap.  When using the -cacheDisplayInRect:toBitmapImageRep: and -displayRectIgnoringOpacity:inContext: methods, remember to first initialize the destination to clear if the content to be drawn won't cover it with full opacity.
     NSBitmapImageRep *initialContentBitmap;
-    if (transitionStyle == AnimatingTabViewPageCurlTransitionStyle) {
-        // For the "Page Curl" transition style, we want the initialContentBitmap to include the opaque window background, so we use the time-honored -initWithFocusedViewRect: approach to capturing a snapshot of the view content.
-        [self lockFocus];
-        initialContentBitmap = [[NSBitmapImageRep alloc] initWithFocusedViewRect:imageRect];
-        [self unlockFocus];
-    } else {
-        initialContentBitmap = [initialContentView bitmapImageRepForCachingDisplayInRect:rect];
-        ClearBitmapImageRep(initialContentBitmap);
-        [initialContentView cacheDisplayInRect:rect toBitmapImageRep:initialContentBitmap];
-    }
+    
+
+    initialContentBitmap = [initialContentView bitmapImageRepForCachingDisplayInRect:rect];
+    ClearBitmapImageRep(initialContentBitmap);
+    [initialContentView cacheDisplayInRect:rect toBitmapImageRep:initialContentBitmap];
 
     // Invoke super's implementation of -selectTabViewItem: to switch to the requested tabViewItem.  The NSTabView will mark itself as needing display, but the window will not have redrawn yet, so this is our chance to animate the transition!
     [super selectTabViewItem:tabViewItem];
@@ -250,7 +250,7 @@ static void ClearBitmapImageRep(NSBitmapImageRep *bitmap) {
 
 // This override exists only as a means to enable slow-motion "demo" mode.  It simply makes a note of whether the [Shift] key was pressed when the mouse was last clicked in the TabView.
 - (void)mouseDown:(NSEvent *)theEvent {
-    if ([theEvent modifierFlags] & NSShiftKeyMask) {
+    if ([theEvent modifierFlags] & NSEventModifierFlagShift) {
         slowMotionDemo = YES;
     }
     [super mouseDown:theEvent];

@@ -65,9 +65,9 @@
         if(line != -1) {
             cachedLocationText = [NSString stringWithFormat:@"%@ @ %d", doc.displayName, line];
         } else {
-            NSUInteger row, col;
+            int row, col;
             [doc translateCoordinate:where toRow:&row col:&col];
-            cachedLocationText = [NSString stringWithFormat:@"%@ @ %lu:%lu", doc.displayName, row, col];
+            cachedLocationText = [NSString stringWithFormat:@"%@ @ %d:%d", doc.displayName, row, col];
         }
     }
     return cachedLocationText;
@@ -87,8 +87,8 @@
 {
    if(line == -1)
    {
-      NSUInteger lRow;
-      NSUInteger lCol;
+      int lRow;
+      int lCol;
       
       [doc translateCoordinate:where toRow:&lRow col:&lCol];
       

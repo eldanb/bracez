@@ -14,7 +14,6 @@
    NSButtonCell *_btnCell;
 }
 
-- (void)dealloc;
 - (void)drawRect:(NSRect)dirtyRect;
 
 -(void)setCoordinateRow:(NSUInteger)aRow col:(NSUInteger)aCol;

@@ -10,7 +10,7 @@
 @implementation BracezTextView
 
 -(void)handleNewline {
-    int indent = 0;
+    NSUInteger indent = 0;
 
     [self.btvDelegate bracezTextView:self
                         forNewLineAt:self.selectedRange.location
@@ -23,8 +23,8 @@
 }
 
 -(void)handleEndContainerWith:(NSString*)terminator {
-    int indent = 0;
-    int lineStart;
+    NSUInteger indent = 0;
+    NSUInteger lineStart;
 
     [self.btvDelegate bracezTextView:self
                      forCloseParenAt:self.selectedRange.location

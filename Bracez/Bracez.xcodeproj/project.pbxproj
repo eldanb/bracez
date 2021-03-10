@@ -26,10 +26,7 @@
 		B9FC2A9725F907E300484EA3 /* TextCoordinate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2A9525F907E200484EA3 /* TextCoordinate.cpp */; };
 		B9FC2AB225F908FC00484EA3 /* JsonPathExpressionCompiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2A9C25F908FC00484EA3 /* JsonPathExpressionCompiler.cpp */; };
 		B9FC2AB325F908FC00484EA3 /* JsonPathExpressionNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2A9D25F908FC00484EA3 /* JsonPathExpressionNode.cpp */; };
-		B9FC2AB425F908FC00484EA3 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = B9FC2AA125F908FC00484EA3 /* LICENSE */; };
-		B9FC2AB525F908FC00484EA3 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2AA325F908FC00484EA3 /* Makefile */; };
 		B9FC2AB825F908FC00484EA3 /* .gitmodules in Resources */ = {isa = PBXBuildFile; fileRef = B9FC2AA625F908FC00484EA3 /* .gitmodules */; };
-		B9FC2AB925F908FC00484EA3 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = B9FC2AA725F908FC00484EA3 /* README.md */; };
 		B9FC2AEC25F90AA300484EA3 /* NSString+WStringUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2AE525F90AA300484EA3 /* NSString+WStringUtils.mm */; };
 		B9FC2AED25F90AA300484EA3 /* NodeTypeToColorTransformer.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2AE825F90AA300484EA3 /* NodeTypeToColorTransformer.mm */; };
 		B9FC2AEE25F90AA300484EA3 /* NumberNonZeroValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2AEB25F90AA300484EA3 /* NumberNonZeroValueTransformer.m */; };
@@ -64,7 +61,6 @@
 		B9FC2B4C25F90DE300484EA3 /* EditorWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9FC2B4B25F90DE300484EA3 /* EditorWindow.xib */; };
 		B9FC2B5025F90E0200484EA3 /* BracezPreferences.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2B4F25F90E0200484EA3 /* BracezPreferences.mm */; };
 		B9FC2BB825F90F7100484EA3 /* PreferencesDefaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = B9FC2BB725F90F7100484EA3 /* PreferencesDefaults.plist */; };
-		B9FC2BBB25F9107C00484EA3 /* Bracez-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B9FC2BBA25F9107C00484EA3 /* Bracez-Info.plist */; };
 		B9FC2BC425F910F600484EA3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2BC025F910F600484EA3 /* main.m */; };
 		B9FC2BC525F910F600484EA3 /* JsonMockupAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2BC225F910F600484EA3 /* JsonMockupAppDelegate.mm */; };
 /* End PBXBuildFile section */
@@ -108,11 +104,8 @@
 		B9FC2A9C25F908FC00484EA3 /* JsonPathExpressionCompiler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JsonPathExpressionCompiler.cpp; sourceTree = "<group>"; };
 		B9FC2A9D25F908FC00484EA3 /* JsonPathExpressionNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JsonPathExpressionNode.cpp; sourceTree = "<group>"; };
 		B9FC2A9E25F908FC00484EA3 /* JsonPathExpressionCompiler.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JsonPathExpressionCompiler.hpp; sourceTree = "<group>"; };
-		B9FC2AA125F908FC00484EA3 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		B9FC2AA225F908FC00484EA3 /* templateio.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = templateio.hpp; sourceTree = "<group>"; };
-		B9FC2AA325F908FC00484EA3 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		B9FC2AA625F908FC00484EA3 /* .gitmodules */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitmodules; sourceTree = "<group>"; };
-		B9FC2AA725F908FC00484EA3 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		B9FC2AA925F908FC00484EA3 /* profile.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = profile.hpp; sourceTree = "<group>"; };
 		B9FC2AAB25F908FC00484EA3 /* parser_combinators.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = parser_combinators.hpp; sourceTree = "<group>"; };
 		B9FC2AAD25F908FC00484EA3 /* function_traits.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = function_traits.hpp; sourceTree = "<group>"; };
@@ -341,11 +334,8 @@
 		B9FC2A9F25F908FC00484EA3 /* Parser-Combinators */ = {
 			isa = PBXGroup;
 			children = (
-				B9FC2AA125F908FC00484EA3 /* LICENSE */,
 				B9FC2AA225F908FC00484EA3 /* templateio.hpp */,
-				B9FC2AA325F908FC00484EA3 /* Makefile */,
 				B9FC2AA625F908FC00484EA3 /* .gitmodules */,
-				B9FC2AA725F908FC00484EA3 /* README.md */,
 				B9FC2AA925F908FC00484EA3 /* profile.hpp */,
 				B9FC2AAA25F908FC00484EA3 /* File-Vector */,
 				B9FC2AAB25F908FC00484EA3 /* parser_combinators.hpp */,
@@ -502,6 +492,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastUpgradeCheck = 1240;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Bracez" */;
 			compatibilityVersion = "Xcode 3.1";
@@ -528,14 +519,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				B9FC2B4C25F90DE300484EA3 /* EditorWindow.xib in Resources */,
-				B9FC2BBB25F9107C00484EA3 /* Bracez-Info.plist in Resources */,
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				B9FC2BB825F90F7100484EA3 /* PreferencesDefaults.plist in Resources */,
 				1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */,
 				B945F9001192DAC800DCFAAE /* reader.inl in Resources */,
 				B9FC2AFC25F90B9B00484EA3 /* TextView.png in Resources */,
-				B9FC2AB925F908FC00484EA3 /* README.md in Resources */,
-				B9FC2AB425F908FC00484EA3 /* LICENSE in Resources */,
 				B9FC2AFB25F90B9B00484EA3 /* BrowserView.png in Resources */,
 				B9FC2B4125F90D6000484EA3 /* HistoryAndFavoritesEditor.xib in Resources */,
 				B9FC2B3225F90D6000484EA3 /* PathCompletionListCell.xib in Resources */,
@@ -572,7 +560,6 @@
 				B9FC2AEE25F90AA300484EA3 /* NumberNonZeroValueTransformer.m in Sources */,
 				B945FD57119E832B00DCFAAE /* JsonDocument.mm in Sources */,
 				B9FC2B4325F90D6000484EA3 /* SplitterAnimation.m in Sources */,
-				B9FC2AB525F908FC00484EA3 /* Makefile in Sources */,
 				B9FC2A9725F907E300484EA3 /* TextCoordinate.cpp in Sources */,
 				B9FC2A9325F8C14F00484EA3 /* Exception.cpp in Sources */,
 				B9FC2AB225F908FC00484EA3 /* JsonPathExpressionCompiler.cpp in Sources */,
@@ -624,9 +611,9 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -638,7 +625,8 @@
 					"$(PROJECT_DIR)/extlib/jq/lib",
 					/usr/local/Cellar/jq/1.6/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zigsterz.Bracez;
 				PRODUCT_NAME = Bracez;
 				VALID_ARCHS = x86_64;
 			};
@@ -649,6 +637,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CODE_SIGN_IDENTITY = "-";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -660,7 +649,8 @@
 					"$(PROJECT_DIR)/extlib/jq/lib",
 					/usr/local/Cellar/jq/1.6/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zigsterz.Bracez;
 				PRODUCT_NAME = Bracez;
 				VALID_ARCHS = x86_64;
 			};
@@ -669,15 +659,39 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_OBJC_GC = "";
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PREBINDING = NO;
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -685,13 +699,36 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_OBJC_GC = "";
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				PREBINDING = NO;
 				SDKROOT = macosx;
 				VALID_ARCHS = "i386 x86_64";
 			};

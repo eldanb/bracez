@@ -80,10 +80,10 @@
 -(BOOL)canCopyPath;
 -(IBAction)copyPath:(id)aSender;
 
-- (int)lineNumberForCharacterIndex:(int)aIdx;
+- (int)lineNumberForCharacterIndex:(NSUInteger)aIdx;
 - (UInt32)markersForLine:(int)aLine;
 - (void)connectGutterView:(id)aGutterView;
-- (UInt32)characterIndexForFirstCharOfLine:(int)aIdx;
+- (NSUInteger)characterIndexForFirstCharOfLine:(int)aIdx;
 
 -(NSString*)currentPathAsJsonQuery;
 

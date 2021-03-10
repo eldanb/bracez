@@ -13,7 +13,7 @@
 
 -(NSIndexPath*)indexPathOfNextSibling
 {
-   int lNextSiblingIdx = [self indexAtPosition:[self length]-1]+1;
+   NSUInteger lNextSiblingIdx = [self indexAtPosition:[self length]-1]+1;
    NSIndexPath *lNewPath = [[self indexPathByRemovingLastIndex] indexPathByAddingIndex:lNextSiblingIdx];
    return lNewPath;
 }
@@ -21,13 +21,13 @@
 
 -(NSIndexPath*)indexPathOfPrevSibling
 {
-   int lPrevSiblingIdx = [self indexAtPosition:[self length]-1]-1;
+   NSUInteger selfIndex = [self indexAtPosition:[self length]-1];
    
-   if(lPrevSiblingIdx<0)
+   if(selfIndex == 0)
    {
       return nil;
    } else {
-      NSIndexPath *lNewPath = [[self indexPathByRemovingLastIndex] indexPathByAddingIndex:lPrevSiblingIdx];
+      NSIndexPath *lNewPath = [[self indexPathByRemovingLastIndex] indexPathByAddingIndex:selfIndex-1];
       return lNewPath;
    }
    

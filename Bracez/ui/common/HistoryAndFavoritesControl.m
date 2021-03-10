@@ -114,7 +114,7 @@
     if([historyItems indexOfObject:accumulatedItem] == NSNotFound) {
         [historyItems insertObject:accumulatedItem atIndex:0];
         if(historyItems.count > MAX_HISTORY_LEN) {
-            int nToRemove = historyItems.count-MAX_HISTORY_LEN;
+            NSUInteger nToRemove = historyItems.count-MAX_HISTORY_LEN;
             [historyItems removeObjectsInRange:NSMakeRange(MAX_HISTORY_LEN, nToRemove)];
         }
     }
