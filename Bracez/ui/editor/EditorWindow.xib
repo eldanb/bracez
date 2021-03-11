@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17701"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -32,7 +31,7 @@
                 </userGuides>
                 <subviews>
                     <customView autoresizesSubviews="NO" translatesAutoresizingMaskIntoConstraints="NO" id="71A-vc-VjH">
-                        <rect key="frame" x="0.0" y="391" width="643" height="22"/>
+                        <rect key="frame" x="0.0" y="391" width="644" height="22"/>
                         <subviews>
                             <customView translatesAutoresizingMaskIntoConstraints="NO" id="159" customClass="CoordView">
                                 <rect key="frame" x="-1" y="-1" width="73" height="24"/>
@@ -42,7 +41,7 @@
                                 </constraints>
                             </customView>
                             <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="263" customClass="PathView">
-                                <rect key="frame" x="71" y="-1" width="572" height="24"/>
+                                <rect key="frame" x="71" y="-1" width="573" height="24"/>
                             </customView>
                         </subviews>
                         <constraints>
@@ -836,7 +835,7 @@
                     </splitView>
                 </subviews>
                 <constraints>
-                    <constraint firstAttribute="trailing" secondItem="71A-vc-VjH" secondAttribute="trailing" id="Hj9-EP-rMV"/>
+                    <constraint firstAttribute="trailing" secondItem="71A-vc-VjH" secondAttribute="trailing" constant="-1" id="Hj9-EP-rMV"/>
                     <constraint firstAttribute="bottom" secondItem="160" secondAttribute="bottom" id="MS8-dx-svT"/>
                     <constraint firstItem="71A-vc-VjH" firstAttribute="top" secondItem="158" secondAttribute="top" id="Q6H-zn-uQ8"/>
                     <constraint firstItem="160" firstAttribute="leading" secondItem="158" secondAttribute="leading" id="RQa-an-2AC"/>

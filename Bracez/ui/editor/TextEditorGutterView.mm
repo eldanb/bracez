@@ -148,7 +148,7 @@
        if(glyphIndex<layoutManager.numberOfGlyphs) {
            lCurLineRect = [layoutManager lineFragmentRectForGlyphAtIndex:glyphIndex effectiveRange:nil];
        } else {
-           lCurLineRect.origin.y = lCurLineNo * lDefaultLineHeight;
+           lCurLineRect.origin.y = (lCurLineNo-1) * lDefaultLineHeight;
            lCurLineRect.size.height = lDefaultLineHeight;
        }
 

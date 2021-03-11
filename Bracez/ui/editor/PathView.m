@@ -470,8 +470,8 @@
 {
    if(flag)
    {
-      [self setTextColor:[NSColor whiteColor]];
-      [self setBackgroundColor:[NSColor blueColor]];
+      [self setTextColor:[NSColor selectedControlTextColor]];
+      [self setBackgroundColor:[NSColor selectedControlColor]];
       [self setDrawsBackground:YES];
    } else
    {
@@ -487,23 +487,29 @@
 
    NSBezierPath* lArrow = [NSBezierPath bezierPath];
  
-   [[NSColor gridColor] setStroke];
+   [[NSColor controlTextColor] setStroke];
 
    [lArrow setLineWidth:1];
-   [lArrow moveToPoint:NSMakePoint(cellFrame.origin.x+cellFrame.size.width-8, cellFrame.origin.y+cellFrame.size.height-2)];
+   [lArrow moveToPoint:NSMakePoint(cellFrame.origin.x+cellFrame.size.width-5, cellFrame.origin.y+cellFrame.size.height-7)];
    [lArrow lineToPoint:NSMakePoint(cellFrame.origin.x+cellFrame.size.width-2, cellFrame.origin.y+cellFrame.size.height/2)];
-   [lArrow lineToPoint:NSMakePoint(cellFrame.origin.x+cellFrame.size.width-8, cellFrame.origin.y)];
+   [lArrow lineToPoint:NSMakePoint(cellFrame.origin.x+cellFrame.size.width-5, cellFrame.origin.y+7)];
    [lArrow stroke];
 
    
    if(lSaveBk)
    {
-      [lArrow lineToPoint:NSMakePoint(cellFrame.origin.x-7, cellFrame.origin.y)];
-      [lArrow lineToPoint:NSMakePoint(cellFrame.origin.x-1, cellFrame.origin.y+cellFrame.size.height/2)];
-      [lArrow lineToPoint:NSMakePoint(cellFrame.origin.x-7, cellFrame.origin.y+cellFrame.size.height-2)];
+       NSBezierPath* lArrowFill = [NSBezierPath bezierPath];
+       [lArrowFill moveToPoint:NSMakePoint(cellFrame.origin.x+cellFrame.size.width-10, cellFrame.origin.y+cellFrame.size.height-2)];
+       [lArrowFill lineToPoint:NSMakePoint(cellFrame.origin.x+cellFrame.size.width-5, cellFrame.origin.y+cellFrame.size.height/2)];
+       [lArrowFill lineToPoint:NSMakePoint(cellFrame.origin.x+cellFrame.size.width-10, cellFrame.origin.y+2)];
+       
+       
+      [lArrowFill lineToPoint:NSMakePoint(cellFrame.origin.x-4, cellFrame.origin.y+2)];
+      [lArrowFill lineToPoint:NSMakePoint(cellFrame.origin.x+1, cellFrame.origin.y+cellFrame.size.height/2)];
+      [lArrowFill lineToPoint:NSMakePoint(cellFrame.origin.x-4, cellFrame.origin.y+cellFrame.size.height-2)];
       
       [[self backgroundColor] setFill];
-      [lArrow fill];
+      [lArrowFill fill];
    }
 
    NSRect lTextFrame = cellFrame;
