@@ -988,7 +988,7 @@ const json::Node *JsonFile::FindNodeContaining(TextCoordinate aDocOffset, JsonPa
     }
     
     TextRange rootRange = ret->GetTextRange();
-    if(rootRange.start > aDocOffset || rootRange.end < aDocOffset ||
+    if(rootRange.start > aDocOffset || rootRange.end <= aDocOffset ||
        (strict && rootRange.start == aDocOffset) ) {
         return NULL;
     }

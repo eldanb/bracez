@@ -38,6 +38,9 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)setEditorColorNumber:(NSColor*)value;
 -(NSColor*)editorColorNumber;
 
+-(void)setIndentSize:(int)indentSize;
+-(int)indentSize;
+
 +(BracezPreferences*)sharedPreferences;
 
 @end

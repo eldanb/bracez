@@ -218,9 +218,12 @@ private:
 -(NSIndexPath*)findPathContaining:(TextCoordinate)aDocOffset
 {
    JsonPath lPath;
-   file->FindPathContaining(aDocOffset, lPath);
-   
-   return [self indexPathFromJsonPath:lPath];
+   if(file->FindPathContaining(aDocOffset, lPath))
+   {
+       return [self indexPathFromJsonPath:lPath];
+   } else {
+       return nil;
+   }
 }
 
 -(NSIndexPath*)pathFromJsonPathString:(NSString*)jsonPathString {
@@ -348,7 +351,8 @@ private:
 
 -(void)reindentStartingAt:(TextCoordinate)aOffsetStart len:(TextLength)aLen {
     std::wstring jsonText = _textStorage.string.cStringWstring;
-    JsonIndentFormatter fixer(jsonText, linesAndBookmarks, aOffsetStart, aLen);
+    JsonIndentFormatter fixer(jsonText, linesAndBookmarks, aOffsetStart, aLen,
+                              [BracezPreferences sharedPreferences].indentSize);
     const std::wstring &indent = fixer.getIndented();
         
     [_textStorage replaceCharactersInRange:NSMakeRange(aOffsetStart, aLen) withString:[NSString stringWithWstring:indent]];
@@ -385,7 +389,7 @@ TextCoordinate getContainerStartColumnAddr(const json::ContainerNode *containerN
     TextCoordinate containerStartColAddr = getContainerStartColumnAddr(container);
     int containerStartCol, containerStartRow;
     linesAndBookmarks.getCoordinateRowCol(containerStartColAddr, containerStartRow, containerStartCol);
-    return containerStartCol-1 + 3;
+    return containerStartCol-1 + [BracezPreferences sharedPreferences].indentSize;
 }
 
 -(int)suggestCloserIndentAt:(TextCoordinate)where getLineStart:(TextCoordinate*)lineStart {

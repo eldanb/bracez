@@ -38,20 +38,21 @@ public:
 
 public:
     static JsonIndentationContext approximateBySingleLine(const std::wstring &text, LinesAndBookmarks &linesAndBookmarks,
-                                                          TextCoordinate aOffset);
-    static JsonIndentationContext approximateWithTokenStream(json::TokenStream &aTokStream, TextCoordinate aOffset);
+                                                          TextCoordinate aOffset, int aIndentSize);
+    static JsonIndentationContext approximateWithTokenStream(json::TokenStream &aTokStream, TextCoordinate aOffset, int aIndentSize);
     
 private:
     JsonIndentationContext();
     void setInitialIndentLevel(int level);
     
     std::vector<int> indentLevelStack;
+    int indentSize;
 };
 
 class JsonIndentFormatter {
 public:
     JsonIndentFormatter(const std::wstring &text, LinesAndBookmarks &linesAndBookmarks,
-                        TextCoordinate aOffsetStart, TextLength aLen);
+                        TextCoordinate aOffsetStart, TextLength aLen, int indentSize);
     
     const std::wstring &getIndented();
     

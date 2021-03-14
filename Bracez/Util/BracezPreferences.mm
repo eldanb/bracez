@@ -13,6 +13,7 @@ static BracezPreferences* __sharedPreferences = NULL;
 @interface BracezPreferences () {
     NSUserDefaults *defaults;
     
+    int _indentSize;
     NSFont *_editorFont;
 }
 
@@ -32,11 +33,26 @@ static BracezPreferences* __sharedPreferences = NULL;
 -(instancetype)init {
     self = [super init];
     defaults = [NSUserDefaults standardUserDefaults];
+    _indentSize = -1;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(defaultsChanged:)
+                                                 name:NSUserDefaultsDidChangeNotification
+                                               object:nil];
+    
+
     return self;
 }
 
+-(void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
-
+-(void)defaultsChanged:(id)sender {
+    // Invalidate cache
+    _indentSize = -1;
+    _editorFont = nil;
+}
 
 -(void)setGutterMasterSwitch:(BOOL)value {
     [defaults setBool:value forKey:@"GutterMaster"];
@@ -145,6 +161,30 @@ static BracezPreferences* __sharedPreferences = NULL;
 
 -(BOOL)enableTreeViewSyntaxColoring {
     return [defaults boolForKey:@"TreeViewSyntaxColoring"];
+}
+
+-(BOOL)validateIndentSize:(NSNumber**)indentSize error:(NSError**)err {
+    if([*indentSize intValue]<1) {
+        *indentSize = [NSNumber numberWithInt:3];
+    }
+    
+    return YES;
+}
+
+-(void)setIndentSize:(int)indentSize {
+    if(indentSize<1) {
+        indentSize = 3;
+    }
+    
+    _indentSize = indentSize;
+    [defaults setInteger:indentSize forKey:@"IndentSize"];
+}
+
+-(int)indentSize {
+    if(_indentSize<0) {
+        _indentSize = (int)[defaults integerForKey:@"IndentSize"];;
+    }
+    return _indentSize;
 }
 
 +(BracezPreferences*)sharedPreferences {
