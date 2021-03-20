@@ -430,5 +430,7 @@ namespace json
    
     wstring jsonizeString(const wstring &aSrc);
 
+    TextCoordinate getContainerStartColumnAddr(const json::ContainerNode *containerNode);
+
 }
 #endif

@@ -25,12 +25,13 @@ static TokenStreamAndUnderlying tokenStreamAtBeginningOfLine(const std::wstring 
  */
 
 JsonIndentFormatter::JsonIndentFormatter(const std::wstring &text,
+                                         const json::JsonFile &jsonFile,
                                          LinesAndBookmarks &linesAndBookmarks,
                                          TextCoordinate aOffsetStart,
                                          TextLength aLen,
                                          int indentSize)
     : tokStreamAndCo(tokenStreamAtBeginningOfLine(text, linesAndBookmarks, aOffsetStart)),
-      indentationContext(JsonIndentationContext::approximateWithTokenStream(tokStreamAndCo.tokenStream, aOffsetStart, indentSize))
+      indentationContext(JsonIndentationContext::approximateWithDocument(jsonFile, linesAndBookmarks, aOffsetStart, indentSize))
 {
     TextLength textLen = (TextLength)text.length();
     startOffset = aOffsetStart;
@@ -162,9 +163,7 @@ JsonIndentationContext JsonIndentationContext::approximateBySingleLine(const std
 }
 
 JsonIndentationContext JsonIndentationContext::approximateWithTokenStream(json::TokenStream &aTokStream, TextCoordinate aOffset, int aIndentSize) {
-    JsonIndentationContext ret;
-    
-    ret.indentSize = aIndentSize;
+    JsonIndentationContext ret(0, aIndentSize);
     
     bool inIndent = true;
     
@@ -198,6 +197,37 @@ JsonIndentationContext JsonIndentationContext::approximateWithTokenStream(json::
     return ret;
 }
 
+JsonIndentationContext JsonIndentationContext::approximateWithDocument(const json::JsonFile &file, const LinesAndBookmarks &linesAndBookmarks, TextCoordinate aOffset, int aIndentSize) {
+    int row, col;
+    linesAndBookmarks.getCoordinateRowCol(aOffset, row, col);
+    
+    TextCoordinate lineStartCoord = aOffset - (col-1);
+    const json::Node *startNode = file.FindNodeContaining(lineStartCoord, nullptr);
+    
+    std::vector<int> indentLevels;
+    
+    const json::ContainerNode *currentContainer = dynamic_cast<const json::ContainerNode*>(startNode);
+    if(!currentContainer) {
+        return JsonIndentationContext(0, aIndentSize);
+    }
+    
+    TextCoordinate colStartCoord = json::getContainerStartColumnAddr(currentContainer);
+    linesAndBookmarks.getCoordinateRowCol(colStartCoord, row, col);
+    indentLevels.insert(indentLevels.begin(), col-1);
+    currentContainer = currentContainer->GetParent();
+    
+    while(currentContainer) {
+        TextCoordinate currentContainerColStartCoord = json::getContainerStartColumnAddr(currentContainer);
+        linesAndBookmarks.getCoordinateRowCol(currentContainerColStartCoord, row, col);
+        indentLevels.insert(indentLevels.begin(), col-1);
+        currentContainer = currentContainer->GetParent();
+    }
+
+    JsonIndentationContext ret(std::move(indentLevels), aIndentSize);
+    ret.pushIndentLevel();
+    return ret;
+}
+
 void JsonIndentationContext::pushIndentLevel() {
     indentLevelStack.push_back(indentLevelStack.back() + indentSize);
 }
@@ -216,10 +246,19 @@ int JsonIndentationContext::currentIndent() {
     return indentLevelStack.back();
 }
 
-JsonIndentationContext::JsonIndentationContext() {
-    indentLevelStack.push_back(0);
-}
-
 void JsonIndentationContext::setInitialIndentLevel(int level) {
     indentLevelStack.front() = level;
+}
+
+JsonIndentationContext::JsonIndentationContext(const std::vector<int> &&indentLevels, int indentSize)
+    : indentSize(indentSize),
+      indentLevelStack(indentLevels)
+{
+    
+}
+
+JsonIndentationContext::JsonIndentationContext(int initialIndent, int indentSize)
+    : indentSize(indentSize)
+{
+    indentLevelStack.push_back(initialIndent);
 }

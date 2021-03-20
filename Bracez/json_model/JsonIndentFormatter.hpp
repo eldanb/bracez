@@ -41,8 +41,14 @@ public:
                                                           TextCoordinate aOffset, int aIndentSize);
     static JsonIndentationContext approximateWithTokenStream(json::TokenStream &aTokStream, TextCoordinate aOffset, int aIndentSize);
     
+    static JsonIndentationContext approximateWithDocument(const json::JsonFile &file,
+                                                          const LinesAndBookmarks &linesAndBookmarks,
+                                                          TextCoordinate aOffset, int aIndentSize);
+
 private:
-    JsonIndentationContext();
+    JsonIndentationContext(int initialIndent, int indentSize);
+    JsonIndentationContext(const std::vector<int> &&indentLevels, int indentSize);
+    
     void setInitialIndentLevel(int level);
     
     std::vector<int> indentLevelStack;
@@ -51,7 +57,9 @@ private:
 
 class JsonIndentFormatter {
 public:
-    JsonIndentFormatter(const std::wstring &text, LinesAndBookmarks &linesAndBookmarks,
+    JsonIndentFormatter(const std::wstring &text,
+                        const json::JsonFile &jsonFile,
+                        LinesAndBookmarks &linesAndBookmarks,
                         TextCoordinate aOffsetStart, TextLength aLen, int indentSize);
     
     const std::wstring &getIndented();

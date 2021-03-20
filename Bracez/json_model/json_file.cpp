@@ -1268,5 +1268,19 @@ wstring jsonizeString(const wstring &aSrc)
     return lRet;
 }
 
+
+TextCoordinate getContainerStartColumnAddr(const json::ContainerNode *containerNode) {
+    const json::ObjectNode *containerContainerObj = dynamic_cast<const json::ObjectNode *>(containerNode->GetParent());
+    if(containerContainerObj) {
+        int idx = containerContainerObj->GetIndexOfChild(containerNode);
+        
+        return (containerContainerObj->GetAbsTextRange().start +
+                containerContainerObj->GetChildMemberAt(idx)->nameRange.start.getAddress());
+    } else {
+        return containerNode->GetAbsTextRange().start;
+    }
+}
+
+
 }
 

@@ -351,24 +351,16 @@ private:
 
 -(void)reindentStartingAt:(TextCoordinate)aOffsetStart len:(TextLength)aLen {
     std::wstring jsonText = _textStorage.string.cStringWstring;
-    JsonIndentFormatter fixer(jsonText, linesAndBookmarks, aOffsetStart, aLen,
+    
+    int row, col;
+    linesAndBookmarks.getCoordinateRowCol(aOffsetStart, row, col);
+    aOffsetStart = aOffsetStart - (col - 1);
+    
+    JsonIndentFormatter fixer(jsonText, *file, linesAndBookmarks, aOffsetStart, aLen,
                               [BracezPreferences sharedPreferences].indentSize);
     const std::wstring &indent = fixer.getIndented();
         
     [_textStorage replaceCharactersInRange:NSMakeRange(aOffsetStart, aLen) withString:[NSString stringWithWstring:indent]];
-}
-
-TextCoordinate getContainerStartColumnAddr(const json::ContainerNode *containerNode) {
-    const json::ObjectNode *containerContainerObj = dynamic_cast<const json::ObjectNode *>(containerNode->GetParent());
-    if(containerContainerObj) {
-        int idx = containerContainerObj->GetIndexOfChild(containerNode);
-        
-        return (containerContainerObj->GetAbsTextRange().start +
-                containerContainerObj->GetChildMemberAt(idx)->nameRange.start.getAddress());
-    } else {
-        return containerNode->GetAbsTextRange().start;
-    }
-    
 }
 
 -(int)suggestIdentForNewLineAt:(TextCoordinate)where {
