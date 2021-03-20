@@ -455,12 +455,16 @@ private:
 
 
 -(void)notifyNodeInvalidated:(json::JsonFile*)aSender nodePath:(const json::JsonPath&)nodePath {
+    
     JsonCocoaNode *node = self.rootNode;
+    JsonCocoaNode *parentNode = nil;
+    
     for(auto iter = nodePath.begin(); iter != nodePath.end(); iter++) {
+        parentNode = node;
         node = [node objectInChildrenAtIndex:*iter];
     }
     
-    [node reloadChildren];
+    [node reloadFromElement: ((json::ContainerNode*)parentNode.proxiedElement)->GetChildAt(nodePath.back())];
 }
 
 @end

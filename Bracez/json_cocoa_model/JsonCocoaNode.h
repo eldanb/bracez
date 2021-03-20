@@ -25,6 +25,7 @@
 -(id) nodeValue;
 
 -(NSString*) nodeName;
+
 -(void) setName:(NSString*)nodeName;
 -(BOOL) nameEditable;
 
@@ -52,5 +53,6 @@
 -(void)_internalInsertChild:(JsonCocoaNode*)aChild atIndex:(int)aIdx;
 
 
+-(void)reloadFromElement:(json::Node*)aProxiedElement;
 -(void)reloadChildren;
 @end

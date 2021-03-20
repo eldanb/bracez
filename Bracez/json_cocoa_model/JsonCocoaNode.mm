@@ -342,6 +342,21 @@ using namespace json;
    return -1;
 }
 
+-(void)reloadFromElement:(json::Node*)aProxiedElement {
+    [self willChangeValueForKey:@"children"];
+    [self willChangeValueForKey:@"nodeName"];
+    [self willChangeValueForKey:@"nodeType"];
+    [self willChangeValueForKey:@"nodeValue"];
+    
+    proxiedElement = aProxiedElement;
+    children = nil;
+    
+    [self didChangeValueForKey:@"nodeValue"];
+    [self didChangeValueForKey:@"nodeType"];
+    [self didChangeValueForKey:@"nodeName"];
+    [self didChangeValueForKey:@"children"];
+}
+
 -(void)reloadChildren {
     [self willChangeValueForKey:@"children"];
     children = nil;

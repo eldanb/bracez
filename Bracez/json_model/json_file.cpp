@@ -158,26 +158,26 @@ void ContainerNode::SetChildAt(int aIdx, Node *aNode, bool fromReparse)
     Node *lOldNode = GetChildAt(aIdx);
     
     // Get new node text and range
-    TextCoordinate lNewStart = lOldNode->textRange.start;
-    TextCoordinate lNewEnd;
     if(!fromReparse) {
+        TextCoordinate lNewStart = lOldNode->textRange.start;
+        TextCoordinate lNewEnd;
+
         std::wstring lNewNodeText;
         aNode->CalculateJsonTextRepresentation(lNewNodeText);
     
         lNewEnd = lNewStart + (int)lNewNodeText.length();
 
+        aNode->textRange.start = lNewStart;
+        aNode->textRange.end = lNewEnd;
+
         // Splice text in document
         TextRange lAbsTextRange = lOldNode->GetAbsTextRange();
         GetDocument()->GetOwner()->spliceJsonTextByDomChange(lAbsTextRange.start, lAbsTextRange.length(), lNewNodeText);
-    } else {
-        lNewEnd = lNewStart + aNode->textRange.length();
     }
- 
+    
     // Update in child list and import to document
     StoreChildAt(aIdx, aNode);
     aNode->parent = this;
-    aNode->textRange.start = lNewStart;
-    aNode->textRange.end = lNewEnd;
     
     delete lOldNode;
 }
@@ -1102,14 +1102,18 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
         return false;
     }
     
-    integralNodeJsonPath.pop_back();
-    
     jsonText.insert(aOffsetStart, aNewText, trimLeft, updatedTextLen);
     jsonText.erase(aOffsetStart.getAddress() + updatedTextLen, aLen);
     updateTreeOffsetsAfterSplice(aOffsetStart, aLen, updatedTextLen);
     updateErrorsAfterSplice(aOffsetStart, aLen, updatedTextLen);
 
     ContainerNode *spliceContainerContainer = spliceContainer->GetParent();
+    
+    // Update node addresses to be relative to parent
+    long offsetAdjust = (absRange.start - spliceContainerContainer->GetAbsTextRange().start);
+    reparsedNode->textRange.start += offsetAdjust;
+    reparsedNode->textRange.end += offsetAdjust;
+    
     spliceContainerContainer->SetChildAt(spliceContainerIndexInParent, reparsedNode, true);
     notify(NodeRefreshNotification(std::move(integralNodeJsonPath)));
     
