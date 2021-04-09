@@ -158,6 +158,10 @@
 
 -(void)selectHfItem:(NSMenuItem*)sender {
     self.boundField.stringValue = sender.title;
+    NSDictionary *bindingInfo = [self.boundField infoForBinding: NSValueBinding];
+    [[bindingInfo valueForKey: NSObservedObjectKey] setValue: self.boundField.stringValue
+                                                  forKeyPath: [bindingInfo valueForKey: NSObservedKeyPathKey]];
+
 }
 
 -(void)addFavorite:(id)sender {
