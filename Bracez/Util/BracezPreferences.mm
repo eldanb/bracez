@@ -37,7 +37,7 @@ static BracezPreferences* __sharedPreferences = NULL;
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(defaultsChanged:)
-                                                 name:NSUserDefaultsDidChangeNotification
+                                                 name:BracezPreferencesChangedNotification
                                                object:nil];
     
 
@@ -48,6 +48,10 @@ static BracezPreferences* __sharedPreferences = NULL;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+-(void)postBracezChangeNotification {
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:BracezPreferencesChangedNotification object:nil]];
+}
+
 -(void)defaultsChanged:(id)sender {
     // Invalidate cache
     _indentSize = -1;
@@ -56,6 +60,7 @@ static BracezPreferences* __sharedPreferences = NULL;
 
 -(void)setGutterMasterSwitch:(BOOL)value {
     [defaults setBool:value forKey:@"GutterMaster"];
+    [self postBracezChangeNotification];
 }
 
 -(BOOL)gutterMasterSwitch {
@@ -64,6 +69,7 @@ static BracezPreferences* __sharedPreferences = NULL;
 
 -(void)setGutterLineNumbers:(BOOL)value {
     [defaults setBool:value forKey:@"GutterLineNumbers"];
+    [self postBracezChangeNotification];
 }
 
 -(BOOL)gutterLineNumbers {
@@ -73,6 +79,7 @@ static BracezPreferences* __sharedPreferences = NULL;
 -(void)setEditorFont:(NSFont*)value {
     _editorFont = value;
     [self setFont:value forKey:@"TextEditorFont"];
+    [self postBracezChangeNotification];
 }
 
 -(NSFont*)editorFont {
@@ -89,6 +96,7 @@ static BracezPreferences* __sharedPreferences = NULL;
                                  requiringSecureCoding:YES
                                                  error:&err];
     [defaults setValue:lFontData forKey:keyName];
+    [self postBracezChangeNotification];
 }
 
 -(NSFont*)loadFontWithKey:(NSString*)key {
@@ -112,11 +120,13 @@ static BracezPreferences* __sharedPreferences = NULL;
                                                requiringSecureCoding:YES
                                                                error:&err];
     [defaults setValue:lColorData forKey:keyName];
+    [self postBracezChangeNotification];
 }
 
 
 -(void)setEditorColorDefault:(NSColor*)value {
     [self setColor:value forDefaultKey:@"TextEditorColorDefault"];
+    [self postBracezChangeNotification];
 }
 
 -(NSColor*)editorColorDefault {
@@ -125,6 +135,7 @@ static BracezPreferences* __sharedPreferences = NULL;
 
 -(void)setEditorColorString:(NSColor*)value {
     [self setColor:value forDefaultKey:@"TextEditorColorString"];
+    [self postBracezChangeNotification];
 }
 
 -(NSColor*)editorColorString {
@@ -133,6 +144,7 @@ static BracezPreferences* __sharedPreferences = NULL;
 
 -(void)setEditorColorKey:(NSColor*)value {
     [self setColor:value forDefaultKey:@"TextEditorColorKey"];
+    [self postBracezChangeNotification];
 }
 
 -(NSColor*)editorColorKey {
@@ -141,6 +153,7 @@ static BracezPreferences* __sharedPreferences = NULL;
 
 -(void)setEditorColorKeyword:(NSColor*)value {
     [self setColor:value forDefaultKey:@"TextEditorColorKeyword"];
+    [self postBracezChangeNotification];
 }
 
 -(NSColor*)editorColorKeyword {
@@ -149,6 +162,7 @@ static BracezPreferences* __sharedPreferences = NULL;
 
 -(void)setEditorColorNumber:(NSColor*)value {
     [self setColor:value forDefaultKey:@"TextEditorColorNumber"];
+    [self postBracezChangeNotification];
 }
 
 -(NSColor*)editorColorNumber {
@@ -157,6 +171,7 @@ static BracezPreferences* __sharedPreferences = NULL;
     
 -(void)setEnableTreeViewSyntaxColoring:(BOOL)value {
     [defaults setBool:value forKey:@"TreeViewSyntaxColoring"];
+    [self postBracezChangeNotification];
 }
 
 -(BOOL)enableTreeViewSyntaxColoring {
@@ -178,6 +193,7 @@ static BracezPreferences* __sharedPreferences = NULL;
     
     _indentSize = indentSize;
     [defaults setInteger:indentSize forKey:@"IndentSize"];
+    [self postBracezChangeNotification];
 }
 
 -(int)indentSize {
@@ -196,3 +212,6 @@ static BracezPreferences* __sharedPreferences = NULL;
 }
 
 @end
+
+
+NSString *BracezPreferencesChangedNotification = @"BracezPreferencesChangedNotification";

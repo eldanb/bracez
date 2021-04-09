@@ -45,4 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+extern NSString *BracezPreferencesChangedNotification;
+
 NS_ASSUME_NONNULL_END

@@ -28,7 +28,7 @@
     IBOutlet JsonPathSearchController *jsonPathSearchController;
 }
 
--(void)loadDefaults;
+-(void)loadPreferences;
 -(void)removeJsonNode:(id)aSender;
 - (void)forwardInvocation:(NSInvocation *)anInvocation;
 

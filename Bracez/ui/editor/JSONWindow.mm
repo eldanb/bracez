@@ -59,19 +59,20 @@ extern "C" {
     [treeView registerForDraggedTypes:[NSArray arrayWithObject:@"JsonNode"]];
     [treeView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(defaultsChanged:) name:NSUserDefaultsDidChangeNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(preferencesChanged:) name:BracezPreferencesChangedNotification object:nil];
     
     
-    [self loadDefaults];
+    [self loadPreferences];
 }
 
 
--(void)defaultsChanged:(NSNotification*)aNotification
+-(void)preferencesChanged:(NSNotification*)aNotification
 {
-    [self loadDefaults];
+    [self loadPreferences];
 }
 
--(void)loadDefaults
+-(void)loadPreferences
 {
     BracezPreferences *prefs = [BracezPreferences sharedPreferences];
 
