@@ -13,7 +13,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface JsonPathSearchController : NSObject {
-    IBOutlet JsonDocument* document;
+    IBOutlet __weak JsonDocument* document;
     
     IBOutlet HistoryAndFavoritesControl *JSONPathHistoryFavorites;
     IBOutlet NSTextField *JSONPathInput;

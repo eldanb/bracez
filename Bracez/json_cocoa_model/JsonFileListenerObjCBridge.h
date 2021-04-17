@@ -28,6 +28,6 @@ public:
    void notifyNodeChanged(json::JsonFile *aSender, const json::JsonPath &nodePath);
 
 private:
-   id<ObjCJsonFileChangeListener> targetListener;
+   __weak id<ObjCJsonFileChangeListener> targetListener;
 };
 

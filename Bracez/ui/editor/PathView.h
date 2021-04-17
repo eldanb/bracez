@@ -35,10 +35,10 @@
    NSArray *_pathCells;   
 
    NSCell *_currentHilightedCell;
-   id _delegate;
+   __weak id _delegate;
 }
 
-@property id<PathViewComponentCellNotifications> delegate;
+@property (weak) id<PathViewComponentCellNotifications> delegate;
 @property (readonly) BOOL pathExtensionActive;
 @property NSArray *shownPath;
 

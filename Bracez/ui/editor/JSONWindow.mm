@@ -38,8 +38,14 @@ extern "C" {
     [NSValueTransformer setValueTransformer:[[NodeTypeToColorTransformer alloc] init] forName:@"treeViewNodeColors"];
 }
 
+-(void)dealloc {
+    NSLog(@"DEALALOC");
+}
+
 -(void)awakeFromNib
 {
+    [super awakeFromNib];
+    
     [textEditor setHorizontallyResizable:YES];
     [textEditor setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
     [[textEditor textContainer] setWidthTracksTextView:NO];

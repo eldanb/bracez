@@ -20,7 +20,7 @@
    NSTextView *textView;   
    NSMutableDictionary *marginAttributes;
    NSMutableDictionary *marginAttributesWithMarkers;
-   id <GutterViewModel> model;
+   __weak id <GutterViewModel> model;
    BOOL shouldShowLineNumbers;
    int shownFlagsMask;
 }

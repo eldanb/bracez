@@ -18,8 +18,6 @@
 
 - (void)awakeFromNib
 {
-    document = [docController content];
-    
     docListenerBridge = new JsonFileListenerObjCBridge(self);
     [document jsonFile]->addListener(docListenerBridge);
     
@@ -451,7 +449,7 @@
 
 -(BOOL)canGoFirstChild
 {
-    return [[[treeController selectedObjects] objectAtIndex:0] countOfChildren] > 0;
+    return treeController.selectedObjects.count && [[treeController.selectedObjects objectAtIndex:0] countOfChildren] > 0;
 }
 
 -(IBAction)goFirstChild:(id)aSender

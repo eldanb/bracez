@@ -15,6 +15,8 @@
 #include "JsonIndentFormatter.hpp"
 #include "stopwatch.h"
 
+#define MAX_LOCAL_EDIT_LEN 1024
+
 NSString *JsonDocumentBookmarkChangeNotification =
     @"com.zigsterz.braces.jsondocument.bookmarkchange";
 
@@ -51,7 +53,7 @@ public:
    }
    
 private:
-   JsonDocument *document;
+   __weak JsonDocument *document;
    
 } ;
 
@@ -102,10 +104,6 @@ private:
     }
 }
 
-- (void)close
-{
-   [super close]; 
-}
 
 - (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError
 {
@@ -330,7 +328,7 @@ private:
             if(!file->spliceTextWithWorkLimit(TextCoordinate(editedRange.location),
                                                editedRange.length-delta,
                                                updatedRegion.cStringWstring,
-                                               1024)) {
+                                               MAX_LOCAL_EDIT_LEN)) {
                 _isSemanticModelDirty = YES;
                 [self slowParseFileContent];
             }

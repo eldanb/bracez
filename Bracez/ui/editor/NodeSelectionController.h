@@ -21,14 +21,13 @@
 
 @interface NodeSelectionController : NSObject<NSUserInterfaceValidations, GutterViewModel,
                                                 ObjCJsonFileChangeListener, PathViewComponentCellNotifications> {
-   IBOutlet NSObjectController *docController;
    IBOutlet NSTreeController *treeController;
 
    IBOutlet NSTextView *textView;
    IBOutlet PathView *pathView;
    IBOutlet CoordView *coordView;
    
-   JsonDocument *document;   
+   IBOutlet __weak JsonDocument *document;
    
    bool syncingNodeAndTextSel;
    bool inhibitHistoryRecord;

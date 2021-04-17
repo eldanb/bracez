@@ -15,7 +15,7 @@
 @interface JSONWindow : NSWindow {
     IBOutlet NSTextView *textEditor;
     IBOutlet NSScrollView *textEditorScroll;
-    IBOutlet NSTreeController *domController;
+    IBOutlet __weak NSTreeController *domController;
     IBOutlet NSOutlineView *treeView;
     
     IBOutlet NSTextField *jqQueryInput;
@@ -23,7 +23,7 @@
     IBOutlet HistoryAndFavoritesControl *jqQueryFavHist;
     
     IBOutlet NSMenu *ViewModeMenu;
-    IBOutlet NodeSelectionController *selectionController;
+    IBOutlet __weak NodeSelectionController *selectionController;
     
     IBOutlet JsonPathSearchController *jsonPathSearchController;
 }

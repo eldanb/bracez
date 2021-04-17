@@ -25,7 +25,6 @@ class BookmarksListenerBridge;
 @property NSTextStorage *textStorage;
 
 -(id)init;
-- (void)close;
 
 - (NSString *)windowNibName;
 

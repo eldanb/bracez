@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BracezTextView : NSTextView
 
-@property IBOutlet id<BracezTextViewDelegate> btvDelegate;
+@property (weak) IBOutlet id<BracezTextViewDelegate> btvDelegate;
 
 @end
 

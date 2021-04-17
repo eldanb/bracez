@@ -134,7 +134,7 @@ namespace json
    {
    public:
    
-      typedef std::deque<Node *> Elements;
+      typedef std::deque<std::unique_ptr<Node>> Elements;
       typedef Elements::iterator iterator;
       typedef Elements::const_iterator const_iterator;
 
@@ -179,12 +179,12 @@ namespace json
       struct Member
       {
          Member(const wstring &aName, Node *aNode) : node(aNode), name(aName) {}
-         Member() : node(NULL) {}
+         Member() : node(nullptr) {}
 
-         wstring name;
+          wstring name;
          TextRange nameRange;
          
-         Node *node;
+         std::unique_ptr<Node> node;
       } ;
       
       typedef std::deque<Member> Members;
@@ -261,7 +261,7 @@ namespace json
        virtual void StoreChildAt(int aIdx, Node *aNode);
 
    private:
-      Node *rootNode;
+      std::unique_ptr<Node> rootNode;
       JsonFile *owner;
    } ;
 
@@ -368,7 +368,7 @@ namespace json
    {
    public:
       JsonFile();
-      
+       
       void setText(const std::wstring &aText);
       const std::wstring &getText() const;
       
@@ -413,7 +413,7 @@ namespace json
       friend class Notification;
       friend class priv::DeferNotificationsInBlock;
       
-      DocumentNode *jsonDom;      
+      std::unique_ptr<DocumentNode> jsonDom;      
 
       std::wstring jsonText;      
 

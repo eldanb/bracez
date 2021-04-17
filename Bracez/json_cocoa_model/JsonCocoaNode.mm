@@ -292,7 +292,7 @@ using namespace json;
             {
                 NSString *nodeName = [NSString stringWithWstring:lIter->name];
 
-               [lArray addObject:[JsonCocoaNode nodeForElement:lIter->node
+               [lArray addObject:[JsonCocoaNode nodeForElement:lIter->node.get()
                                                       withName:nodeName]];
             }         
             break;
@@ -306,7 +306,7 @@ using namespace json;
                lIter != lJsonArray->End();
                lIter++, lIdx++)
             {
-               [lArray addObject:[JsonCocoaNode nodeForElement:*lIter withName:[NSString stringWithFormat:@"%d", lIdx]]];
+               [lArray addObject:[JsonCocoaNode nodeForElement:lIter->get() withName:[NSString stringWithFormat:@"%d", lIdx]]];
             }         
             break;
          }  

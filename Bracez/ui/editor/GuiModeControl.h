@@ -21,13 +21,13 @@
 
    BOOL verticalSplit;
 
-   IBOutlet NSTabView *visualEditorTabView;
-   IBOutlet NSScrollView *textEditorView;
-   IBOutlet NSSplitView *editorSplit;
+   IBOutlet __weak NSTabView *visualEditorTabView;
+   IBOutlet __weak NSScrollView *textEditorView;
+   IBOutlet __weak NSSplitView *editorSplit;
     
-   IBOutlet NSTabView *navTabView;
-   IBOutlet NSView *navContainer;
-   IBOutlet NSSplitView *navSplit;
+   IBOutlet __weak NSTabView *navTabView;
+   IBOutlet __weak NSView *navContainer;
+   IBOutlet __weak NSSplitView *navSplit;
 }
 
 -(id)init;

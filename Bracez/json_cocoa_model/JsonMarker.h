@@ -17,7 +17,7 @@ enum JsonMarkerType {
 
 @interface JsonMarker : NSObject {
 
-   JsonDocument *doc;
+   __weak JsonDocument *doc;
    
    TextCoordinate where;
    NSString *what;
