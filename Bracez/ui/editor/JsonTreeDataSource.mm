@@ -22,15 +22,18 @@ NSString * const JsonNodePboardType=@"JsonNode";
                 item: (id)item
           childIndex: (NSInteger)index
 {
-   NSDictionary *lDropInfo = [[info draggingPasteboard] propertyListForType:JsonNodePboardType];
+    NSDictionary *lDropInfo = [[info draggingPasteboard] propertyListForType:JsonNodePboardType];
+    
+    __weak JsonCocoaNode **lNode = (__weak JsonCocoaNode**)[[lDropInfo objectForKey:@"draggedObject"] bytes];
+    __weak  JsonCocoaNode **lParentNode = (__weak JsonCocoaNode**)[[lDropInfo objectForKey:@"draggedParent"] bytes];
    
-   __weak JsonCocoaNode **lNode = (__weak JsonCocoaNode**)[[lDropInfo objectForKey:@"draggedObject"] bytes];
-   __weak  JsonCocoaNode **lParentNode = (__weak JsonCocoaNode**)[[lDropInfo objectForKey:@"draggedParent"] bytes];
-   
-   if(lNode && *lNode && lParentNode && *lParentNode)
-   {
-      [*lNode moveToNode:[item representedObject] atIndex:(int)index fromParent:*lParentNode];
-   }
+    if(index == -1) {
+        index = 0;
+    }
+    if(lNode && *lNode && lParentNode && *lParentNode)
+    {
+        [*lNode moveToNode:[item representedObject] atIndex:(int)index fromParent:*lParentNode];
+    }
    
    return YES;
 }

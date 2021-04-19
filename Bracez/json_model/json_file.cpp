@@ -307,7 +307,7 @@ void ArrayNode::DetachChildAt(int aIdx, Node **aNode)
         lSpliceRange.end = GetAbsTextRange().end-1;
     }
     
-    *aNode = lIter->get();
+    *aNode = lIter->release();
     (*aNode)->parent = NULL;
     
     elements.erase(lIter);
@@ -674,7 +674,7 @@ void ObjectNode::DetachChildAt(int aIdx, Node **aNode)
         lSpliceRange.end = lSpliceRange.end - 1;
     }
     
-    *aNode = lIter->node.get();
+    *aNode = lIter->node.release();
     (*aNode)->parent = NULL;
     
     members.erase(lIter);

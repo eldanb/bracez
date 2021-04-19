@@ -175,7 +175,9 @@ using namespace json;
    }
 }
 
--(void)moveToNode:(JsonCocoaNode*)aNewContainer atIndex:(int)aIndex fromParent:(JsonCocoaNode*)aParent;
+-(void)moveToNode:(JsonCocoaNode*)aNewContainer
+          atIndex:(int)aIndex
+       fromParent:(JsonCocoaNode*)aParent;
 {
    ContainerNode *lParentNode = proxiedElement->GetParent();
    int lIdxInParent = lParentNode->GetIndexOfChild(proxiedElement);
