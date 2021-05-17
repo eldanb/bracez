@@ -8,6 +8,7 @@
 
 #import "JsonMockupAppDelegate.h"
 #import "JsonPreferencesDialogController.h"
+#import "BracezPreferences.h"
 
 #import "JsonCocoaNode.h"
 #include "json_file.h"
@@ -16,7 +17,32 @@
 
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(preferencesChanged:) name:BracezPreferencesChangedNotification object:nil];
+    
+    [self loadAppearanceFromPreferences];
 }
+
+-(void)preferencesChanged:(id)notification {
+    [self loadAppearanceFromPreferences];
+}
+
+-(void)loadAppearanceFromPreferences {
+    AppearanceSelection selAppearance = [BracezPreferences sharedPreferences].selectedAppearance;
+    switch(selAppearance) {
+        case System:
+            [NSApplication sharedApplication].appearance = nil;
+            break;
+            
+        case Dark:
+            [NSApplication sharedApplication].appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
+            break;
+            
+        case Light:
+            [NSApplication sharedApplication].appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantLight];
+            break;
+    }
+}
+
 
 - (IBAction)showPreferences:(id)aSender
 {

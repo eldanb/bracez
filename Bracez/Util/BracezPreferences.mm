@@ -178,6 +178,16 @@ static BracezPreferences* __sharedPreferences = NULL;
     return [defaults boolForKey:@"TreeViewSyntaxColoring"];
 }
 
+-(void)setSelectedAppearance:(AppearanceSelection)appearance {
+    [defaults setInteger:appearance forKey:@"Appearance"];
+    [self postBracezChangeNotification];
+}
+
+-(AppearanceSelection)selectedAppearance {
+    return (AppearanceSelection)[defaults integerForKey:@"Appearance"];
+}
+
+
 -(BOOL)validateIndentSize:(NSNumber**)indentSize error:(NSError**)err {
     if([*indentSize intValue]<1) {
         *indentSize = [NSNumber numberWithInt:3];

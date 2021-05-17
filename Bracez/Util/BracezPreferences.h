@@ -9,6 +9,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+enum AppearanceSelection {
+    System = 0,
+    Light = 1,
+    Dark = 2
+} ;
+
 @interface BracezPreferences : NSObject
 
 -(void)setGutterMasterSwitch:(BOOL)value;
@@ -40,6 +46,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(void)setIndentSize:(int)indentSize;
 -(int)indentSize;
+
+-(void)setSelectedAppearance:(enum AppearanceSelection)appearance;
+-(enum AppearanceSelection)selectedAppearance;
 
 +(BracezPreferences*)sharedPreferences;
 

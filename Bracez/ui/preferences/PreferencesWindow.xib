@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="18122" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17701"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="18122"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -30,17 +31,40 @@
                         <tabViewItems>
                             <tabViewItem label="Tab" identifier="general" id="31">
                                 <view key="view" id="34">
-                                    <rect key="frame" x="0.0" y="0.0" width="480" height="290"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="480" height="306"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <userGuides>
+                                        <userLayoutGuide location="240" affinity="minX"/>
+                                    </userGuides>
                                     <subviews>
-                                        <button fixedFrame="YES" imageHugsTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="96">
-                                            <rect key="frame" x="18" y="254" width="237" height="18"/>
+                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lwS-sK-XE7">
+                                            <rect key="frame" x="245" y="262" width="120" height="25"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="check" title="Remember last view configuration" bezelStyle="regularSquare" imagePosition="leading" alignment="left" state="on" inset="2" id="97">
-                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <popUpButtonCell key="cell" type="push" title="System" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="pZT-jf-fgB" id="Odt-8H-GQo">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="menu"/>
+                                                <menu key="menu" id="u8v-uh-OHP">
+                                                    <items>
+                                                        <menuItem title="System" state="on" id="pZT-jf-fgB"/>
+                                                        <menuItem isSeparatorItem="YES" id="o9f-2P-lGS"/>
+                                                        <menuItem title="Light" tag="1" id="gXX-mS-BSU"/>
+                                                        <menuItem title="Dark" tag="2" id="3j2-JY-ypp"/>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                            <connections>
+                                                <binding destination="VgD-zE-YhD" name="selectedTag" keyPath="self.selectedAppearance" id="KM8-Li-bKj"/>
+                                            </connections>
+                                        </popUpButton>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cUP-Na-zQF">
+                                            <rect key="frame" x="154" y="269" width="81" height="16"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Appearance:" id="Zi8-fv-Pme">
                                                 <font key="font" metaFont="system"/>
-                                            </buttonCell>
-                                        </button>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
                                     </subviews>
                                 </view>
                             </tabViewItem>
@@ -258,21 +282,23 @@
             </view>
             <toolbar key="toolbar" implicitIdentifier="E788E493-2452-4C54-AEAE-702CC0238407" autosavesConfiguration="NO" allowsUserCustomization="NO" displayMode="iconAndLabel" sizeMode="regular" id="20">
                 <allowedToolbarItems>
-                    <toolbarItem implicitItemIdentifier="08B5E111-4602-49EB-B1BE-CA6632E540F9" explicitItemIdentifier="general" label="General" paletteLabel="General" tag="-1" image="NSPreferencesGeneral" autovalidates="NO" selectable="YES" id="28">
+                    <toolbarItem implicitItemIdentifier="08B5E111-4602-49EB-B1BE-CA6632E540F9" explicitItemIdentifier="general" label="General" paletteLabel="General" tag="-1" autovalidates="NO" selectable="YES" id="28">
+                        <imageReference key="image" image="gearshape" catalog="system" symbolScale="medium"/>
                         <size key="minSize" width="22" height="22"/>
                         <size key="maxSize" width="22" height="22"/>
                         <connections>
                             <action selector="changePage:" target="-2" id="52"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="E675BBA1-1A1F-4071-B841-F2CBE15542B9" explicitItemIdentifier="texted" label="Text Editor" paletteLabel="Text Editor" tag="-1" image="NSAdvanced" autovalidates="NO" selectable="YES" id="29">
+                    <toolbarItem implicitItemIdentifier="E675BBA1-1A1F-4071-B841-F2CBE15542B9" explicitItemIdentifier="texted" label="Text Editor" paletteLabel="Text Editor" tag="-1" autovalidates="NO" selectable="YES" id="29">
+                        <imageReference key="image" image="square.and.pencil" catalog="system" symbolScale="medium"/>
                         <size key="minSize" width="22" height="22"/>
                         <size key="maxSize" width="22" height="22"/>
                         <connections>
                             <action selector="changePage:" target="-2" id="53"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="3F130A0F-FED1-4A49-93DE-997E409A7B69" explicitItemIdentifier="vised" label="Visual Editor" paletteLabel="Visual Editor" tag="-1" image="NSAdvanced" autovalidates="NO" selectable="YES" id="140">
+                    <toolbarItem implicitItemIdentifier="3F130A0F-FED1-4A49-93DE-997E409A7B69" explicitItemIdentifier="vised" label="Visual Editor" paletteLabel="Visual Editor" tag="-1" image="list.bullet.indent" catalog="system" autovalidates="NO" selectable="YES" id="140">
                         <size key="minSize" width="22" height="22"/>
                         <size key="maxSize" width="22" height="22"/>
                         <connections>
@@ -297,7 +323,8 @@
         <userDefaultsController representsSharedInstance="YES" id="0mh-CV-PO5"/>
     </objects>
     <resources>
-        <image name="NSAdvanced" width="32" height="32"/>
-        <image name="NSPreferencesGeneral" width="32" height="32"/>
+        <image name="gearshape" catalog="system" width="16" height="16"/>
+        <image name="list.bullet.indent" catalog="system" width="19" height="12"/>
+        <image name="square.and.pencil" catalog="system" width="17" height="15"/>
     </resources>
 </document>
