@@ -13,6 +13,7 @@
 - (int)lineNumberForCharacterIndex:(unsigned long)aIdx;
 - (unsigned long)characterIndexForFirstCharOfLine:(int)aIdx;
 - (UInt32)markersForLine:(int)aLine;
+- (int)lineCount;
 @end
 
 @interface TextEditorGutterView : NSRulerView {

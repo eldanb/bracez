@@ -213,7 +213,8 @@ inline void TokenStream::Match4Hex(unsigned int& integer) {
    for (i = 0; (i < 4) && (inputStream.EOS() == false) && isxdigit(inputStream.Peek()); ++i)
       ss << inputStream.Get();
 
-   listener->Error(inputStream.GetLocation(), PARSER_ERROR_UNEXPECTED_CHARACTER, "Expected a hex digit");
+   if(listener)
+       listener->Error(inputStream.GetLocation(), PARSER_ERROR_UNEXPECTED_CHARACTER, "Expected a hex digit");
 
    ss << std::hex;
    ss >> integer;
@@ -268,39 +269,23 @@ inline void TokenStream::MatchString()
                                     (surrogate & 0x3FF));
                             } else
                             {
-                                listener->Error(inputStream.GetLocation(), PARSER_ERROR_UNEXPECTED_CHARACTER, "Expected \\u after surrogate character.");
+                                if(listener)
+                                    listener->Error(inputStream.GetLocation(), PARSER_ERROR_UNEXPECTED_CHARACTER, "Expected \\u after surrogate character.");
                             }
                         } else
                         {
-                            listener->Error(inputStream.GetLocation(), PARSER_ERROR_UNEXPECTED_CHARACTER, "Expected \\u after surrogate character.");
+                            if(listener)
+                                listener->Error(inputStream.GetLocation(), PARSER_ERROR_UNEXPECTED_CHARACTER, "Expected \\u after surrogate character.");
                         }                                
                     }
 
                     currentToken.sValue.push_back(codepoint);
-                    /*
-                    // To UTF8
-                    if (codepoint < 0x80) {
-                        currentToken.sValue.push_back((char)codepoint);
-                    } else if (codepoint < 0x0800) {
-                        currentToken.sValue.push_back((char)((codepoint >> 6) | 0xC0));
-                        currentToken.sValue.push_back((char)((codepoint & 0x3F) | 0x80));
-                    } else if (codepoint < 0x10000) {
-                        currentToken.sValue.push_back((char)((codepoint >> 12) | 0xE0));
-                        currentToken.sValue.push_back((char)(((codepoint >> 6) & 0x3F) | 0x80));
-                        currentToken.sValue.push_back((char)((codepoint & 0x3F) | 0x80));
-                    } else if (codepoint < 0x200000) {
-                        currentToken.sValue.push_back((char)((codepoint >> 18) | 0xF0));
-                        currentToken.sValue.push_back((char)(((codepoint >> 12) & 0x3F) | 0x80));
-                        currentToken.sValue.push_back((char)(((codepoint >> 6) & 0x3F) | 0x80));
-                        currentToken.sValue.push_back((char)((codepoint & 0x3F) | 0x80));
-                    } else {
-                        currentToken.sValue.push_back('?');
-                    }*/
                     break;
                 }
             default: {
                std::string sMessage = "Unrecognized escape sequence found in string: \\" + wstring_to_utf8(wstring(&c, 1));
-               listener->Error(inputStream.GetLocation(), PARSER_ERROR_UNEXPECTED_CHARACTER, sMessage);
+               if(listener)
+                   listener->Error(inputStream.GetLocation(), PARSER_ERROR_UNEXPECTED_CHARACTER, sMessage);
             }
          }
       }
@@ -314,7 +299,8 @@ inline void TokenStream::MatchString()
         currentToken.sOrgText.push_back(inputStream.Get());
     } else {
         std::string sMessage = "Unterminated string constant.";
-        listener->Error(inputStream.GetLocation(), PARSER_ERROR_UNEXPECTED_CHARACTER, sMessage);
+        if(listener)
+            listener->Error(inputStream.GetLocation(), PARSER_ERROR_UNEXPECTED_CHARACTER, sMessage);
     }
 }
 
@@ -343,7 +329,8 @@ inline void TokenStream::MatchBareWordToken()
     {
         
         std::string sErrorMessage = "Unknown token in stream: " + wstring_to_utf8(currentToken.sValue);
-        listener->Error(currentToken.locBegin, PARSER_ERROR_UNEXPECTED_CHARACTER, sErrorMessage);
+        if(listener)
+            listener->Error(currentToken.locBegin, PARSER_ERROR_UNEXPECTED_CHARACTER, sErrorMessage);
     }
     
     currentToken.sOrgText = currentToken.sValue;

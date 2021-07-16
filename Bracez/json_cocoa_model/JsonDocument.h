@@ -36,6 +36,7 @@ class BookmarksListenerBridge;
 -(NSIndexPath*)findPathContaining:(TextCoordinate)aDocOffset;
 -(void)translateCoordinate:(TextCoordinate)aCoord toRow:(int*)aRow col:(int*)aCol;
 -(NSUInteger)characterIndexForFirstCharOfLine:(UInt32)lineNumber;
+-(NSUInteger)lineCount;
 
 -(LinesAndBookmarks&)bookmarks;
 -(const MarkerList<ParseErrorMarker>*)errors;

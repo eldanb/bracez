@@ -918,6 +918,8 @@ void JsonFile::setText(const wstring &aText)
     jsonText = aText;
     wstringstream lStream(aText);
     
+    errors.clear();
+    
     stopwatch lStopWatch("Read Json");
     Node *lNode = NULL;
     Reader::Read(lNode, lStream, &listener);
@@ -926,6 +928,8 @@ void JsonFile::setText(const wstring &aText)
     jsonDom.reset(new DocumentNode(this, lNode));
     jsonDom->textRange.start = TextCoordinate(0);
     jsonDom->textRange.end = TextCoordinate(aText.length());
+    
+    notify(ErrorsChangedNotification());
 }
 
 const wstring &JsonFile::getText() const

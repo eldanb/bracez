@@ -23,14 +23,14 @@
     
     [treeController addObserver:self forKeyPath:@"selectionIndexPaths" options:0 context:nil];
     [pathView setDelegate:self];
+    [document addObserver:self forKeyPath:@"bookmarkMarkers" options:0 context:NULL];
+    [document addObserver:self forKeyPath:@"problems" options:0 context:NULL];
     
     syncingNodeAndTextSel = false;
     inhibitHistoryRecord = false;
     
     lastNavGroup=NAVGROUP_NONE;
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(_bookmarksChanged:) name:JsonDocumentBookmarkChangeNotification object:document];
     
     inhibitHistoryRecord = true;
     [self refreshSelectionFromTextView];
@@ -76,15 +76,26 @@
 
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    
+    if([keyPath isEqualTo:@"selectionIndexPaths"])
+    {
+        [self selectionIndexPathsUpdated];
+    } else if([keyPath isEqualTo:@"bookmarkMarkers"]) {
+        [self _bookmarksChanged];
+    } else if([keyPath isEqualTo:@"problems"]) {
+        [self _problemsChanged];
+    }
+
+}
+
+-(void)selectionIndexPathsUpdated {
     if(document.isSemanticModelDirty) {
         return;
     }
-    
+
     if(![treeController selectionIndexPath]) {
         return;
     }
-    
+ 
     JsonCocoaNode *lLastNode = nil;
     NSArray* lPathArr = [self _nodeNamesForIndexPath:[treeController selectionIndexPath] lastNodeInto:&lLastNode];
     if(!pathView.pathExtensionActive) {
@@ -632,11 +643,19 @@
     return lRet;
 }
 
-- (void)_bookmarksChanged:(id)aUserNotification
+- (NSUInteger)lineCount {
+    return [document lineCount];
+}
+
+
+- (void)_bookmarksChanged
 {
     [gutterView markersChanged];
 }
 
+- (void)_problemsChanged {
+    [gutterView markersChanged];
+}
 
 static void adjustNavEntries(vector<TextCoordinate> &aNavEntries, TextCoordinate aOldOffset, TextLength aOldLength, TextLength aNewLength)
 {

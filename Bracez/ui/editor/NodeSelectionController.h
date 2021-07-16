@@ -81,11 +81,10 @@
 
 - (int)lineNumberForCharacterIndex:(NSUInteger)aIdx;
 - (UInt32)markersForLine:(int)aLine;
+- (NSUInteger)lineCount;
 - (void)connectGutterView:(id)aGutterView;
 - (NSUInteger)characterIndexForFirstCharOfLine:(int)aIdx;
 
 -(NSString*)currentPathAsJsonQuery;
-
-- (void)_bookmarksChanged:(id)aUserData;
 
 @end

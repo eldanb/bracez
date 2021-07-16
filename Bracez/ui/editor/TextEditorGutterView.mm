@@ -112,18 +112,6 @@
     [[NSColor controlBackgroundColor] set];
     [NSBezierPath fillRect: aRect];
     
-    /* [[NSColor controlShadowColor] set];
-     
-     NSBezierPath *lLine = [NSBezierPath bezierPath];
-     [lLine moveToPoint:NSMakePoint(aRect.origin.x+aRect.size.width, aRect.origin.y)];
-     [lLine lineToPoint:NSMakePoint(aRect.origin.x+aRect.size.width, aRect.origin.y+aRect.size.height)];
-     [lLine stroke]; */
-    
-    /*   [[NSColor contr] set];
-     [lLine moveToPoint:NSMakePoint(aRect.origin.x, aRect.origin.y)];
-     [lLine lineToPoint:NSMakePoint(aRect.origin.x, aRect.origin.y+aRect.size.height)];
-     [lLine stroke];*/
-    
     NSLayoutManager* layoutManager = [textView layoutManager];
     CGFloat lDefaultLineHeight = [layoutManager defaultLineHeightForFont:textView.font];
     if(!lDefaultLineHeight)
@@ -143,9 +131,16 @@
     lCurLineRect.origin.y -= documentVisibleRect.origin.y;
     while(lCurLineRect.origin.y <= aRect.origin.y+aRect.size.height)
     {
-        NSUInteger charIndex = [model characterIndexForFirstCharOfLine:lCurLineNo];
-        NSUInteger glyphIndex = [layoutManager glyphIndexForCharacterAtIndex:charIndex];
-        if(glyphIndex<layoutManager.numberOfGlyphs) {
+        bool gotGlyphIndex = false;
+        NSUInteger glyphIndex;
+        
+        if(lCurLineNo < [model lineCount]) {
+            NSUInteger charIndex = [model characterIndexForFirstCharOfLine:lCurLineNo];
+            glyphIndex = [layoutManager glyphIndexForCharacterAtIndex:charIndex];
+            gotGlyphIndex = glyphIndex<layoutManager.numberOfGlyphs;
+        }
+        
+        if(gotGlyphIndex) {
             lCurLineRect = [layoutManager lineFragmentRectForGlyphAtIndex:glyphIndex effectiveRange:nil];
         } else {
             lCurLineRect.origin.y = (lCurLineNo-1) * lDefaultLineHeight;
