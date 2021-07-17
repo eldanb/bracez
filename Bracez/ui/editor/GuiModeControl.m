@@ -20,6 +20,7 @@
         treeEditor    = YES;
         verticalSplit = NO;
         bookmarksList = YES;
+        projectionViewShown = NO;
     }
     
     return self;
@@ -180,6 +181,15 @@
     return showNavPanel;
 }
 
+-(void)setShowProjectionView:(BOOL)value {
+    projectionViewShown = value;
+    [self updateGui];
+}
+
+-(BOOL)showProjectionView {
+    return projectionViewShown;
+}
+
 static void animateSplitterPane(NSSplitView *aView, int aSize)
 {
     NSAnimation *lAnimation = [[SplitterAnimation alloc] initWithTarget:aView divIndex:0 endValue:aSize];
@@ -196,7 +206,7 @@ static void animateSplitterPane(NSSplitView *aView, int aSize)
     BOOL lVisualShown = (lFrame.size.height * lFrame.size.width) > 0;
     lFrame = [textEditorView frame];
     BOOL lTextEditorShown = (lFrame.size.height * lFrame.size.width) > 0;
-    
+    BOOL lProjectionShown = projectionViewSplit.arrangedSubviews.count > 1 && projectionViewSplit.arrangedSubviews[1].frame.size.height > 0;
     
     
     // Hide components as needed
@@ -253,7 +263,8 @@ static void animateSplitterPane(NSSplitView *aView, int aSize)
     {
         [navTabView selectTabViewItemWithIdentifier:@"jsonPathPanel"];
     }
-    
+
+    // Update nav pain view
     if((!navContainer.hidden) != showNavPanel)
     {
         if(showNavPanel && [navSplit.arrangedSubviews indexOfObject:navContainer]==NSNotFound) {
@@ -268,6 +279,26 @@ static void animateSplitterPane(NSSplitView *aView, int aSize)
             }
             
             navContainer.hidden = YES;
+        }
+    }
+    
+    
+    // Update projection pane
+    if(projectionViewShown != lProjectionShown) {
+        projectionViewSplit.arrangesAllSubviews = NO;
+        if(projectionViewShown) {
+            if([projectionViewSplit.arrangedSubviews indexOfObject:projectionView] == NSNotFound) {
+                [projectionViewSplit addArrangedSubview:projectionView];
+                projectionView.hidden = NO;
+            }
+            animateSplitterPane(projectionViewSplit, projectionViewSplit.frame.size.height * 2 / 3);
+        } else {
+            animateSplitterPane(projectionViewSplit, projectionViewSplit.frame.size.height + 5);
+            NSInteger lSubviewIndex = [projectionViewSplit.arrangedSubviews indexOfObject:projectionView];
+            if(lSubviewIndex != NSNotFound) {
+                [projectionViewSplit removeArrangedSubview:projectionView];
+            }
+            projectionView.hidden = YES;
         }
     }
 }

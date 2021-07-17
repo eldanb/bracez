@@ -9,25 +9,28 @@
 #import <Cocoa/Cocoa.h>
 
 @interface GuiModeControl : NSObject {
-   BOOL treeEditor;
-   BOOL browserEditor;
-   BOOL textEditor;
-   
-   BOOL problemsList;
-   BOOL bookmarksList;
-   BOOL jqPanel;
-   BOOL jsonPathPanel;
-   BOOL showNavPanel;
-
-   BOOL verticalSplit;
-
-   IBOutlet __weak NSTabView *visualEditorTabView;
-   IBOutlet __weak NSScrollView *textEditorView;
-   IBOutlet __weak NSSplitView *editorSplit;
+    BOOL treeEditor;
+    BOOL browserEditor;
+    BOOL textEditor;
     
-   IBOutlet __weak NSTabView *navTabView;
-   IBOutlet __weak NSView *navContainer;
-   IBOutlet __weak NSSplitView *navSplit;
+    BOOL problemsList;
+    BOOL bookmarksList;
+    BOOL jqPanel;
+    BOOL jsonPathPanel;
+    BOOL showNavPanel;
+    BOOL projectionViewShown;
+    BOOL verticalSplit;
+    
+    IBOutlet __weak NSTabView *visualEditorTabView;
+    IBOutlet __weak NSScrollView *textEditorView;
+    IBOutlet __weak NSSplitView *editorSplit;
+
+    IBOutlet __weak NSView *projectionView;
+    IBOutlet __weak NSSplitView *projectionViewSplit;
+    
+    IBOutlet __weak NSTabView *navTabView;
+    IBOutlet __weak NSView *navContainer;
+    IBOutlet __weak NSSplitView *navSplit;
 }
 
 -(id)init;
@@ -46,7 +49,8 @@
 -(void)setShowTextEditor:(NSNumber*)aValue;
 -(NSNumber*)showTextEditor;
 
-
+-(void)setShowProjectionView:(BOOL)value;
+-(BOOL)showProjectionView;
 
 -(void)setShowProblemsList:(NSNumber*)aValue;
 -(NSNumber*)showProblemsList;
