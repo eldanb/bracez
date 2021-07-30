@@ -16,6 +16,7 @@
 using namespace json;
 
 extern NSString *JsonDocumentBookmarkChangeNotification;
+extern NSString *JsonDocumentSemanticModelUpdatedNotification;
 
 class BookmarksListenerBridge;
 

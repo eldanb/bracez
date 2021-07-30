@@ -22,6 +22,14 @@ public:
     static JsonPathExpression compile(const std::wstring &inputExpression);
     static JsonPathExpression compile(const std::string &inputExpression);
     
+    JsonPathExpression(JsonPathExpression &&expr) : _rootNode(std::move(expr._rootNode)) {}
+    JsonPathExpression() {}
+
+    JsonPathExpression &operator=(JsonPathExpression &&expr) {
+        _rootNode = std::move(expr._rootNode);
+        return *this;
+    }
+
 private:
     JsonPathExpression(std::unique_ptr<JsonPathExpressionNode> &&rootNode) : _rootNode(std::move(rootNode)) {}
     

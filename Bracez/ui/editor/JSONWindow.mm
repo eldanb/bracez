@@ -18,6 +18,9 @@
 #import "HistoryAndFavoritesControl.h"
 #import "BracezTextView.h"
 
+#import "ProjectionTableDataSource.h"
+#import "ProjectionDefinitionEditor.h"
+
 extern "C" {
 #include "jq.h"
 }
@@ -26,6 +29,8 @@ extern "C" {
     JsonTreeDataSource *_treeDataSource;
     TextEditorGutterView *gutterView;
     IBOutlet GuiModeControl *guiModeControl;
+    ProjectionTableDataSource *projectionTableDatasource;
+    IBOutlet HistoryAndFavoritesControl *projectionDefinitionsHistory;
 }
 
 @end
@@ -67,7 +72,17 @@ extern "C" {
     
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(preferencesChanged:) name:BracezPreferencesChangedNotification object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(semanticModelChanged:) name:JsonDocumentSemanticModelUpdatedNotification
+                                               object:self.document];
+
+    [guiModeControl addObserver:self
+                     forKeyPath:@"showProjectionView"
+                        options:0
+                        context:nil];
     
+    [self setProjectionDefinition:[ProjectionDefinition newDefinition]];
     
     [self loadPreferences];
 }
@@ -95,8 +110,18 @@ extern "C" {
 }
 
 -(void)removeJsonNode:(id)aSender
-{
-    [domController remove:aSender];
+{    
+    JsonCocoaNode* selectedNodeParent =  (JsonCocoaNode*)(domController.selectedNodes.firstObject.parentNode.representedObject);
+        
+    NSIndexPath *selectedNodeIndexPath = domController.selectionIndexPath;
+    NSUInteger lastIndexPath = [selectedNodeIndexPath indexAtPosition:selectedNodeIndexPath.length-1];
+    
+    [selectedNodeParent removeObjectFromChildrenAtIndex:(int)lastIndexPath];
+
+    // Doing domController remove below triggers a bug, probably because during the
+    // DOM controller change we reload items which triggers another notification
+    // (TreeRemove -> CocoaNode remove -> JsonDoc remove -> notify node changed -> reload node)
+    // [domController remove:aSender];
 }
 
 
@@ -328,5 +353,58 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
     *lineStart = c.getAddress();
 }
 
+
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    if(object == guiModeControl) {
+        if([keyPath isEqualTo:@"showProjectionViewel"]) {
+            [self onGuiModeControlProjectVisibleChanged];
+        }
+    }
+}
+
+
+-(void)onGuiModeControlProjectVisibleChanged {
+    [self updateProjectionData];
+}
+
+-(void)semanticModelChanged:(id)sender {
+    NSLog(@"Editor window handling semantic model changed");
+    [self updateProjectionData];
+}
+
+- (IBAction)editProjectionClicked:(id)sender {
+    ProjectionDefinitionEditor *editor = [[ProjectionDefinitionEditor alloc] initWithDefinition:projectionTableDatasource.projectionDefinition];
+    [self beginSheet:editor.window completionHandler:^(NSModalResponse returnCode) {
+        [self setProjectionDefinition:editor.editedProjection];
+    }];
+}
+
+
+-(void)updateProjectionData {
+    if(projectionTableDatasource && guiModeControl.showProjectionView) {
+        [projectionTableDatasource reloadData];
+        [self->projectionTable reloadData];
+    }
+}
+
+-(void)setProjectionDefinition:(ProjectionDefinition*)definition {
+    projectionTableDatasource =
+        [[ProjectionTableDataSource alloc] initWithDefinition:definition
+                                            projectedDocument:self.document];
+    
+    [projectionTableDatasource reloadData];
+    [projectionTableDatasource configureTableViewColumns:self->projectionTable];
+    
+    projectionTable.delegate = projectionTableDatasource;
+    projectionTable.dataSource = projectionTableDatasource;
+}
+
+- (nonnull ProjectionDefinition *)projectionDefintitionForFavorite:(nonnull id)sender {
+    return self->projectionTableDatasource.projectionDefinition;
+}
+
+- (void)recallProjectionDefinition:(nonnull ProjectionDefinition *)definition {
+    [self setProjectionDefinition:definition];
+}
 
 @end

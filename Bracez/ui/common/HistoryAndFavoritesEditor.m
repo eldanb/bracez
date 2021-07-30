@@ -53,21 +53,20 @@
 
 -(NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
     NSTableCellView *cellView = [tableView makeViewWithIdentifier:@"defaultCell" owner:tableView];
-    cellView.textField.stringValue = [_editedFavList objectAtIndex:row];
+    cellView.textField.stringValue = [_historyAndFavorites nameForItem:[_editedFavList objectAtIndex:row]];
     return cellView;
 }
 
 
 -(id<NSPasteboardWriting>)tableView:(NSTableView *)tableView pasteboardWriterForRow:(NSInteger)row {
-    NSObject *favItem = [_editedFavList objectAtIndex:row];
+    NSData *favItem = [NSKeyedArchiver archivedDataWithRootObject:[_editedFavList objectAtIndex:row]
+                                            requiringSecureCoding:YES
+                                                            error:nil];
     NSPasteboardItem *pboardItem = [[NSPasteboardItem alloc] init];
     [pboardItem setPropertyList:@{ @"index": @(row), @"item": favItem } forType:@"public.text"];
      
     return pboardItem;
 }
-
-
-
 
 - (NSDragOperation)tableView:(NSTableView *)tableView validateDrop:(id<NSDraggingInfo>)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)dropOperation {
 
@@ -83,7 +82,9 @@
     
     if(dropOperation != NSDragOperationNone) {
         NSNumber *orgIndex = [info.draggingPasteboard propertyListForType:@"public.text"][@"index"];
-        NSObject *item = [info.draggingPasteboard propertyListForType:@"public.text"][@"item"];
+        NSObject *item = [NSKeyedUnarchiver unarchivedObjectOfClass:[NSObject class]
+                                                           fromData:[info.draggingPasteboard propertyListForType:@"public.text"][@"item"]
+                                                              error:nil];
         
         [_editedFavList removeObjectAtIndex:orgIndex.unsignedIntValue];
         if(orgIndex.unsignedIntValue < row) {

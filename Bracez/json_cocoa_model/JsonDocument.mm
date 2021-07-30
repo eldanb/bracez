@@ -20,6 +20,9 @@
 NSString *JsonDocumentBookmarkChangeNotification =
 @"com.zigsterz.braces.jsondocument.bookmarkchange";
 
+NSString *JsonDocumentSemanticModelUpdatedNotification =
+@"com.zigsterz.braces.jsondocument.semanticmodelchange";
+
 @interface JsonDocument () {
     BOOL _isSemanticModelTextChangeInProgress;
     BOOL _isSemanticModelDirty;
@@ -280,6 +283,8 @@ private:
     _isSemanticModelDirty = NO;
 
     [self updateSyntaxInRange:NSMakeRange(0, self.textStorage.string.length)];
+    
+    [self notifySemanticModelUpdated];
 }
 
 -(void)notifyJsonTextSpliced:(JsonFile*)aSender from:(TextCoordinate)aOldOffset length:(TextLength)aOldLength newLength:(TextLength)aNewLength
@@ -468,6 +473,13 @@ private:
     }
     
     [node reloadFromElement: ((json::ContainerNode*)parentNode.proxiedElement)->GetChildAt(nodePath.back())];
+    
+    [self notifySemanticModelUpdated];
 }
 
+-(void)notifySemanticModelUpdated {
+    [[NSNotificationCenter defaultCenter] postNotificationName:JsonDocumentSemanticModelUpdatedNotification
+                                                        object:self
+                                                      userInfo:nil];
+}
 @end

@@ -46,8 +46,6 @@ using namespace json;
 
 -(void)setNodeValue:(NSValue*)aValue
 {
-   [self willChangeValueForKey:@"nodeType"];
-   
    NSString *lValString = [aValue description];
    
    int lIdx = proxiedElement->GetParent()->GetIndexOfChild(proxiedElement);
@@ -90,9 +88,6 @@ using namespace json;
    }
    
    proxiedElement->GetParent()->SetChildAt(lIdx, lNewNode);
-   proxiedElement = lNewNode;
-   
-   [self didChangeValueForKey:@"nodeType"];
 }
 
 -(id) nodeValue
@@ -171,7 +166,7 @@ using namespace json;
    if(lContainerNode)
    {
       lContainerNode->RemoveChildAt(aIdx);
-      [self _internalRemoveChildAtIndex:aIdx];
+      //[self _internalRemoveChildAtIndex:aIdx];
    }
 }
 
@@ -207,9 +202,6 @@ using namespace json;
       ArrayNode *lArrNode = dynamic_cast<ArrayNode*> (lNewParent);
       lArrNode->InsertMemberAt(aIndex, lThis, &lTxt);      
    }
-   
-   [aParent _internalRemoveChildAtIndex:lIdxInParent];
-   [aNewContainer _internalInsertChild:[JsonCocoaNode nodeForElement:lThis withName:name] atIndex:aIndex];
 }
 
 -(void)_internalInsertChild:(JsonCocoaNode*)aChild atIndex:(int)aIdx

@@ -6,13 +6,14 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "ProjectionDefinitionFavoritesAdapter.h"
 
 @class NodeSelectionController;
 @class TextEditorGutterView;
 @class JsonPathSearchController;
 @class HistoryAndFavoritesControl;
 
-@interface JSONWindow : NSWindow {
+@interface JSONWindow : NSWindow <ProjectionDefinitionFavoritesAdapterDelegate> {
     IBOutlet NSTextView *textEditor;
     IBOutlet NSScrollView *textEditorScroll;
     IBOutlet __weak NSTreeController *domController;
@@ -26,6 +27,8 @@
     IBOutlet __weak NodeSelectionController *selectionController;
     
     IBOutlet JsonPathSearchController *jsonPathSearchController;
+    
+    __weak IBOutlet NSTableView *projectionTable;
 }
 
 -(void)loadPreferences;

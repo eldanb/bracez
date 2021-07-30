@@ -10,6 +10,45 @@
 
 #define MAX_HISTORY_LEN 10
 
+
+@interface TextEditHistoryFavEditorDelegate : NSObject<HistoryAndFavoritesControlDelegate> {
+}
+
++(TextEditHistoryFavEditorDelegate*)shared;
+@end
+
+
+@implementation TextEditHistoryFavEditorDelegate
+
++(TextEditHistoryFavEditorDelegate*)shared {
+    static dispatch_once_t donce;
+    static TextEditHistoryFavEditorDelegate* shared = nil;
+    dispatch_once(&donce, ^() {
+        shared = [[TextEditHistoryFavEditorDelegate alloc] init];
+    });
+        
+    return shared;
+}
+
+
+- (nonnull NSString *)hfControl:(nonnull HistoryAndFavoritesControl *)sender wantsNameForFavoriteItem:(nonnull id)favoriteItem {
+    return favoriteItem;
+}
+
+- (void)hfControl:(nonnull HistoryAndFavoritesControl *)sender wantsNewFavoriteObjectWithCompletion:(nonnull void (^)(id _Nonnull, NSError * nullable))completionHandler {
+    completionHandler(sender.boundField.stringValue, nil);
+}
+
+- (void)hfControl:(nonnull HistoryAndFavoritesControl *)sender recallItem:(nonnull id)recalledItem {
+    sender.boundField.stringValue = recalledItem;
+    NSDictionary *bindingInfo = [sender.boundField infoForBinding: NSValueBinding];
+    [[bindingInfo valueForKey: NSObservedObjectKey] setValue: sender.boundField.stringValue
+                                                  forKeyPath: [bindingInfo valueForKey: NSObservedKeyPathKey]];
+}
+
+
+@end
+
 @interface HistoryAndFavoritesControl () <NSMenuDelegate> {
     NSPopUpButton *button;
     
@@ -30,7 +69,6 @@
     button.bordered = NO;
     button.imagePosition = NSImageOnly;
     [(id)button.cell setArrowPosition:NSPopUpArrowAtBottom];
-    
     
     NSMenu *menu = [[NSMenu alloc] init];
     menu.delegate = self;
@@ -63,11 +101,13 @@
     [menu addItem:sep];
     
     // History
-    NSMenuItem *hist = [[NSMenuItem alloc] initWithTitle:@"History" action:nil keyEquivalent:@""];
-    [menu addItem:hist];
-    histMenu = [[NSMenu alloc] init];
-    hist.submenu = histMenu;
-
+    if(!self.disableHistory) {
+        NSMenuItem *hist = [[NSMenuItem alloc] initWithTitle:@"History" action:nil keyEquivalent:@""];
+        [menu addItem:hist];
+        histMenu = [[NSMenu alloc] init];
+        hist.submenu = histMenu;
+    }
+    
     button.menu = menu;
     [self addSubview:button];
 }
@@ -82,7 +122,20 @@
 }
 
 -(void) loadLists {
-    NSDictionary *hflistData = [[NSUserDefaults standardUserDefaults] dictionaryForKey:self.storageKey];
+    NSError *err;
+    NSDictionary *hflistData;
+    
+    NSData *loadedData = [[NSUserDefaults standardUserDefaults] dataForKey:self.storageKey];
+    if(loadedData && [loadedData isKindOfClass:[NSData class]]) {
+        hflistData = [NSKeyedUnarchiver unarchivedObjectOfClass:[NSObject class]
+                                                       fromData:loadedData
+                                                          error:&err];
+    }
+    
+    if(!hflistData) {
+        hflistData = [[NSUserDefaults standardUserDefaults] dictionaryForKey:self.storageKey];
+    }
+    
     historyItems = [(NSArray*)(hflistData[@"history"]) mutableCopy];
     favItems = [(NSArray*)(hflistData[@"favorites"]) mutableCopy];
     
@@ -100,7 +153,10 @@
         @"favorites": favItems
     };
     
-    [[NSUserDefaults standardUserDefaults] setObject:hflistData forKey:self.storageKey];
+    NSData *favListArchive = [NSKeyedArchiver archivedDataWithRootObject:hflistData
+                                                   requiringSecureCoding:YES
+                                                                   error:nil];
+    [[NSUserDefaults standardUserDefaults] setObject:favListArchive forKey:self.storageKey];
 }
 
 -(void)addFavoriteValue:(id)favValue {
@@ -122,14 +178,17 @@
 }
 
 -(void)menuNeedsUpdate:(NSMenu *)menu {
+    
     [self loadLists];
     
     [favMenu removeAllItems];
     if(favItems.count) {
-        for(NSString *favItemTitle in favItems) {
+        for(id favItem in favItems) {
+            NSString *favItemTitle = [self nameForItem:favItem];
             NSMenuItem *favMenuItem = [[NSMenuItem alloc] initWithTitle:favItemTitle
                                          action:@selector(selectHfItem:)
                                   keyEquivalent:@""];
+            favMenuItem.representedObject = favItem;
             [favMenuItem setTarget:self];
             [favMenu addItem:favMenuItem];
         }
@@ -139,33 +198,36 @@
         [favMenu addItem:emptyItem];
     }
 
-    [histMenu removeAllItems];
-    if(historyItems.count) {
-        for(NSString *historyItemTitle in historyItems) {
-            NSMenuItem *histMenuItem = [[NSMenuItem alloc] initWithTitle:historyItemTitle
-                                         action:@selector(selectHfItem:)
-                                  keyEquivalent:@""];
-            [histMenuItem setTarget:self];
-            [histMenu addItem:histMenuItem];
+    if(!self.disableHistory) {
+        [histMenu removeAllItems];
+        if(historyItems.count) {
+            for(NSString *historyItemTitle in historyItems) {
+                NSMenuItem *histMenuItem = [[NSMenuItem alloc] initWithTitle:historyItemTitle
+                                             action:@selector(selectHfItem:)
+                                      keyEquivalent:@""];
+                [histMenuItem setTarget:self];
+                [histMenu addItem:histMenuItem];
+            }
+        } else {
+            NSMenuItem *emptyItem = [[NSMenuItem alloc] initWithTitle:@"No Items" action:nil keyEquivalent:@""];
+            emptyItem.enabled = NO;
+            [histMenu addItem:emptyItem];
         }
-    } else {
-        NSMenuItem *emptyItem = [[NSMenuItem alloc] initWithTitle:@"No Items" action:nil keyEquivalent:@""];
-        emptyItem.enabled = NO;
-        [histMenu addItem:emptyItem];
     }
 }
 
 
 -(void)selectHfItem:(NSMenuItem*)sender {
-    self.boundField.stringValue = sender.title;
-    NSDictionary *bindingInfo = [self.boundField infoForBinding: NSValueBinding];
-    [[bindingInfo valueForKey: NSObservedObjectKey] setValue: self.boundField.stringValue
-                                                  forKeyPath: [bindingInfo valueForKey: NSObservedKeyPathKey]];
-
+    [self.effectiveDelegate hfControl:self recallItem:sender.representedObject];
 }
 
 -(void)addFavorite:(id)sender {
-    [self addFavoriteValue:self.boundField.stringValue];
+    [self.effectiveDelegate hfControl:self
+                            wantsNewFavoriteObjectWithCompletion:^(id  _Nonnull favObject, NSError * _Nullable error) {
+        if(favObject) {
+            [self addFavoriteValue:favObject];
+        }
+    }];
 }
 
 -(void)editFavorites:(id)sender {
@@ -192,5 +254,18 @@
     [self loadLists];
     favItems = [favoritesList mutableCopy];
     [self saveLists];
+}
+
+-(NSString*)nameForItem:(id)favoriteItem {
+    return [self.effectiveDelegate hfControl:self wantsNameForFavoriteItem:favoriteItem];
+}
+
+-(id<HistoryAndFavoritesControlDelegate>)effectiveDelegate {
+    id<HistoryAndFavoritesControlDelegate> ret = self.delegate;
+    if(!ret) {
+        ret = [TextEditHistoryFavEditorDelegate shared];
+    }
+    
+    return ret;
 }
 @end
