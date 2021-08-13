@@ -29,6 +29,7 @@
 		B9F8ACB226B3D57600602302 /* ProjectionDefinitionFavoritesAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = B9F8ACB126B3D57600602302 /* ProjectionDefinitionFavoritesAdapter.m */; };
 		B9F8ACB626B41F9B00602302 /* FavoriteNameInputWindowConrtoller.m in Sources */ = {isa = PBXBuildFile; fileRef = B9F8ACB426B41F9B00602302 /* FavoriteNameInputWindowConrtoller.m */; };
 		B9F8ACB726B41F9B00602302 /* FavoriteNameInputWindowConrtoller.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9F8ACB526B41F9B00602302 /* FavoriteNameInputWindowConrtoller.xib */; };
+		B9F8ACBA26B4545800602302 /* ProjectionTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9F8ACB926B4545800602302 /* ProjectionTableCell.xib */; };
 		B9FC2A9325F8C14F00484EA3 /* Exception.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2A8C25F8B0A400484EA3 /* Exception.cpp */; };
 		B9FC2A9725F907E300484EA3 /* TextCoordinate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2A9525F907E200484EA3 /* TextCoordinate.cpp */; };
 		B9FC2AB225F908FC00484EA3 /* JsonPathExpressionCompiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2A9C25F908FC00484EA3 /* JsonPathExpressionCompiler.cpp */; };
@@ -116,6 +117,7 @@
 		B9F8ACB426B41F9B00602302 /* FavoriteNameInputWindowConrtoller.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FavoriteNameInputWindowConrtoller.m; sourceTree = "<group>"; };
 		B9F8ACB526B41F9B00602302 /* FavoriteNameInputWindowConrtoller.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FavoriteNameInputWindowConrtoller.xib; sourceTree = "<group>"; };
 		B9F8ACB826B44DAD00602302 /* HistoryAndFavoritesControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HistoryAndFavoritesControl.h; sourceTree = "<group>"; };
+		B9F8ACB926B4545800602302 /* ProjectionTableCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ProjectionTableCell.xib; sourceTree = "<group>"; };
 		B9FC2A8C25F8B0A400484EA3 /* Exception.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Exception.cpp; path = json_model/Exception.cpp; sourceTree = "<group>"; };
 		B9FC2A8D25F8B0A400484EA3 /* Exception.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Exception.hpp; path = json_model/Exception.hpp; sourceTree = "<group>"; };
 		B9FC2A9525F907E200484EA3 /* TextCoordinate.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = TextCoordinate.cpp; path = json_model/TextCoordinate.cpp; sourceTree = "<group>"; };
@@ -406,8 +408,10 @@
 				B9FC2B0725F90D6000484EA3 /* MarkerTableCellView.xib */,
 				B9FC2B0825F90D6000484EA3 /* TextEditorGutterView.h */,
 				B9FC2B0925F90D6000484EA3 /* NodeSelectionController.h */,
+				B9FC2B1625F90D6000484EA3 /* NodeSelectionController.mm */,
 				B9FC2B0A25F90D6000484EA3 /* PathCompletionListCell.xib */,
 				B9FC2B0B25F90D6000484EA3 /* JSONWindow.h */,
+				B9FC2B1425F90D6000484EA3 /* JSONWindow.mm */,
 				B9FC2B0C25F90D6000484EA3 /* BracezTextView.m */,
 				B9FC2B0D25F90D6000484EA3 /* CoordView.m */,
 				B9FC2B0E25F90D6000484EA3 /* JsonTreeDataSource.h */,
@@ -416,9 +420,7 @@
 				B9FC2B1125F90D6000484EA3 /* PathView.h */,
 				B9FC2B1225F90D6000484EA3 /* MarkerTableCellView.h */,
 				B9FC2B1325F90D6000484EA3 /* JsonTreeDataSource.mm */,
-				B9FC2B1425F90D6000484EA3 /* JSONWindow.mm */,
 				B9FC2B1525F90D6000484EA3 /* BracezTextView.h */,
-				B9FC2B1625F90D6000484EA3 /* NodeSelectionController.mm */,
 				B9FC2B1725F90D6000484EA3 /* CoordView.h */,
 				B9FC2B1825F90D6000484EA3 /* MarkerTableCellView.mm */,
 				B9C354D626A8A4FA007380E8 /* ProjectionDefinition.h */,
@@ -430,6 +432,7 @@
 				B9625D2E26AC909400214407 /* ProjectionDefinitionEditor.xib */,
 				B9F8ACB026B3D57600602302 /* ProjectionDefinitionFavoritesAdapter.h */,
 				B9F8ACB126B3D57600602302 /* ProjectionDefinitionFavoritesAdapter.m */,
+				B9F8ACB926B4545800602302 /* ProjectionTableCell.xib */,
 			);
 			path = editor;
 			sourceTree = "<group>";
@@ -456,9 +459,9 @@
 				B9FC2B2525F90D6000484EA3 /* DarkDiviterSplitter.h */,
 				B9FC2B2425F90D6000484EA3 /* HistoryAndFavoritesEditor.h */,
 				B9FC2B2C25F90D6000484EA3 /* HistoryAndFavoritesEditor.m */,
+				B9FC2B2725F90D6000484EA3 /* HistoryAndFavoritesEditor.xib */,
 				B9F8ACB826B44DAD00602302 /* HistoryAndFavoritesControl.h */,
 				B9FC2B2625F90D6000484EA3 /* HistoryAndFavoritesControl.m */,
-				B9FC2B2725F90D6000484EA3 /* HistoryAndFavoritesEditor.xib */,
 				B9FC2B2825F90D6000484EA3 /* KvoAnimation.m */,
 				B9FC2B2925F90D6000484EA3 /* AnimatingTabView.h */,
 				B9FC2B2A25F90D6000484EA3 /* SplitterAnimation.m */,
@@ -553,6 +556,7 @@
 				B9FC2B4C25F90DE300484EA3 /* EditorWindow.xib in Resources */,
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				B9FC2BB825F90F7100484EA3 /* PreferencesDefaults.plist in Resources */,
+				B9F8ACBA26B4545800602302 /* ProjectionTableCell.xib in Resources */,
 				1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */,
 				B945F9001192DAC800DCFAAE /* reader.inl in Resources */,
 				B9FC2AFC25F90B9B00484EA3 /* TextView.png in Resources */,

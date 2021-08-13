@@ -16,20 +16,15 @@
 
 -(instancetype)initWithInitialName:(NSString*)name
                      existingNames:(NSArray<NSString*>*)names {
-    self = [super initWithWindowNibName:@"FavoriteNameInputWindowConrtoller"];
+    self = [self initWithWindowNibName:@"FavoriteNameInputWindowConrtoller"];
     if(self) {
         self.inputName = name;
         [self loadWindow];
         [self.nameCombo addItemsWithObjectValues:names];
+        self.nameCombo.stringValue = self.inputName;
     }
     return self;
 }
-
-- (void)windowDidLoad {
-    [super windowDidLoad];
-    self.nameCombo.stringValue = self.inputName;
-}
-
 
 - (IBAction)onOkClicked:(id)sender {
     self.inputName = self.nameCombo.stringValue;

@@ -12,6 +12,7 @@
 #import "JsonDocument.h"
 #import "TextEditorGutterView.h"
 #import "JsonFileListenerObjCBridge.h"
+#import "ProjectionTableDataSource.h"
 
 #include "LinesAndBookmarks.h"
 
@@ -20,13 +21,15 @@
 #define NAVGROUP_NODE_STEP 1
 
 @interface NodeSelectionController : NSObject<NSUserInterfaceValidations, GutterViewModel,
-                                                ObjCJsonFileChangeListener, PathViewComponentCellNotifications> {
+                                                ObjCJsonFileChangeListener,
+                                                PathViewComponentCellNotifications,
+                                                ProjectionTableDataSourceDelegate> {
    IBOutlet NSTreeController *treeController;
 
    IBOutlet NSTextView *textView;
    IBOutlet PathView *pathView;
    IBOutlet CoordView *coordView;
-   
+    
    IBOutlet __weak JsonDocument *document;
    
    bool syncingNodeAndTextSel;
@@ -47,6 +50,7 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
 - (void)textViewDidChangeSelection:(NSNotification *)aNotification;
 
+- (void)projectionTableDataSource:(ProjectionTableDataSource *)sender didSelectNode:(Node *)node;
 - (void)pathView:(PathView *)aPathView didClickOnPathComponentIndex:(int)aIdx;
 - (void)pathView:(PathView *)aPathView preparePopupMenu:(NSMenu**)aMenu forIndex:(int)aIdx;
 
@@ -86,5 +90,7 @@
 - (NSUInteger)characterIndexForFirstCharOfLine:(int)aIdx;
 
 -(NSString*)currentPathAsJsonQuery;
+
+@property (weak) IBOutlet ProjectionTableDataSource *projectionTableDs;
 
 @end

@@ -8,6 +8,7 @@
 #import "ProjectionTableDataSource.h"
 #import "JsonPathExpressionCompiler.hpp"
 #import "NSString+WStringUtils.h"
+#import "NodeSelectionController.h"
 
 @interface ProjectionTableColumn : NSTableColumn {
     JsonPathExpression columnExpression;
@@ -87,22 +88,46 @@
     return rowNodes.size();
 }
 
+-(void)selectNode:(JsonCocoaNode*)node {
+    json::TextRange selectedNodeRange = node.proxiedElement->GetAbsTextRange();
+    auto iter = std::find_if(rowNodes.begin(), rowNodes.end(), [selectedNodeRange](json::Node* node) {
+        return node->GetAbsTextRange().contains(selectedNodeRange);
+    });
+    
+    if(iter != rowNodes.end()) {
+        [self.tableView selectRowIndexes:[NSIndexSet indexSetWithIndex:iter - rowNodes.begin()]
+                    byExtendingSelection:NO];
+    }
+}
 
--(NSView *)tableView:(NSTableView *)tableView viewForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+-(NSView *)tableView:(NSTableView *)tableView
+  viewForTableColumn:(NSTableColumn *)tableColumn
+                 row:(NSInteger)row {
     ProjectionTableColumn* projectionCol = (ProjectionTableColumn*)tableColumn;
     Node *valueForCol = [projectionCol resolveColumnInRow:rowNodes[row]];
     
     // TODO: col should return a view rendered
-    NSTextField *viewForCol = [[NSTextField alloc] initWithFrame:NSMakeRect(0,0,0,0)];
+    NSTableCellView *viewForCol = [tableView makeViewWithIdentifier:@"projectionCell" owner:tableView];
     
     NSString *nodeValue = [JsonCocoaNode nodeForElement:valueForCol withName:@""].nodeValue;
     if(!nodeValue) {
         nodeValue = @"";
     }
     
-    viewForCol.stringValue = nodeValue;
+    viewForCol.textField.stringValue = nodeValue;
     
     return viewForCol;
+}
+
+-(void)tableViewSelectionDidChange:(NSNotification *)notification {
+    if(self.delegate) {
+        NSInteger selectedRow = [(NSTableView*)notification.object selectedRow];
+        if(selectedRow >= 0) {
+            Node *node = rowNodes[selectedRow];
+            [self.delegate projectionTableDataSource:self didSelectNode:node];
+        }
+    }
+    
 }
 
 -(void)configureTableViewColumns:(NSTableView *)tableView {

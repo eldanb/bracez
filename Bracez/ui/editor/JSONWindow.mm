@@ -70,7 +70,8 @@ extern "C" {
     [treeView registerForDraggedTypes:[NSArray arrayWithObject:@"JsonNode"]];
     [treeView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
     
-    
+    [projectionTable registerNib:[[NSNib alloc] initWithNibNamed:@"ProjectionTableCell" bundle:nil] forIdentifier:@"projectionCell"];
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(preferencesChanged:) name:BracezPreferencesChangedNotification object:nil];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -83,6 +84,7 @@ extern "C" {
                         context:nil];
     
     [self setProjectionDefinition:[ProjectionDefinition newDefinition]];
+    
     
     [self loadPreferences];
 }
@@ -356,7 +358,7 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
 
 -(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
     if(object == guiModeControl) {
-        if([keyPath isEqualTo:@"showProjectionViewel"]) {
+        if([keyPath isEqualTo:@"showProjectionView"]) {
             [self onGuiModeControlProjectVisibleChanged];
         }
     }
@@ -373,7 +375,8 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
 }
 
 - (IBAction)editProjectionClicked:(id)sender {
-    ProjectionDefinitionEditor *editor = [[ProjectionDefinitionEditor alloc] initWithDefinition:projectionTableDatasource.projectionDefinition];
+    ProjectionDefinitionEditor *editor = [[ProjectionDefinitionEditor alloc]
+                                          initWithDefinition:projectionTableDatasource.projectionDefinition];
     [self beginSheet:editor.window completionHandler:^(NSModalResponse returnCode) {
         [self setProjectionDefinition:editor.editedProjection];
     }];
@@ -397,6 +400,10 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
     
     projectionTable.delegate = projectionTableDatasource;
     projectionTable.dataSource = projectionTableDatasource;
+    
+    projectionTableDatasource.delegate = selectionController;
+    selectionController.projectionTableDs = projectionTableDatasource;
+    projectionTableDatasource.tableView = projectionTable;
 }
 
 - (nonnull ProjectionDefinition *)projectionDefintitionForFavorite:(nonnull id)sender {

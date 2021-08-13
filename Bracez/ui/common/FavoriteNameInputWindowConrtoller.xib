@@ -51,8 +51,8 @@ DQ
                             <action selector="onOkClicked:" target="-2" id="jVo-dG-wr9"/>
                         </connections>
                     </button>
-                    <button verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FUH-2F-Rya">
-                        <rect key="frame" x="317" y="14" width="76" height="32"/>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="FUH-2F-Rya">
+                        <rect key="frame" x="317" y="13" width="76" height="32"/>
                         <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="FSO-CV-wIm">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>

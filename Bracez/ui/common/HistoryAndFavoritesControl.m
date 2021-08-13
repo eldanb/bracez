@@ -56,7 +56,7 @@
     NSMenu *histMenu;
     
     NSMutableArray<NSString*> *historyItems;
-    NSMutableArray<NSString*> *favItems;
+    NSMutableArray<id> *favItems;
 }
 
 @end
@@ -160,8 +160,20 @@
 }
 
 -(void)addFavoriteValue:(id)favValue {
+    NSString *newFavName = [self.delegate hfControl:self wantsNameForFavoriteItem:favValue];
+    
     [self loadLists];
-    [favItems addObject:favValue];
+    NSIndexSet *existingItemIndex = [favItems indexesOfObjectsPassingTest:^BOOL(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSString *existingFavName = [self.delegate hfControl:self wantsNameForFavoriteItem:obj];
+        return [existingFavName isEqualToString:newFavName];
+    }];
+    
+    if(existingItemIndex.count > 0) {
+        [favItems setObject:favValue atIndexedSubscript:existingItemIndex.firstIndex];
+    } else {
+        [favItems addObject:favValue];
+    }
+    
     [self saveLists];
 }
 

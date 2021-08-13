@@ -24,7 +24,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 @optional
--(void)hfControl:(HistoryAndFavoritesControl*)sender wantsEditForItem:(id)favoriteItem withCompletion:(void(^)(id favObject, NSError * __nullable error))completionHandler;
+-(void)hfControl:(HistoryAndFavoritesControl*)sender
+        wantsEditForItem:(id)favoriteItem
+        inWindow:(NSWindow *)window
+        withCompletion:(void(^)(id favObject, NSError * __nullable error))completionHandler;
 
 
 @end

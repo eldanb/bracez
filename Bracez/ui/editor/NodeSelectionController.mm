@@ -102,6 +102,8 @@
         [pathView setShownPath:lPathArr];
     }
     
+    [self.projectionTableDs selectNode:lLastNode];
+
     if(!syncingNodeAndTextSel)
     {
         if(!document.isSemanticModelUpdateInProgress) {
@@ -112,8 +114,8 @@
             
             NSRange range = NSMakeRange(lNodeRange.start.getAddress(), lNodeRange.end - lNodeRange.start);
 
-            [textView setSelectedRange:range];
-            [textView scrollRangeToVisible:NSMakeRange(lNodeRange.start.getAddress(), 0)];
+            [self selectTextRange:range];
+
             syncingNodeAndTextSel = false;
         }
     }
@@ -157,8 +159,7 @@
     {
         lTogo = [lSelMarker coordinate];
         
-        [textView setSelectedRange:NSMakeRange(lTogo.getAddress(), 0)];
-        [textView scrollRangeToVisible:NSMakeRange(lTogo.getAddress(), 0)];
+        [self selectTextRange:NSMakeRange(lTogo.getAddress(), 0)];
         
         lastNavGroup = NAVGROUP_NONE;
         
@@ -374,6 +375,13 @@
     return path;
 }
 
+- (void)projectionTableDataSource:(ProjectionTableDataSource *)sender didSelectNode:(Node *)node {
+    if(!syncingNodeAndTextSel) {
+        json::TextRange nodeRange = node->GetAbsTextRange();
+        [self selectTextRange:NSMakeRange(nodeRange.start, nodeRange.length())];
+    }
+}
+
 - (void)textViewDidChangeSelection:(NSNotification *)aNotification
 {
     if(!syncingNodeAndTextSel &&  // Don't reflect selection change if sync in progress
@@ -495,8 +503,7 @@
     TextCoordinate lTogo = backNavs.back();
     backNavs.pop_back();
     
-    [textView setSelectedRange:NSMakeRange(lTogo.getAddress(), 0)];
-    [textView scrollRangeToVisible:NSMakeRange(lTogo.getAddress(), 0)];
+    [self selectTextRange:NSMakeRange(lTogo.getAddress(), 0)];
     
     lastNavGroup = NAVGROUP_NONE;
     
@@ -524,8 +531,7 @@
     TextCoordinate lTogo = forwardNavs.back();
     forwardNavs.pop_back();
     
-    [textView setSelectedRange:NSMakeRange(lTogo.getAddress(), 0)];
-    [textView scrollRangeToVisible:NSMakeRange(lTogo.getAddress(), 0)];
+    [self selectTextRange:NSMakeRange(lTogo.getAddress(), 0)];
     
     lastNavGroup = NAVGROUP_NONE;
     
@@ -568,8 +574,8 @@
     if(document.bookmarks.findNextBookmark(lLine))
     {
         TextCoordinate lLineStart = [document bookmarks].getLineFirstCharacter(lLine);
-        [textView setSelectedRange:NSMakeRange(lLineStart.getAddress(), 0)];
-        [textView scrollRangeToVisible:NSMakeRange(lLineStart.getAddress(), 0)];
+        
+        [self selectTextRange:NSMakeRange(lLineStart.getAddress(), 0)];
         [[textView window] makeFirstResponder:textView];
     }
 }
@@ -580,12 +586,16 @@
     if(document.bookmarks.findPrevBookmark(lLine))
     {
         TextCoordinate lLineStart = document.bookmarks.getLineFirstCharacter(lLine);
-        [textView setSelectedRange:NSMakeRange(lLineStart.getAddress(), 0)];
-        [textView scrollRangeToVisible:NSMakeRange(lLineStart.getAddress(), 0)];
+        [self selectTextRange:NSMakeRange(lLineStart.getAddress(), 0)];
         [[textView window] makeFirstResponder:textView];
     }
 }
 
+-(void)selectTextRange:(NSRange)range {
+    [textView setSelectedRange:range];
+    range.length = 0;
+    [textView scrollRangeToVisible:range];
+}
 
 -(BOOL)canCopyPath
 {

@@ -43,6 +43,10 @@ namespace json
            return ret;
        }
        
+       bool contains(TextRange other) const {
+           return start<=other.start && end>=other.end;
+       }
+       
       TextCoordinate start;   // First character in range
       TextCoordinate end; // One past last charcter in range
    };

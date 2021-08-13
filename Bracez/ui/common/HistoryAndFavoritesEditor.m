@@ -43,6 +43,10 @@
     return _selectedFavs;
 }
 
+-(BOOL)editSupported {
+    return [(NSObject*)_historyAndFavorites.delegate respondsToSelector:@selector(hfControl:wantsEditForItem:inWindow:withCompletion:)];
+}
+
 -(BOOL)hasFavSelection {
     return [_selectedFavs count] > 0;
 }
@@ -109,6 +113,18 @@
 - (IBAction)deleteClicked:(id)sender {
     [_editedFavList removeObjectsAtIndexes:self.selectedFavs];
     [self.favTable reloadData];
+}
+- (IBAction)editClicked:(id)sender {
+    NSInteger editedIndex = self.selectedFavs.firstIndex;
+    
+    [_historyAndFavorites.delegate hfControl:_historyAndFavorites
+                            wantsEditForItem:[_editedFavList objectAtIndex:editedIndex]
+                                    inWindow:self.window
+                              withCompletion:^(id  _Nonnull favObject, NSError * _Nullable error) {
+        if(!error) {
+            [self->_editedFavList setObject:favObject atIndexedSubscript:editedIndex];
+        }
+    }];
 }
 
 @end

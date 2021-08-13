@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="17701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="18122" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17701"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="18122"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -59,7 +58,7 @@
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                             <prototypeCellViews>
                                                 <tableCellView identifier="defaultCell" id="jfH-ly-xdN">
-                                                    <rect key="frame" x="8" y="0.0" width="421" height="24"/>
+                                                    <rect key="frame" x="18" y="0.0" width="421" height="24"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4hA-gU-z8O">
@@ -88,7 +87,7 @@
                             </subviews>
                         </clipView>
                         <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="ZJ7-oD-JJW">
-                            <rect key="frame" x="1" y="118" width="238" height="16"/>
+                            <rect key="frame" x="1" y="173" width="438" height="16"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                         <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="sDn-Qg-kEX">
@@ -96,17 +95,47 @@
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
-                    <button verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PiG-jA-7n7">
-                        <rect key="frame" x="13" y="14" width="131" height="32"/>
-                        <buttonCell key="cell" type="push" title="Delete Selected" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="3Ar-5c-G6J">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="deleteClicked:" target="-2" id="vQe-kZ-J8i"/>
-                            <binding destination="-2" name="enabled" keyPath="hasFavSelection" id="ak4-Gy-L3i"/>
-                        </connections>
-                    </button>
+                    <stackView distribution="equalSpacing" orientation="horizontal" alignment="centerY" spacing="10" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" fixedFrame="YES" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ha4-Ru-O9G">
+                        <rect key="frame" x="20" y="21" width="134" height="20"/>
+                        <subviews>
+                            <button verticalHuggingPriority="750" id="6Qh-bl-VDD">
+                                <rect key="frame" x="-11" y="-6" width="82" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="Edit" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="YOc-wB-5iw">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="editClicked:" target="-2" id="046-KT-scM"/>
+                                    <binding destination="-2" name="enabled" keyPath="hasFavSelection" id="cjU-o8-jOe"/>
+                                    <binding destination="-2" name="hidden" keyPath="editSupported" previousBinding="cjU-o8-jOe" id="1ZJ-Ks-42w">
+                                        <dictionary key="options">
+                                            <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                        </dictionary>
+                                    </binding>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="PiG-jA-7n7">
+                                <rect key="frame" x="67" y="-7" width="74" height="32"/>
+                                <buttonCell key="cell" type="push" title="Delete" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="3Ar-5c-G6J">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="deleteClicked:" target="-2" id="vQe-kZ-J8i"/>
+                                    <binding destination="-2" name="enabled" keyPath="hasFavSelection" id="ak4-Gy-L3i"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <visibilityPriorities>
+                            <integer value="1000"/>
+                            <integer value="1000"/>
+                        </visibilityPriorities>
+                        <customSpacing>
+                            <real value="3.4028234663852886e+38"/>
+                            <real value="3.4028234663852886e+38"/>
+                        </customSpacing>
+                    </stackView>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gb9-K5-YgN">
                         <rect key="frame" x="271" y="13" width="76" height="32"/>
                         <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BuK-Xn-SIV">
@@ -128,10 +157,8 @@ Gw
                     <constraint firstAttribute="trailing" secondItem="Ord-eo-TcL" secondAttribute="trailing" constant="20" symbolic="YES" id="BjU-2e-1xk"/>
                     <constraint firstItem="mjy-at-xgN" firstAttribute="top" secondItem="Ord-eo-TcL" secondAttribute="bottom" constant="20" symbolic="YES" id="Mjv-Ej-nbt"/>
                     <constraint firstItem="Ord-eo-TcL" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="20" symbolic="YES" id="aus-P4-GKP"/>
-                    <constraint firstItem="PiG-jA-7n7" firstAttribute="leading" secondItem="Ord-eo-TcL" secondAttribute="leading" id="lRk-GF-b3l"/>
                     <constraint firstAttribute="bottom" secondItem="mjy-at-xgN" secondAttribute="bottom" constant="20" symbolic="YES" id="ty4-pZ-ggo"/>
                     <constraint firstItem="mjy-at-xgN" firstAttribute="top" secondItem="gb9-K5-YgN" secondAttribute="top" id="zXp-Wk-bil"/>
-                    <constraint firstItem="mjy-at-xgN" firstAttribute="top" secondItem="PiG-jA-7n7" secondAttribute="top" id="znw-xF-hT0"/>
                 </constraints>
             </view>
             <connections>

@@ -18,7 +18,7 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(preferencesChanged:) name:BracezPreferencesChangedNotification object:nil];
-    
+
     [self loadAppearanceFromPreferences];
 }
 

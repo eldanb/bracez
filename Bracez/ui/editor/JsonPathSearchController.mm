@@ -47,9 +47,11 @@
         nodeList = expr.execute(document.rootNode.proxiedElement, &opts);
         
         JSONPathQueryStatus.textColor = [NSColor blackColor];
+        JSONPathQueryStatus.font = [NSFont systemFontOfSize:[NSFont smallSystemFontSize]];
         JSONPathQueryStatus.stringValue = [NSString stringWithFormat:@"%ld results", nodeList.size()];
     } catch(const std::exception &e) {
         JSONPathQueryStatus.textColor = [NSColor redColor];
+        JSONPathQueryStatus.font = [NSFont monospacedSystemFontOfSize:[NSFont smallSystemFontSize] weight:NSFontWeightRegular];
         JSONPathQueryStatus.stringValue = [NSString stringWithFormat:@"Invalid JSON path syntax: %s", e.what()];
     }
     
