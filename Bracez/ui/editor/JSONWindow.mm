@@ -317,6 +317,11 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
     [guiModeControl setShowNavPanel:YES];
 }
 
+-(IBAction)handleProjectionViewItem:(id)sender {
+    guiModeControl.showProjectionView = YES;
+    [self editProjection];
+}
+
 - (void)findByJsonPathWithQuery:(NSString*)query {
     [guiModeControl setShowJsonPathPanel:@(YES)];
     [guiModeControl setShowNavPanel:YES];
@@ -374,12 +379,16 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
     [self updateProjectionData];
 }
 
-- (IBAction)editProjectionClicked:(id)sender {
+-(void)editProjection {
     ProjectionDefinitionEditor *editor = [[ProjectionDefinitionEditor alloc]
                                           initWithDefinition:projectionTableDatasource.projectionDefinition];
     [self beginSheet:editor.window completionHandler:^(NSModalResponse returnCode) {
         [self setProjectionDefinition:editor.editedProjection];
     }];
+}
+
+- (IBAction)editProjectionClicked:(id)sender {
+    [self editProjection];
 }
 
 
