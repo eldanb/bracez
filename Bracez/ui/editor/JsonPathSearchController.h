@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
     IBOutlet __weak JsonDocument* document;
     
     IBOutlet HistoryAndFavoritesControl *JSONPathHistoryFavorites;
-    IBOutlet NSTextField *JSONPathInput;
+    IBOutlet NSTextView *JSONPathInput;
     IBOutlet NSArrayController *JSONPathResultsController;
     IBOutlet NSTextField *JSONPathQueryStatus;
 }

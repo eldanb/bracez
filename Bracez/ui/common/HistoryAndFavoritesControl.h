@@ -35,13 +35,13 @@ NS_ASSUME_NONNULL_BEGIN
 @interface HistoryAndFavoritesControl : NSView
 
 -(void)accumulateHistory;
--(id<HistoryAndFavoritesControlDelegate>)effectiveDelegate;
 
 -(NSString*)nameForItem:(id)favoriteItem;
 
 @property NSString *historyListName;
 @property BOOL disableHistory;
-@property IBOutlet NSTextField *boundField;
+@property IBOutlet NSTextField * __nullable boundField;
+@property IBOutlet NSTextView * __nullable boundTextView;
 @property NSArray *favoritesList;
 
 @property (weak) IBOutlet id<HistoryAndFavoritesControlDelegate> delegate;

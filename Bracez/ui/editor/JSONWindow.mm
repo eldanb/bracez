@@ -61,6 +61,13 @@ extern "C" {
     
     [textEditor.layoutManager replaceTextStorage:self.document.textStorage];
     
+    
+    
+    jsonQueryTextView.automaticQuoteSubstitutionEnabled = NO;
+    jsonQueryTextView.automaticDashSubstitutionEnabled = NO;
+    jsonQueryTextView.automaticTextReplacementEnabled = NO;
+    jsonQueryTextView.enabledTextCheckingTypes = 0;
+    
     gutterView = [[TextEditorGutterView alloc] initWithScrollView:textEditorScroll];
     [gutterView setModel:(id<GutterViewModel>)selectionController];
     [textEditorScroll setVerticalRulerView:gutterView];
@@ -256,6 +263,14 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
     [self.document reindentStartingAt:TextCoordinate(selectionRange.location) len:selectionRange.length];
 }
 
+static void onJqCompileError(void *ctxt, jv err) {
+    jv formattedError = jq_format_error(err);
+    const char *errCStr = jv_string_value(formattedError);
+    
+    NSMutableArray<NSString*> *outArray = (__bridge NSMutableArray<NSString*>*)ctxt;
+    [outArray addObject:[NSString stringWithCString:errCStr encoding:NSUTF8StringEncoding]];
+}
+
 - (IBAction)executeJqQuery:(id)sender {
     NSString *docText = self.document.textStorage.string;
     
@@ -269,10 +284,17 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
                                             }]];
     } else {
         jq_state *state = jq_init();
+        
+        NSMutableArray<NSString*> *errors = [NSMutableArray arrayWithCapacity:2];
+        jq_set_error_cb(state, onJqCompileError, (__bridge void*)errors);
         int compileResult = jq_compile(state, jqQueryInput.stringValue.UTF8String);
         if(!compileResult) {
+            if(!errors.count) {
+                [errors addObject:@"(Unknown error)"];
+            }
+            NSString *errorString = [errors componentsJoinedByString:@"\n"];
             [jqQueryResult.textStorage setAttributedString:
-                [[NSAttributedString alloc] initWithString:@"Invalid query."
+                [[NSAttributedString alloc] initWithString:errorString
                                                 attributes:@{
                                                     NSForegroundColorAttributeName: [NSColor systemRedColor],
                                                     NSFontAttributeName: jqQueryResult.font

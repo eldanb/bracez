@@ -10,21 +10,21 @@
 
 #define MAX_HISTORY_LEN 10
 
+// ********************************************
 
-@interface TextEditHistoryFavEditorDelegate : NSObject<HistoryAndFavoritesControlDelegate> {
+@interface TextFieldHistoryFavEditorDelegate : NSObject<HistoryAndFavoritesControlDelegate> {
 }
 
-+(TextEditHistoryFavEditorDelegate*)shared;
++(TextFieldHistoryFavEditorDelegate*)shared;
 @end
 
+@implementation TextFieldHistoryFavEditorDelegate
 
-@implementation TextEditHistoryFavEditorDelegate
-
-+(TextEditHistoryFavEditorDelegate*)shared {
++(TextFieldHistoryFavEditorDelegate*)shared {
     static dispatch_once_t donce;
-    static TextEditHistoryFavEditorDelegate* shared = nil;
+    static TextFieldHistoryFavEditorDelegate* shared = nil;
     dispatch_once(&donce, ^() {
-        shared = [[TextEditHistoryFavEditorDelegate alloc] init];
+        shared = [[TextFieldHistoryFavEditorDelegate alloc] init];
     });
         
     return shared;
@@ -49,6 +49,48 @@
 
 @end
 
+// ********************************************
+
+@interface TextViewHistoryFavEditorDelegate : NSObject<HistoryAndFavoritesControlDelegate> {
+}
+
++(TextViewHistoryFavEditorDelegate*)shared;
+@end
+
+@implementation TextViewHistoryFavEditorDelegate
+
++(TextViewHistoryFavEditorDelegate*)shared {
+    static dispatch_once_t donce;
+    static TextViewHistoryFavEditorDelegate* shared = nil;
+    dispatch_once(&donce, ^() {
+        shared = [[TextViewHistoryFavEditorDelegate alloc] init];
+    });
+        
+    return shared;
+}
+
+
+- (nonnull NSString *)hfControl:(nonnull HistoryAndFavoritesControl *)sender wantsNameForFavoriteItem:(nonnull id)favoriteItem {
+    return favoriteItem;
+}
+
+- (void)hfControl:(nonnull HistoryAndFavoritesControl *)sender wantsNewFavoriteObjectWithCompletion:(nonnull void (^)(id _Nonnull, NSError * nullable))completionHandler {
+    completionHandler(sender.boundTextView.string, nil);
+}
+
+- (void)hfControl:(nonnull HistoryAndFavoritesControl *)sender recallItem:(nonnull id)recalledItem {
+    sender.boundField.stringValue = recalledItem;
+    NSDictionary *bindingInfo = [sender.boundTextView infoForBinding: NSValueBinding];
+    [[bindingInfo valueForKey: NSObservedObjectKey] setValue: sender.boundTextView.string
+                                                  forKeyPath: [bindingInfo valueForKey: NSObservedKeyPathKey]];
+}
+
+
+@end
+
+// ********************************************
+
+
 @interface HistoryAndFavoritesControl () <NSMenuDelegate> {
     NSPopUpButton *button;
     
@@ -57,6 +99,9 @@
     
     NSMutableArray<NSString*> *historyItems;
     NSMutableArray<id> *favItems;
+    
+    NSTextField *_boundTextField;
+    NSTextView *_boundTextView;
 }
 
 @end
@@ -230,11 +275,11 @@
 
 
 -(void)selectHfItem:(NSMenuItem*)sender {
-    [self.effectiveDelegate hfControl:self recallItem:sender.representedObject];
+    [self.delegate hfControl:self recallItem:sender.representedObject];
 }
 
 -(void)addFavorite:(id)sender {
-    [self.effectiveDelegate hfControl:self
+    [self.delegate hfControl:self
                             wantsNewFavoriteObjectWithCompletion:^(id  _Nonnull favObject, NSError * _Nullable error) {
         if(favObject) {
             [self addFavoriteValue:favObject];
@@ -269,15 +314,34 @@
 }
 
 -(NSString*)nameForItem:(id)favoriteItem {
-    return [self.effectiveDelegate hfControl:self wantsNameForFavoriteItem:favoriteItem];
+    return [self.delegate hfControl:self wantsNameForFavoriteItem:favoriteItem];
 }
 
--(id<HistoryAndFavoritesControlDelegate>)effectiveDelegate {
-    id<HistoryAndFavoritesControlDelegate> ret = self.delegate;
-    if(!ret) {
-        ret = [TextEditHistoryFavEditorDelegate shared];
-    }
+-(void)setBoundTextView:(NSTextView * __nullable)boundTextView {
+    _boundTextView = boundTextView;
     
-    return ret;
+    if(_boundTextView) {
+        self.boundField = nil;
+        self.delegate = [TextViewHistoryFavEditorDelegate shared];
+    }
 }
+
+-(NSTextView*)boundTextView {
+    return _boundTextView;
+}
+
+-(void)setBoundField:(NSTextField  * __nullable)boundField {
+    _boundTextField = boundField;
+    
+    if(_boundTextField) {
+        self.boundTextView = nil;
+        self.delegate = [TextFieldHistoryFavEditorDelegate shared];
+    }
+}
+
+-(NSTextField*)boundField {
+    return _boundTextField;
+}
+
+
 @end

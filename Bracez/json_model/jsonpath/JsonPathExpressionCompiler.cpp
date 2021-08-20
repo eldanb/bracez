@@ -7,7 +7,6 @@
 
 #include "JsonPathExpressionCompiler.hpp"
 
-#include "Parser-Combinators/parser_combinators.hpp"
 #include "JsonPathExpressionNode.hpp"
 
 #include "reader.h"
@@ -71,13 +70,12 @@ struct is_oneof {
 };
 constexpr is_oneof is_name_char = {"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789"};
 
-auto const name_token = tokenise(some(accept(is_name_char)));
+auto const name_token = define("name", tokenise(some(accept(is_name_char))));
 auto const wildcard_token = tokenise(accept(is_char('*')));
 
-auto const recurse_qualify_token = tokenise(accept_str(".."));
 auto const qualify_token = tokenise(accept(is_char('.')));
-auto const navigate_to_parent_token = tokenise(accept_str(".^"));
-auto const navigate_to_ancestor_token = tokenise(accept_str(".^^"));
+auto const navigate_to_parent_token = tokenise(accept_str("^"));
+auto const navigate_to_ancestor_token = tokenise(accept_str("^^"));
 
 auto const root_token = tokenise(accept(is_char('$')));
 auto const context_token = tokenise(accept(is_char('@')));
@@ -189,7 +187,7 @@ struct construct_navigate_recurse {
         }
     }
 } constexpr construct_navigate_recurse;
-auto navigate_recurse = all(construct_navigate_recurse, recurse_qualify_token, (name_token || wildcard_token));
+auto navigate_recurse = all(construct_navigate_recurse, qualify_token, (name_token || wildcard_token));
 
 
 struct construct_navigate_to_ancestor {
@@ -219,9 +217,18 @@ struct construct_navigate_non_recurse {
     }
 } constexpr construct_navigate_non_recurse;
 auto navigate_non_recurse =
-    all(construct_navigate_non_recurse,
-        (discard(qualify_token) && (name_token || wildcard_token)) ||
-        (discard(start_subscript_token) && string_literal && discard(end_subscript_token)));
+    all(construct_navigate_non_recurse, (name_token || wildcard_token));
+
+auto dot_qualify =
+    define("dot_qualify",
+           discard(qualify_token) &&
+                strict("dot_qualifiation_step",
+                    attempt(navigate_recurse) ||
+                    attempt(navigate_to_ancestor) ||
+                    attempt(navigate_to_parent) ||
+                    navigate_non_recurse));
+
+
 
 
 struct construct_index_array {
@@ -230,106 +237,109 @@ struct construct_index_array {
     }
 } constexpr construct_index_array;
 auto index_array =
-    all(construct_index_array,
-        (discard(start_subscript_token) && number_literal && discard(end_subscript_token)));
+    define("array_indexing", all(construct_index_array,
+        number_literal));
 
 
-struct construct_get_all_array_items {
-    void operator()(JsonPathExpressionNodeNavPipelineStep **result, std::string glob) const {
-        *result = new JsonPathExpressionNodeNavSliceArray(0, false, 0, true);
-    }
-} constexpr construct_get_all_array_items;
+void construct_get_all_array_items(JsonPathExpressionNodeNavPipelineStep **result, std::string glob) {
+    *result = new JsonPathExpressionNodeNavSliceArray(0, false, 0, true);
+}
+
 auto get_all_array_items =
-    all(construct_get_all_array_items,
-        (discard(start_subscript_token) && wildcard_token && discard(end_subscript_token)));
+    all(&construct_get_all_array_items,
+        wildcard_token);
 
 
-struct construct_get_array_item_list {
-    void operator()(JsonPathExpressionNodeNavPipelineStep **result, std::list<int> numLiteral) const {
-        *result = new JsonPathExpressionNodeNavIndexArrayByList(numLiteral);
-    }
-} constexpr construct_get_array_item_list;
-struct construct_index_list {
-    void operator()(std::list<int> *result, std::string index) const {
-        result->push_back(atoi(index.c_str()));
-    }
-} constexpr construct_index_list;
+void construct_get_array_item_list(JsonPathExpressionNodeNavPipelineStep **result, std::list<int> numLiteral) {
+    *result = new JsonPathExpressionNodeNavIndexArrayByList(numLiteral);
+}
+
+void construct_index_list(std::list<int> *result, std::string index) {
+    result->push_back(atoi(index.c_str()));
+}
+
 auto get_array_item_list =
-    all(construct_get_array_item_list,
-        (discard(start_subscript_token) && sep_by(all(construct_index_list, number_literal), comma_token) && discard(end_subscript_token)));
+    define("array_index_list",
+           all(&construct_get_array_item_list,
+               (sep_by(all(&construct_index_list, number_literal), comma_token))));
 
-
-
-struct construct_get_array_slice {
-    void operator()(JsonPathExpressionNodeNavPipelineStep **result,
+void construct_get_array_slice(JsonPathExpressionNodeNavPipelineStep **result,
                     std::tuple<std::string, std::string> *sliceStart,
                     std::string sep,
-                    std::tuple<std::string, std::string> *sliceEnd) const {
+                    std::tuple<std::string, std::string> *sliceEnd)  {
         
-        tuple<std::string, std::string> defaultStart(std::string(""), std::string("0"));
-        tuple<std::string, std::string> defaultEnd(std::string("-"), std::string("0"));
-        
-        if(!sliceStart) {
-            sliceStart = &defaultStart;
-        }
-        if(!sliceEnd) {
-            sliceEnd = &defaultEnd;
-        }
-
-        *result = new JsonPathExpressionNodeNavSliceArray(
-          atoi(get<1>(*sliceStart).c_str()),
-          !!get<0>(*sliceStart).size(),
-          atoi(get<1>(*sliceEnd).c_str()),
-          !!get<0>(*sliceEnd).size());
+    tuple<std::string, std::string> defaultStart(std::string(""), std::string("0"));
+    tuple<std::string, std::string> defaultEnd(std::string("-"), std::string("0"));
+    
+    if(!sliceStart) {
+        sliceStart = &defaultStart;
     }
-} constexpr construct_get_array_slice;
+    if(!sliceEnd) {
+        sliceEnd = &defaultEnd;
+    }
+
+    *result = new JsonPathExpressionNodeNavSliceArray(
+      atoi(get<1>(*sliceStart).c_str()),
+      !!get<0>(*sliceStart).size(),
+      atoi(get<1>(*sliceEnd).c_str()),
+      !!get<0>(*sliceEnd).size());
+}
+
 auto get_array_slice =
-    discard(start_subscript_token) &&
-        all(construct_get_array_slice,
+    define("array_slice",
+        all(&construct_get_array_slice,
             option(mktuple(
                            option(invert_slice_index_token),
                            number_literal)),
             slice_index_sep_token,
             option(mktuple(
                 option(invert_slice_index_token),
-                number_literal))) &&
-   discard(end_subscript_token);
+                number_literal))));
 
+
+auto subscript_by_expression =
+    define("subscript_expression",
+           all([](JsonPathExpressionNodeNavPipelineStep **result, JsonPathExpressionNode *expression) {
+                *result = new JsonPathExpressionNodeIndexByExpression(
+                        std::unique_ptr<JsonPathExpressionNode>(expression));
+            },
+            (discard(open_paren_token) &&
+             strict("subscript_expression", reference("expression", &expression) &&
+                    discard(close_paren_token)))));
+
+auto subscript_by_string =
+    all(construct_navigate_non_recurse, string_literal);
+
+auto subscript_qualify =
+    define("subscript",
+           discard(start_subscript_token) &&
+                strict("subscript_step",
+                    (attempt(get_all_array_items) ||
+                     attempt(get_array_slice) ||
+                     attempt(get_array_item_list) ||
+                     attempt(index_array) ||
+                     attempt(subscript_by_string) ||
+                     attempt(subscript_by_expression)) && discard(end_subscript_token)));
 
 auto filter_by_expression =
-    all([](JsonPathExpressionNodeNavPipelineStep **result, JsonPathExpressionNode *expression) {
+    define("filter_expression",
+        all([](JsonPathExpressionNodeNavPipelineStep **result, JsonPathExpressionNode *expression) {
             *result = new JsonPathExpressionNodeFilterChildren(
                         std::unique_ptr<JsonPathExpressionNode>(expression));
         },
         (discard(start_subscript_token) &&
          discard(open_filter_paren_token) &&
-         strict("expression", reference("expression", &expression) &&
+         strict("filter_expression", reference("expression", &expression) &&
                 discard(close_filter_paren_token) &&
-                discard(end_subscript_token))));
+                discard(end_subscript_token)))));
 
-auto index_by_expression =
-    all([](JsonPathExpressionNodeNavPipelineStep **result, JsonPathExpressionNode *expression) {
-            *result = new JsonPathExpressionNodeIndexByExpression(
-                        std::unique_ptr<JsonPathExpressionNode>(expression));
-        },
-        (discard(start_subscript_token) &&
-         discard(open_paren_token) &&
-         strict("expression", reference("expression", &expression) &&
-                discard(close_paren_token) &&
-                discard(end_subscript_token))));
+
 
 const auto navigation_step =
-    attempt(navigate_to_ancestor) ||
-    attempt(navigate_to_parent) ||    
-    attempt(navigate_recurse) ||
-    attempt(index_array) ||
-    attempt(navigate_non_recurse) ||
-    attempt(get_all_array_items) ||
-    attempt(get_array_item_list) ||
-    attempt(get_array_slice) ||
+    dot_qualify ||
     attempt(filter_by_expression) ||
-    index_by_expression;
-
+    subscript_qualify;
+    
 struct construct_navigation_pipe {
     void operator()(JsonPathExpressionNode **result, JsonPathExpressionNodeNavPipelineStep *pipeStep) const {
         dynamic_cast<JsonPathExpressionNodeNavPipeline*>(*result)->addStep(std::unique_ptr<JsonPathExpressionNodeNavPipelineStep>(pipeStep));
@@ -397,7 +407,7 @@ auto or_expression = binary_operator(and_expression, operator_parser("||", JsonP
 
 expression_parser_handle expression = or_expression;
 
-auto json_path_compiler = first_token && strict("navigation_pipe", navigation_pipe);
+auto json_path_compiler = first_token && strict("navigation_pipe", navigation_pipe) && strict("end_of_expression", discard(accept(is_eof)));
 
 
 JsonPathResultNodeList JsonPathExpression::execute(json::Node *root, JsonPathExpressionOptions *options) {
@@ -483,12 +493,10 @@ void testjsonpathexpressionparser() {
     JsonPathResultNodeList result14 = JsonPathExpression::compile(L"$..book[?(!@.isbn)]").execute(doc);
     JsonPathResultNodeList result15 =
     JsonPathExpression::compile(L"$..book[?(@.category == \"fiction\" || @.category == \"reference\")]").execute(doc);
-/*
-    $..book[?(@.price < 10)]    All books cheaper than 10.
-    $..book[?(@.price > $.expensive)]
-    All expensive books.
-
-    $..book[?(@.author =~ /.*Tolkien/i)]
-    */
+    JsonPathResultNodeList result16 = JsonPathExpression::compile(L"$..book[?(@.price < 10)]").execute(doc);
+    JsonPathResultNodeList result17 = JsonPathExpression::compile(L"$..book[?(@.price > $.expensive)]").execute(doc);
+    
+    // TODO
+    //JsonPathResultNodeList result18 = JsonPathExpression::compile(L"$..book[?(@.author =~ /.*Tolkien/i)]").execute(doc);
     
 }

@@ -9,6 +9,7 @@
 #define JsonPathExpressionCompiler_hpp
 
 #include "JsonPathExpressionNode.hpp"
+#include "Parser-Combinators/parser_combinators.hpp"
 
 struct JsonPathExpressionOptions {
     bool fuzzy;
@@ -29,7 +30,7 @@ public:
         _rootNode = std::move(expr._rootNode);
         return *this;
     }
-
+    
 private:
     JsonPathExpression(std::unique_ptr<JsonPathExpressionNode> &&rootNode) : _rootNode(std::move(rootNode)) {}
     

@@ -706,22 +706,6 @@
                                                                                     <rect key="frame" x="0.0" y="0.0" width="261" height="138"/>
                                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                     <subviews>
-                                                                                        <textField focusRingType="none" verticalHuggingPriority="1" verticalCompressionResistancePriority="1" placeholderIntrinsicWidth="230" placeholderIntrinsicHeight="infinite" translatesAutoresizingMaskIntoConstraints="NO" id="tic-dm-3Lx">
-                                                                                            <rect key="frame" x="0.0" y="0.0" width="261" height="108"/>
-                                                                                            <textFieldCell key="cell" selectable="YES" editable="YES" focusRingType="none" alignment="left" placeholderString="JSON path" drawsBackground="YES" id="2Y8-vX-4Uw">
-                                                                                                <font key="font" usesAppearanceFont="YES"/>
-                                                                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                                                            </textFieldCell>
-                                                                                            <connections>
-                                                                                                <action selector="executeJsonPath:" target="J9G-cz-Plk" id="RFJ-Aw-XJU"/>
-                                                                                                <binding destination="J9G-cz-Plk" name="value" keyPath="searchPath" id="hde-66-bZ5">
-                                                                                                    <dictionary key="options">
-                                                                                                        <bool key="NSContinuouslyUpdatesValue" value="YES"/>
-                                                                                                    </dictionary>
-                                                                                                </binding>
-                                                                                            </connections>
-                                                                                        </textField>
                                                                                         <box boxType="custom" borderType="none" borderWidth="0.0" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="QfS-bc-n5q">
                                                                                             <rect key="frame" x="0.0" y="108" width="158" height="30"/>
                                                                                             <view key="contentView" id="R7Z-nc-be7">
@@ -757,7 +741,7 @@
                                                                                                             <userDefinedRuntimeAttribute type="string" keyPath="historyListName" value="JsonPathSearch"/>
                                                                                                         </userDefinedRuntimeAttributes>
                                                                                                         <connections>
-                                                                                                            <outlet property="boundField" destination="tic-dm-3Lx" id="Pmn-q0-PMA"/>
+                                                                                                            <outlet property="boundTextView" destination="ULP-Sd-xav" id="Tr6-u1-2Zp"/>
                                                                                                         </connections>
                                                                                                     </customView>
                                                                                                 </subviews>
@@ -803,17 +787,50 @@
                                                                                             <color key="borderColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                             <color key="fillColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                                                         </box>
+                                                                                        <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Het-PW-6a4">
+                                                                                            <rect key="frame" x="0.0" y="0.0" width="261" height="108"/>
+                                                                                            <clipView key="contentView" drawsBackground="NO" id="9IZ-fS-urd">
+                                                                                                <rect key="frame" x="0.0" y="0.0" width="261" height="108"/>
+                                                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                                <subviews>
+                                                                                                    <textView importsGraphics="NO" richText="NO" verticallyResizable="YES" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" id="ULP-Sd-xav">
+                                                                                                        <rect key="frame" x="0.0" y="0.0" width="261" height="108"/>
+                                                                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                                                                        <size key="minSize" width="261" height="108"/>
+                                                                                                        <size key="maxSize" width="261" height="10000000"/>
+                                                                                                        <color key="insertionPointColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                                                                        <connections>
+                                                                                                            <binding destination="J9G-cz-Plk" name="value" keyPath="searchPath" id="LXY-iZ-HXy">
+                                                                                                                <dictionary key="options">
+                                                                                                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                                                                                                </dictionary>
+                                                                                                            </binding>
+                                                                                                        </connections>
+                                                                                                    </textView>
+                                                                                                </subviews>
+                                                                                            </clipView>
+                                                                                            <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="GNP-gs-ryw">
+                                                                                                <rect key="frame" x="-100" y="-100" width="240" height="16"/>
+                                                                                                <autoresizingMask key="autoresizingMask"/>
+                                                                                            </scroller>
+                                                                                            <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="BZJ-C3-8j1">
+                                                                                                <rect key="frame" x="245" y="0.0" width="16" height="108"/>
+                                                                                                <autoresizingMask key="autoresizingMask"/>
+                                                                                            </scroller>
+                                                                                        </scrollView>
                                                                                     </subviews>
                                                                                     <constraints>
+                                                                                        <constraint firstAttribute="bottom" secondItem="Het-PW-6a4" secondAttribute="bottom" id="19L-b3-SST"/>
                                                                                         <constraint firstItem="QfS-bc-n5q" firstAttribute="leading" secondItem="1Fz-IB-9v3" secondAttribute="leading" id="6Bo-z4-n7r"/>
-                                                                                        <constraint firstItem="tic-dm-3Lx" firstAttribute="top" secondItem="QfS-bc-n5q" secondAttribute="bottom" id="ElR-oZ-uZG"/>
+                                                                                        <constraint firstAttribute="trailing" secondItem="Het-PW-6a4" secondAttribute="trailing" id="7Zc-2e-g5x"/>
                                                                                         <constraint firstItem="ydm-I5-Lnz" firstAttribute="top" secondItem="1Fz-IB-9v3" secondAttribute="top" id="PAs-aG-4dz"/>
+                                                                                        <constraint firstItem="Het-PW-6a4" firstAttribute="top" secondItem="QfS-bc-n5q" secondAttribute="bottom" id="UZM-3a-HcG"/>
                                                                                         <constraint firstAttribute="trailing" secondItem="ydm-I5-Lnz" secondAttribute="trailing" id="VQb-gz-jkP"/>
+                                                                                        <constraint firstItem="Het-PW-6a4" firstAttribute="leading" secondItem="1Fz-IB-9v3" secondAttribute="leading" id="YZ6-6R-TZO"/>
                                                                                         <constraint firstItem="ydm-I5-Lnz" firstAttribute="bottom" secondItem="QfS-bc-n5q" secondAttribute="bottom" id="gfm-0U-Xra"/>
-                                                                                        <constraint firstAttribute="bottom" secondItem="tic-dm-3Lx" secondAttribute="bottom" id="m91-pN-qGw"/>
                                                                                         <constraint firstItem="QfS-bc-n5q" firstAttribute="top" secondItem="1Fz-IB-9v3" secondAttribute="top" id="mVe-qq-pMr"/>
-                                                                                        <constraint firstAttribute="trailing" secondItem="tic-dm-3Lx" secondAttribute="trailing" id="n6M-US-oHF"/>
-                                                                                        <constraint firstItem="tic-dm-3Lx" firstAttribute="leading" secondItem="1Fz-IB-9v3" secondAttribute="leading" id="z25-wr-um5"/>
                                                                                     </constraints>
                                                                                 </view>
                                                                             </box>
@@ -1146,6 +1163,7 @@
                 <outlet property="jqQueryInput" destination="W7l-Dy-3pg" id="AGz-A3-1Zw"/>
                 <outlet property="jqQueryResult" destination="Gqx-B7-p6B" id="0OC-Tc-DHm"/>
                 <outlet property="jsonPathSearchController" destination="J9G-cz-Plk" id="f0y-2A-f8u"/>
+                <outlet property="jsonQueryTextView" destination="ULP-Sd-xav" id="YWU-wi-OOP"/>
                 <outlet property="projectionDefinitionsHistory" destination="aGE-dR-G6U" id="euC-fH-38Z"/>
                 <outlet property="projectionTable" destination="gi7-bp-v9u" id="cg8-H8-aat"/>
                 <outlet property="selectionController" destination="6" id="591"/>
@@ -1163,7 +1181,7 @@
         <customObject id="J9G-cz-Plk" customClass="JsonPathSearchController">
             <connections>
                 <outlet property="JSONPathHistoryFavorites" destination="pEy-o9-4te" id="wYq-S4-9fR"/>
-                <outlet property="JSONPathInput" destination="tic-dm-3Lx" id="Urw-qN-YW8"/>
+                <outlet property="JSONPathInput" destination="ULP-Sd-xav" id="2Fk-0h-F8m"/>
                 <outlet property="JSONPathQueryStatus" destination="Mux-ew-Apz" id="bZn-pe-4ZR"/>
                 <outlet property="JSONPathResultsController" destination="hVc-UR-23G" id="cHI-d0-Akb"/>
                 <outlet property="document" destination="-2" id="O73-nz-4Gs"/>

@@ -322,7 +322,7 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Json" id="718">
                         <items>
-                            <menuItem title="Evaluate jq..." keyEquivalent="E" id="Ac4-VD-Reg">
+                            <menuItem title="Evaluate jq..." keyEquivalent="J" id="Ac4-VD-Reg">
                                 <connections>
                                     <action selector="showJqEval:" target="-1" id="sCm-rS-azu"/>
                                 </connections>
