@@ -18,7 +18,7 @@
 #import "HistoryAndFavoritesControl.h"
 #import "BracezTextView.h"
 
-#import "ProjectionTableDataSource.h"
+#import "ProjectionTableController.h"
 #import "ProjectionDefinitionEditor.h"
 
 extern "C" {
@@ -29,7 +29,7 @@ extern "C" {
     JsonTreeDataSource *_treeDataSource;
     TextEditorGutterView *gutterView;
     IBOutlet GuiModeControl *guiModeControl;
-    ProjectionTableDataSource *projectionTableDatasource;
+    IBOutlet ProjectionTableController *projectionTableController;
     IBOutlet HistoryAndFavoritesControl *projectionDefinitionsHistory;
 }
 
@@ -60,13 +60,6 @@ extern "C" {
     [textEditor setMaxSize:NSMakeSize(MAXFLOAT, MAXFLOAT)];
     
     [textEditor.layoutManager replaceTextStorage:self.document.textStorage];
-    
-    
-    
-    jsonQueryTextView.automaticQuoteSubstitutionEnabled = NO;
-    jsonQueryTextView.automaticDashSubstitutionEnabled = NO;
-    jsonQueryTextView.automaticTextReplacementEnabled = NO;
-    jsonQueryTextView.enabledTextCheckingTypes = 0;
     
     gutterView = [[TextEditorGutterView alloc] initWithScrollView:textEditorScroll];
     [gutterView setModel:(id<GutterViewModel>)selectionController];
@@ -403,7 +396,8 @@ static void onJqCompileError(void *ctxt, jv err) {
 
 -(void)editProjection {
     ProjectionDefinitionEditor *editor = [[ProjectionDefinitionEditor alloc]
-                                          initWithDefinition:projectionTableDatasource.projectionDefinition];
+                                          initWithDefinition:projectionTableController.projectionDefinition
+                                          previewDocument:self.document];
     [self beginSheet:editor.window completionHandler:^(NSModalResponse returnCode) {
         [self setProjectionDefinition:editor.editedProjection];
     }];
@@ -415,30 +409,17 @@ static void onJqCompileError(void *ctxt, jv err) {
 
 
 -(void)updateProjectionData {
-    if(projectionTableDatasource && guiModeControl.showProjectionView) {
-        [projectionTableDatasource reloadData];
-        [self->projectionTable reloadData];
+    if(guiModeControl.showProjectionView) {
+        [projectionTableController reloadData];
     }
 }
 
 -(void)setProjectionDefinition:(ProjectionDefinition*)definition {
-    projectionTableDatasource =
-        [[ProjectionTableDataSource alloc] initWithDefinition:definition
-                                            projectedDocument:self.document];
-    
-    [projectionTableDatasource reloadData];
-    [projectionTableDatasource configureTableViewColumns:self->projectionTable];
-    
-    projectionTable.delegate = projectionTableDatasource;
-    projectionTable.dataSource = projectionTableDatasource;
-    
-    projectionTableDatasource.delegate = selectionController;
-    selectionController.projectionTableDs = projectionTableDatasource;
-    projectionTableDatasource.tableView = projectionTable;
+    projectionTableController.projectionDefinition = definition;
 }
 
 - (nonnull ProjectionDefinition *)projectionDefintitionForFavorite:(nonnull id)sender {
-    return self->projectionTableDatasource.projectionDefinition;
+    return projectionTableController.projectionDefinition;
 }
 
 - (void)recallProjectionDefinition:(nonnull ProjectionDefinition *)definition {

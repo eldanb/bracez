@@ -12,6 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ProjectionFieldDefinition : NSObject <NSCopying, NSSecureCoding>
 
+-(BOOL)isEqual:(id __nullable)other;
+
+
 @property NSString *fieldTitle;
 @property NSString *expression;
 @property NSString *formatterType;
@@ -25,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(void)addProjection:(ProjectionFieldDefinition*)definition;
 -(void)removeProjectionAtIndex:(NSUInteger)index;
+
+-(BOOL)isEqual:(id __nullable)other;
 
 @property NSString *projectionName;
 @property NSString *rowSelector;

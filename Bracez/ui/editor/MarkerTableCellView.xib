@@ -30,7 +30,7 @@
                         <constraint firstAttribute="height" constant="12" id="l4o-zo-YvW"/>
                     </constraints>
                     <textFieldCell key="cell" lineBreakMode="truncatingTail" truncatesLastVisibleLine="YES" alignment="left" title="Title" usesSingleLineMode="YES" id="YSK-Wd-tMp">
-                        <font key="font" metaFont="systemSemibold" size="11"/>
+                        <font key="font" metaFont="system" size="11"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
@@ -42,7 +42,7 @@
                     <rect key="frame" x="24" y="0.0" width="287" height="14"/>
                     <textFieldCell key="cell" lineBreakMode="truncatingTail" truncatesLastVisibleLine="YES" title="Label" usesSingleLineMode="YES" id="lqF-gd-EwA">
                         <font key="font" metaFont="smallSystem"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="textColor" name="systemGrayColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                     <connections>

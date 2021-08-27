@@ -219,7 +219,7 @@
                                                                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="OBg-Ho-itC">
                                                                     <rect key="frame" x="0.0" y="0.0" width="48" height="31"/>
                                                                     <subviews>
-                                                                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YKS-3g-TUc">
+                                                                        <button toolTip="Hide projection pane" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YKS-3g-TUc">
                                                                             <rect key="frame" x="5" y="8.5" width="24" height="14"/>
                                                                             <constraints>
                                                                                 <constraint firstAttribute="width" constant="24" id="4PM-1f-yYJ"/>
@@ -242,7 +242,7 @@
                                                                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="IZZ-qm-oui">
                                                                     <rect key="frame" x="-89" y="0.0" width="89" height="31"/>
                                                                     <subviews>
-                                                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="aGE-dR-G6U" customClass="HistoryAndFavoritesControl">
+                                                                        <customView toolTip="Favorites" translatesAutoresizingMaskIntoConstraints="NO" id="aGE-dR-G6U" customClass="HistoryAndFavoritesControl">
                                                                             <rect key="frame" x="20" y="0.0" width="32" height="31"/>
                                                                             <constraints>
                                                                                 <constraint firstAttribute="width" constant="32" id="thl-Hv-k9o"/>
@@ -254,7 +254,7 @@
                                                                                 <outlet property="delegate" destination="RPk-Fd-Pcr" id="8cV-LY-WJ8"/>
                                                                             </connections>
                                                                         </customView>
-                                                                        <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ew5-2z-fqG">
+                                                                        <button toolTip="Edit projection settings" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Ew5-2z-fqG">
                                                                             <rect key="frame" x="60" y="8" width="24" height="16"/>
                                                                             <constraints>
                                                                                 <constraint firstAttribute="width" constant="24" id="rWC-S6-Z9L"/>
@@ -576,7 +576,7 @@
                                                                                     <rect key="frame" x="0.0" y="0.0" width="261" height="172"/>
                                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                     <subviews>
-                                                                                        <customView translatesAutoresizingMaskIntoConstraints="NO" id="Om7-JX-Pln" customClass="HistoryAndFavoritesControl">
+                                                                                        <customView identifier="History and Favorites" translatesAutoresizingMaskIntoConstraints="NO" id="Om7-JX-Pln" customClass="HistoryAndFavoritesControl">
                                                                                             <rect key="frame" x="6" y="145" width="32" height="24"/>
                                                                                             <constraints>
                                                                                                 <constraint firstAttribute="height" constant="24" id="8uz-Nr-iuB"/>
@@ -659,7 +659,7 @@
                                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                                 <clipView key="contentView" drawsBackground="NO" id="s0D-Sl-40F">
                                                                                     <rect key="frame" x="0.0" y="0.0" width="261" height="178"/>
-                                                                                    <autoresizingMask key="autoresizingMask"/>
+                                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                     <subviews>
                                                                                         <textView focusRingType="none" editable="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" spellingCorrection="YES" smartInsertDelete="YES" id="Gqx-B7-p6B">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="261" height="178"/>
@@ -732,7 +732,7 @@
                                                                                                             <binding destination="J9G-cz-Plk" name="value" keyPath="fuzzySearch" id="rUQ-3R-FfW"/>
                                                                                                         </connections>
                                                                                                     </button>
-                                                                                                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="pEy-o9-4te" customClass="HistoryAndFavoritesControl">
+                                                                                                    <customView toolTip="History and Favorites" translatesAutoresizingMaskIntoConstraints="NO" id="pEy-o9-4te" customClass="HistoryAndFavoritesControl">
                                                                                                         <rect key="frame" x="6" y="0.0" width="32" height="30"/>
                                                                                                         <constraints>
                                                                                                             <constraint firstAttribute="width" constant="32" id="ffc-T4-Jd9"/>
@@ -793,7 +793,7 @@
                                                                                                 <rect key="frame" x="0.0" y="0.0" width="261" height="108"/>
                                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                                 <subviews>
-                                                                                                    <textView importsGraphics="NO" richText="NO" verticallyResizable="YES" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" id="ULP-Sd-xav">
+                                                                                                    <textView importsGraphics="NO" richText="NO" verticallyResizable="YES" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" id="ULP-Sd-xav" customClass="SyntaxEditingField">
                                                                                                         <rect key="frame" x="0.0" y="0.0" width="261" height="108"/>
                                                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -807,6 +807,7 @@
                                                                                                                     <bool key="NSContinuouslyUpdatesValue" value="YES"/>
                                                                                                                 </dictionary>
                                                                                                             </binding>
+                                                                                                            <outlet property="syntaxEditingFieldDelegate" destination="J9G-cz-Plk" id="D0N-WR-dWr"/>
                                                                                                         </connections>
                                                                                                     </textView>
                                                                                                 </subviews>
@@ -950,7 +951,7 @@
                                                 <customView translatesAutoresizingMaskIntoConstraints="NO" id="536-gv-f2q">
                                                     <rect key="frame" x="77" y="-1" width="108" height="33"/>
                                                     <subviews>
-                                                        <button horizontalHuggingPriority="1000" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="Vpq-hb-dRH">
+                                                        <button toolTip="Search with JSON Path" horizontalHuggingPriority="1000" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="Vpq-hb-dRH">
                                                             <rect key="frame" x="0.0" y="-3.5" width="15.5" height="40"/>
                                                             <buttonCell key="cell" type="bevel" title="Button" bezelStyle="regularSquare" image="mappin.and.ellipse" catalog="system" imagePosition="only" alignment="left" inset="2" id="JUs-Js-sEJ">
                                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -969,7 +970,7 @@
                                                                 </binding>
                                                             </connections>
                                                         </button>
-                                                        <button horizontalHuggingPriority="1000" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="DaZ-CR-lgM">
+                                                        <button toolTip="Bookmarks" horizontalHuggingPriority="1000" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="DaZ-CR-lgM">
                                                             <rect key="frame" x="63" y="9" width="16" height="16"/>
                                                             <buttonCell key="cell" type="bevel" title="Button" bezelStyle="regularSquare" image="ToolbarBookmarksTemplate" imagePosition="only" inset="2" id="LdE-M3-oXR">
                                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -984,7 +985,7 @@
                                                                 <binding destination="4" name="value" keyPath="selection.showBookmarksList" id="KaY-DJ-a0S"/>
                                                             </connections>
                                                         </button>
-                                                        <button horizontalHuggingPriority="1000" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="5cG-3K-rvG">
+                                                        <button toolTip="Evaluate jq" horizontalHuggingPriority="1000" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="5cG-3K-rvG">
                                                             <rect key="frame" x="27" y="0.0" width="24" height="33"/>
                                                             <buttonCell key="cell" type="bevel" title="./jq" bezelStyle="regularSquare" image="NSRevealFreestandingTemplate" inset="2" id="yde-Qw-AzK">
                                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -1003,7 +1004,7 @@
                                                                 </binding>
                                                             </connections>
                                                         </button>
-                                                        <button horizontalHuggingPriority="1000" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="2Aw-8b-rob">
+                                                        <button toolTip="Problems" horizontalHuggingPriority="1000" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="2Aw-8b-rob">
                                                             <rect key="frame" x="91" y="9.5" width="17.5" height="15"/>
                                                             <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="exclamationmark.triangle" catalog="system" imagePosition="only" inset="2" id="VT0-uw-feR">
                                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -1069,8 +1070,7 @@
             </view>
             <toolbar key="toolbar" implicitIdentifier="DAAFECAE-1850-420E-8CEA-3E27B76E810F" autosavesConfiguration="NO" displayMode="iconOnly" sizeMode="regular" id="157">
                 <allowedToolbarItems>
-                    <toolbarItem implicitItemIdentifier="A83D36F3-A960-4977-B76C-28F701E73885" label="Back" paletteLabel="Back" image="NSGoBackTemplate" sizingBehavior="auto" navigational="YES" id="bmf-2x-UJf">
-                        <nil key="toolTip"/>
+                    <toolbarItem implicitItemIdentifier="A83D36F3-A960-4977-B76C-28F701E73885" label="Back" paletteLabel="Back" toolTip="Navigate back" image="NSGoBackTemplate" sizingBehavior="auto" navigational="YES" id="bmf-2x-UJf">
                         <button key="view" verticalHuggingPriority="750" id="F8n-J4-L5l">
                             <rect key="frame" x="6" y="14" width="22" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>
@@ -1083,8 +1083,7 @@
                             </connections>
                         </button>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="A186463B-E6DF-4AFB-BDDD-CAB27C8CA6D5" label="Forward" paletteLabel="Forward" image="NSGoForwardTemplate" sizingBehavior="auto" navigational="YES" id="ycT-Mm-511">
-                        <nil key="toolTip"/>
+                    <toolbarItem implicitItemIdentifier="A186463B-E6DF-4AFB-BDDD-CAB27C8CA6D5" label="Forward" paletteLabel="Forward" toolTip="Navigate forward" image="NSGoForwardTemplate" sizingBehavior="auto" navigational="YES" id="ycT-Mm-511">
                         <button key="view" verticalHuggingPriority="750" id="rl1-nh-WdP">
                             <rect key="frame" x="14" y="14" width="22" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>
@@ -1098,8 +1097,7 @@
                         </button>
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="NSToolbarPrintItem" id="211"/>
-                    <toolbarItem implicitItemIdentifier="7281AE20-5384-41A5-B561-0ADD3CBE75D8" label="Preferences" paletteLabel="Preferences" tag="-1" image="NSPreferencesGeneral" sizingBehavior="auto" id="578">
-                        <nil key="toolTip"/>
+                    <toolbarItem implicitItemIdentifier="7281AE20-5384-41A5-B561-0ADD3CBE75D8" label="Preferences" paletteLabel="Preferences" toolTip="Change preferences" tag="-1" image="NSPreferencesGeneral" sizingBehavior="auto" id="578">
                         <connections>
                             <action selector="showPreferences:" target="-1" id="579"/>
                         </connections>
@@ -1107,8 +1105,7 @@
                     <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="210"/>
                     <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="209"/>
                     <toolbarItem implicitItemIdentifier="NSToolbarCustomizeToolbarItem" id="208"/>
-                    <toolbarItem implicitItemIdentifier="1C1A6AF8-AF02-4D6D-B620-55CE9F7DD55E" label="Delete" paletteLabel="Delete" image="NSStopProgressTemplate" title="Textured Rounded" sizingBehavior="auto" id="1hl-u1-DMO">
-                        <nil key="toolTip"/>
+                    <toolbarItem implicitItemIdentifier="1C1A6AF8-AF02-4D6D-B620-55CE9F7DD55E" label="Delete" paletteLabel="Delete" toolTip="Delete Node" image="NSStopProgressTemplate" title="Textured Rounded" sizingBehavior="auto" id="1hl-u1-DMO">
                         <button key="view" verticalHuggingPriority="750" id="WBj-4P-rfo">
                             <rect key="frame" x="8" y="14" width="26" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>
@@ -1121,8 +1118,7 @@
                             <action selector="removeJsonNode:" target="-1" id="Bcv-Ti-RCK"/>
                         </connections>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="15D9F7CA-7C46-4C9D-9F26-8A2219D104D3" label="Utility Panel" paletteLabel="Utility Panel" sizingBehavior="auto" id="IQ1-wQ-0eh">
-                        <nil key="toolTip"/>
+                    <toolbarItem implicitItemIdentifier="15D9F7CA-7C46-4C9D-9F26-8A2219D104D3" label="Utility Panel" paletteLabel="Utility Panel" toolTip="Show/hide utility panel" sizingBehavior="auto" id="IQ1-wQ-0eh">
                         <imageReference key="image" image="sidebar.right" catalog="system" symbolScale="large" renderingMode="original"/>
                         <button key="view" verticalHuggingPriority="750" id="DeP-Qk-2bf">
                             <rect key="frame" x="18" y="14" width="35" height="23"/>
@@ -1137,7 +1133,7 @@
                             </connections>
                         </button>
                     </toolbarItem>
-                    <toolbarItem implicitItemIdentifier="37182EE3-0235-4E4D-A048-2DDFE9C20D55" label="View Settings" paletteLabel="View Settings" tag="-1" navigational="YES" id="8oA-Mh-nrs">
+                    <toolbarItem implicitItemIdentifier="37182EE3-0235-4E4D-A048-2DDFE9C20D55" label="View Settings" paletteLabel="View Settings" toolTip="Change view settings" tag="-1" navigational="YES" id="8oA-Mh-nrs">
                         <imageReference key="image" image="sidebar.left" catalog="system" symbolScale="small" renderingMode="template"/>
                         <size key="minSize" width="37" height="25"/>
                         <size key="maxSize" width="37" height="25"/>
@@ -1166,6 +1162,7 @@
                 <outlet property="jsonQueryTextView" destination="ULP-Sd-xav" id="YWU-wi-OOP"/>
                 <outlet property="projectionDefinitionsHistory" destination="aGE-dR-G6U" id="euC-fH-38Z"/>
                 <outlet property="projectionTable" destination="gi7-bp-v9u" id="cg8-H8-aat"/>
+                <outlet property="projectionTableController" destination="z0V-BO-OWg" id="vgd-f3-K3b"/>
                 <outlet property="selectionController" destination="6" id="591"/>
                 <outlet property="textEditor" destination="187" id="239"/>
                 <outlet property="textEditorScroll" destination="184" id="590"/>
@@ -1185,6 +1182,13 @@
                 <outlet property="JSONPathQueryStatus" destination="Mux-ew-Apz" id="bZn-pe-4ZR"/>
                 <outlet property="JSONPathResultsController" destination="hVc-UR-23G" id="cHI-d0-Akb"/>
                 <outlet property="document" destination="-2" id="O73-nz-4Gs"/>
+            </connections>
+        </customObject>
+        <customObject id="z0V-BO-OWg" customClass="ProjectionTableController">
+            <connections>
+                <outlet property="delegate" destination="6" id="Hnh-K1-fiA"/>
+                <outlet property="projectedDocument" destination="-2" id="btg-L4-8om"/>
+                <outlet property="tableView" destination="gi7-bp-v9u" id="mzP-hP-xk1"/>
             </connections>
         </customObject>
         <objectController id="4" userLabel="Gui Mode object controller">
@@ -1223,6 +1227,7 @@
                 <outlet property="coordView" destination="159" id="213"/>
                 <outlet property="document" destination="-2" id="h2z-E4-vQ4"/>
                 <outlet property="pathView" destination="263" id="264"/>
+                <outlet property="projectionTableDs" destination="z0V-BO-OWg" id="42R-PF-lc7"/>
                 <outlet property="textView" destination="187" id="216"/>
                 <outlet property="treeController" destination="12" id="229"/>
             </connections>

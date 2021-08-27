@@ -420,8 +420,13 @@
 }
 
 -(void)handleCompletionSelectionWithTerminatingDot:(BOOL)terminatingDot {
-    if([_completionTableView selectedRow] != -1) {
-        NSString *selectedSuggestion = [_currentSuggestions objectAtIndex:[_completionTableView selectedRow]];
+    long selRow = [_completionTableView selectedRow];
+    if(selRow == -1 && _currentSuggestions.count > 0) {
+        selRow = 0;
+    }
+    
+    if(selRow != -1) {
+        NSString *selectedSuggestion = [_currentSuggestions objectAtIndex:selRow];
         
         NSString *newPath = [self.delegate pathView:self updateExtensionValue:_pathExtensionEdit.stringValue forSelectedCompletion:selectedSuggestion];
         

@@ -46,6 +46,15 @@
                                                   forKeyPath: [bindingInfo valueForKey: NSObservedKeyPathKey]];
 }
 
+-(id)newHistoryItemForHfControl:(HistoryAndFavoritesControl *)sender {
+    NSString *ret = sender.boundField.stringValue;
+    if(ret.length) {
+        return ret;
+    } else {
+        return nil;
+    }
+}
+
 
 @end
 
@@ -79,13 +88,21 @@
 }
 
 - (void)hfControl:(nonnull HistoryAndFavoritesControl *)sender recallItem:(nonnull id)recalledItem {
-    sender.boundField.stringValue = recalledItem;
     NSDictionary *bindingInfo = [sender.boundTextView infoForBinding: NSValueBinding];
-    [[bindingInfo valueForKey: NSObservedObjectKey] setValue: sender.boundTextView.string
+    [[bindingInfo valueForKey: NSObservedObjectKey] setValue: recalledItem
                                                   forKeyPath: [bindingInfo valueForKey: NSObservedKeyPathKey]];
+    sender.boundTextView.string = recalledItem;
 }
 
 
+-(id)newHistoryItemForHfControl:(HistoryAndFavoritesControl *)sender {
+    NSString *ret = sender.boundTextView.string;
+    if(ret.length) {
+        return ret;
+    } else {
+        return nil;
+    }
+}
 @end
 
 // ********************************************
@@ -109,10 +126,13 @@
 @implementation HistoryAndFavoritesControl
 
 -(void)awakeFromNib {
+    [super awakeFromNib];
+    
     button = [[NSPopUpButton alloc] initWithFrame:self.bounds pullsDown:YES];
     button.bezelStyle = NSBezelStyleRoundRect;
     button.bordered = NO;
     button.imagePosition = NSImageOnly;
+    button.toolTip = self.toolTip;
     [(id)button.cell setArrowPosition:NSPopUpArrowAtBottom];
     
     NSMenu *menu = [[NSMenu alloc] init];
@@ -146,7 +166,7 @@
     [menu addItem:sep];
     
     // History
-    if(!self.disableHistory) {
+    if(self.isHistoryEnabled) {
         NSMenuItem *hist = [[NSMenuItem alloc] initWithTitle:@"History" action:nil keyEquivalent:@""];
         [menu addItem:hist];
         histMenu = [[NSMenu alloc] init];
@@ -234,6 +254,10 @@
     [self saveLists];
 }
 
+-(BOOL)isHistoryEnabled {
+    return [(NSObject*)self.delegate respondsToSelector:@selector(newHistoryItemForHfControl:)];
+}
+
 -(void)menuNeedsUpdate:(NSMenu *)menu {
     
     [self loadLists];
@@ -255,13 +279,15 @@
         [favMenu addItem:emptyItem];
     }
 
-    if(!self.disableHistory) {
+    if(self.isHistoryEnabled) {
         [histMenu removeAllItems];
         if(historyItems.count) {
-            for(NSString *historyItemTitle in historyItems) {
+            for(id historyItem in historyItems) {
+                NSString *historyItemTitle = [self nameForItem:historyItem];
                 NSMenuItem *histMenuItem = [[NSMenuItem alloc] initWithTitle:historyItemTitle
                                              action:@selector(selectHfItem:)
                                       keyEquivalent:@""];
+                histMenuItem.representedObject = historyItem;
                 [histMenuItem setTarget:self];
                 [histMenu addItem:histMenuItem];
             }
@@ -295,12 +321,10 @@
 }
 
 -(void)accumulateHistory {
-    NSString *accumulatedItem = self.boundField.stringValue;
-    if(!accumulatedItem.length) {
-        return;
+    id accumulatedItem = [self.delegate newHistoryItemForHfControl:self];
+    if(accumulatedItem) {
+        [self accumulateHistoryValue:accumulatedItem];
     }
-    
-    [self accumulateHistoryValue:accumulatedItem];
 }
 
 -(NSArray *)favoritesList {

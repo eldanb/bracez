@@ -375,7 +375,7 @@
     return path;
 }
 
-- (void)projectionTableDataSource:(ProjectionTableDataSource *)sender didSelectNode:(Node *)node {
+- (void)projectionTableController:(ProjectionTableController *)sender didSelectNode:(Node *)node {
     if(!syncingNodeAndTextSel) {
         json::TextRange nodeRange = node->GetAbsTextRange();
         [self selectTextRange:NSMakeRange(nodeRange.start, nodeRange.length())];

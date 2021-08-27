@@ -18,7 +18,6 @@
     IBOutlet NSScrollView *textEditorScroll;
     IBOutlet __weak NSTreeController *domController;
     IBOutlet NSOutlineView *treeView;
-    __unsafe_unretained IBOutlet NSTextView *jsonQueryTextView;
     
     IBOutlet NSTextField *jqQueryInput;
     IBOutlet NSTextView *jqQueryResult;

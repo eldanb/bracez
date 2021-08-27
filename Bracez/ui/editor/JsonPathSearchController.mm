@@ -35,6 +35,18 @@
     [JSONPathInput becomeFirstResponder];
 }
 
+- (void)showErrorResult:(NSString*)error forRange:(NSRange)range {
+    [JSONPathInput markErrorRange:range];
+    
+    JSONPathQueryStatus.textColor = [NSColor redColor];
+    JSONPathQueryStatus.font = [NSFont monospacedSystemFontOfSize:[NSFont smallSystemFontSize] weight:NSFontWeightRegular];
+    JSONPathQueryStatus.stringValue = error;
+}
+
+-(void)syntaxEditingFieldChanged:(SyntaxEditingField *)sender {
+    [self executeJsonPath:sender];
+}
+
 - (IBAction)executeJsonPath:(id)sender {
     if(!_searchPath.length) {
         return;
@@ -42,9 +54,8 @@
     
     [JSONPathHistoryFavorites accumulateHistory];
     
-    [JSONPathInput.textStorage removeAttribute:NSUnderlineStyleAttributeName
-                                         range:NSMakeRange(0, JSONPathInput.textStorage.length)];
-    
+    [JSONPathInput clearErrorRanges];
+
     JsonPathResultNodeList nodeList;
     try {
         JsonPathExpression expr = JsonPathExpression::compile(_searchPath.UTF8String);
@@ -57,26 +68,14 @@
         JSONPathQueryStatus.font = [NSFont systemFontOfSize:[NSFont smallSystemFontSize]];
         JSONPathQueryStatus.stringValue = [NSString stringWithFormat:@"%ld results", nodeList.size()];
     } catch(const parse_error &e) {
-                        
-        [JSONPathInput.textStorage addAttributes:@{
-            NSUnderlineStyleAttributeName: @(NSUnderlineStyleThick),
-            NSUnderlineColorAttributeName: [NSColor redColor]
-        }
-                                           range:NSMakeRange(std::min(e._offset_start, JSONPathInput.textStorage.length-1), std::max(e._len, (size_t)1))];
-
-        JSONPathQueryStatus.textColor = [NSColor redColor];
-        JSONPathQueryStatus.font = [NSFont monospacedSystemFontOfSize:[NSFont smallSystemFontSize] weight:NSFontWeightRegular];
-        JSONPathQueryStatus.stringValue = [NSString stringWithFormat:@"Invalid JSON path syntax: %s; expected: %s", e._what.c_str(), e._expecting.c_str()];
+        [self showErrorResult:[NSString stringWithFormat:@"Invalid JSON path syntax: %s; expected: %s",
+                               e._what.c_str(), e._expecting.c_str()]
+                     forRange:NSMakeRange(
+                                          std::min(e._offset_start, JSONPathInput.textStorage.length-1),
+                                          std::max(e._len, (size_t)1))];
     } catch(const std::exception &e) {
-        [JSONPathInput.textStorage addAttributes:@{
-            NSUnderlineStyleAttributeName: @(NSUnderlineStyleThick),
-            NSUnderlineColorAttributeName: [NSColor redColor]
-        }
-                                           range:NSMakeRange(0, JSONPathInput.textStorage.length)];
-
-        JSONPathQueryStatus.textColor = [NSColor redColor];
-        JSONPathQueryStatus.font = [NSFont monospacedSystemFontOfSize:[NSFont smallSystemFontSize] weight:NSFontWeightRegular];
-        JSONPathQueryStatus.stringValue = [NSString stringWithFormat:@"Invalid JSON path syntax: %s", e.what()];
+        [self showErrorResult:[NSString stringWithFormat:@"Invalid JSON path syntax: %s", e.what()]
+                     forRange:NSMakeRange(0, JSONPathInput.textStorage.length)];
     }
     
     NSMutableArray *nodesArray = [NSMutableArray arrayWithCapacity:nodeList.size()];

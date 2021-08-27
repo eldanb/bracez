@@ -44,7 +44,8 @@
  wantsEditForItem:(id)favoriteItem
          inWindow:(NSWindow*)window
    withCompletion:(void (^)(id _Nonnull, NSError * _Nullable))completionHandler {
-    ProjectionDefinitionEditor *editor = [[ProjectionDefinitionEditor alloc] initWithDefinition:favoriteItem];
+    ProjectionDefinitionEditor *editor = [[ProjectionDefinitionEditor alloc]
+                                          initWithDefinition:favoriteItem previewDocument:nil];
     [window beginSheet:editor.window
             completionHandler:^(NSModalResponse returnCode) {
                 completionHandler(editor.editedProjection, nil);

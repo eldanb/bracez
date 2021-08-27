@@ -327,9 +327,6 @@
                                     <action selector="showJqEval:" target="-1" id="sCm-rS-azu"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Associate Schema..." id="722">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>

@@ -12,7 +12,7 @@
 #import "JsonDocument.h"
 #import "TextEditorGutterView.h"
 #import "JsonFileListenerObjCBridge.h"
-#import "ProjectionTableDataSource.h"
+#import "ProjectionTableController.h"
 
 #include "LinesAndBookmarks.h"
 
@@ -23,7 +23,7 @@
 @interface NodeSelectionController : NSObject<NSUserInterfaceValidations, GutterViewModel,
                                                 ObjCJsonFileChangeListener,
                                                 PathViewComponentCellNotifications,
-                                                ProjectionTableDataSourceDelegate> {
+                                                ProjectionTableControllerDelegate> {
    IBOutlet NSTreeController *treeController;
 
    IBOutlet NSTextView *textView;
@@ -50,7 +50,7 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
 - (void)textViewDidChangeSelection:(NSNotification *)aNotification;
 
-- (void)projectionTableDataSource:(ProjectionTableDataSource *)sender didSelectNode:(Node *)node;
+- (void)projectionTableController:(ProjectionTableController *)sender didSelectNode:(Node *)node;
 - (void)pathView:(PathView *)aPathView didClickOnPathComponentIndex:(int)aIdx;
 - (void)pathView:(PathView *)aPathView preparePopupMenu:(NSMenu**)aMenu forIndex:(int)aIdx;
 
@@ -91,6 +91,6 @@
 
 -(NSString*)currentPathAsJsonQuery;
 
-@property (weak) IBOutlet ProjectionTableDataSource *projectionTableDs;
+@property (weak) IBOutlet ProjectionTableController *projectionTableDs;
 
 @end

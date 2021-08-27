@@ -6,17 +6,18 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SyntaxEditingField.h"
 
 @class JsonDocument;
 @class HistoryAndFavoritesControl;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface JsonPathSearchController : NSObject {
+@interface JsonPathSearchController : NSObject <SyntaxEditingFieldDelegate> {
     IBOutlet __weak JsonDocument* document;
     
     IBOutlet HistoryAndFavoritesControl *JSONPathHistoryFavorites;
-    IBOutlet NSTextView *JSONPathInput;
+    IBOutlet SyntaxEditingField *JSONPathInput;
     IBOutlet NSArrayController *JSONPathResultsController;
     IBOutlet NSTextField *JSONPathQueryStatus;
 }

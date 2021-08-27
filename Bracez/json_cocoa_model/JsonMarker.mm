@@ -63,11 +63,11 @@
 -(NSString*)locationAsText {
     if(!cachedLocationText) {
         if(line != -1) {
-            cachedLocationText = [NSString stringWithFormat:@"%@ @ %d", doc.displayName, line];
+            cachedLocationText = [NSString stringWithFormat:@"Line %d in %@", line, doc.displayName];
         } else {
             int row, col;
             [doc translateCoordinate:where toRow:&row col:&col];
-            cachedLocationText = [NSString stringWithFormat:@"%@ @ %d:%d", doc.displayName, row, col];
+            cachedLocationText = [NSString stringWithFormat:@"Pos %d:%d in %@", row, col, doc.displayName];
         }
     }
     return cachedLocationText;

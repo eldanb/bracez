@@ -29,6 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
         inWindow:(NSWindow *)window
         withCompletion:(void(^)(id favObject, NSError * __nullable error))completionHandler;
 
+-(id)newHistoryItemForHfControl:(HistoryAndFavoritesControl*)sender;
 
 @end
 
@@ -39,7 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
 -(NSString*)nameForItem:(id)favoriteItem;
 
 @property NSString *historyListName;
-@property BOOL disableHistory;
 @property IBOutlet NSTextField * __nullable boundField;
 @property IBOutlet NSTextView * __nullable boundTextView;
 @property NSArray *favoritesList;

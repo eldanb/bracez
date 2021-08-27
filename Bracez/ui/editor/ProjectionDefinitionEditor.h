@@ -10,12 +10,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class JsonDocument;
+
 @interface ProjectionDefinitionEditor : NSWindowController
 
 @property (readonly) ProjectionDefinition *editedProjection;
 
--(instancetype)initWithDefinition:(ProjectionDefinition*)editedDefinition;
-
+-(instancetype)initWithDefinition:(ProjectionDefinition*)editedDefinition
+                  previewDocument:(JsonDocument* __nullable)previewDocument;
 @end
 
 NS_ASSUME_NONNULL_END

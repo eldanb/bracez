@@ -49,6 +49,18 @@
     return self;
 }
 
+-(BOOL)isEqual:(id)other {
+    if(![other isKindOfClass:[ProjectionFieldDefinition class]]) {
+        return NO;
+    }
+    
+    ProjectionFieldDefinition *otherDef = other;
+    return [self.fieldTitle isEqualTo:otherDef.fieldTitle] &&
+           [self.expression isEqualTo:otherDef.expression] &&
+           ([self.formatterType isEqualTo:otherDef.formatterType] ||
+                (self.formatterType == nil && otherDef.formatterType == nil)); 
+}
+
 @end
 
 
@@ -126,6 +138,22 @@
     return YES;
 }
 
+-(BOOL)isEqual:(id)other {
+    if(![other isKindOfClass:[ProjectionDefinition class]]) {
+        return NO;
+    }
+    
+    ProjectionDefinition *otherDef = other;
+    if(![self.rowSelector isEqualTo:otherDef.rowSelector]) {
+        return NO;
+    }
+    
+    if(![self.fieldDefinitions isEqualToArray:otherDef.fieldDefinitions]) {
+        return NO;
+    }
+    
+    return YES;
+}
 
 @end
 
