@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(void)addProjection:(ProjectionFieldDefinition*)definition;
 -(void)removeProjectionAtIndex:(NSUInteger)index;
+-(void)insertProjection:(ProjectionFieldDefinition*)definition atIndex:(NSUInteger)index;
 
 -(BOOL)isEqual:(id __nullable)other;
 
@@ -35,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSString *rowSelector;
 
 @property (readonly) NSArray<ProjectionFieldDefinition*> *fieldDefinitions;
+
 
 @end
 

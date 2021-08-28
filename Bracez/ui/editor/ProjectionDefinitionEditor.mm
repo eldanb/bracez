@@ -8,13 +8,14 @@
 #import "ProjectionDefinitionEditor.h"
 #import "ProjectionTableController.h"
 
-@interface ProjectionDefinitionEditor () {
+@interface ProjectionDefinitionEditor () <NSTableViewDataSource> {
     ProjectionDefinition *_editedProjection;
     NSWindow* _overrideSheetParent;
     __weak IBOutlet NSTableView *projectionTable;
     IBOutlet ProjectionTableController *_projectionController;
     JsonDocument *_previewDocument;
     
+    __weak IBOutlet NSTableView *fieldListView;
     ProjectionDefinition *_previewedProjection;
     NSTimer *_refreshTimer;
 }
@@ -48,6 +49,7 @@
 
 -(void)awakeFromNib {
     [super awakeFromNib];
+    
     [projectionTable registerNib:[[NSNib alloc] initWithNibNamed:@"ProjectionTableCell" bundle:nil] forIdentifier:@"projectionCell"];
 
     _projectionController.projectedDocument = _previewDocument;
@@ -60,6 +62,49 @@
             self->_projectionController.projectionDefinition = self->_previewedProjection;
         }
     }];
+    
+    [fieldListView registerForDraggedTypes: [NSArray arrayWithObject: @"public.text"]];
 }
+
+
+-(id<NSPasteboardWriting>)tableView:(NSTableView *)tableView pasteboardWriterForRow:(NSInteger)row {
+    NSData *item = [NSKeyedArchiver archivedDataWithRootObject:[_editedProjection.fieldDefinitions objectAtIndex:row]
+                                            requiringSecureCoding:YES
+                                                            error:nil];
+    NSPasteboardItem *pboardItem = [[NSPasteboardItem alloc] init];
+    [pboardItem setPropertyList:@{ @"index": @(row), @"item": item } forType:@"public.text"];
+     
+    return pboardItem;
+}
+
+- (NSDragOperation)tableView:(NSTableView *)tableView validateDrop:(id<NSDraggingInfo>)info proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)dropOperation {
+
+    BOOL canDrop = row >= 0;
+    if(canDrop) {
+        return NSDragOperationMove;
+    } else {
+        return NSDragOperationNone;
+    }
+ }
+
+-(BOOL)tableView:(NSTableView *)tableView acceptDrop:(id<NSDraggingInfo>)info row:(NSInteger)row dropOperation:(NSTableViewDropOperation)dropOperation {
+    
+    if(dropOperation != NSDragOperationNone) {
+        NSNumber *orgIndex = [info.draggingPasteboard propertyListForType:@"public.text"][@"index"];
+        ProjectionFieldDefinition *item = [NSKeyedUnarchiver unarchivedObjectOfClass:[ProjectionFieldDefinition class]
+                                                           fromData:[info.draggingPasteboard propertyListForType:@"public.text"][@"item"]
+                                                              error:nil];
+        
+        [_editedProjection removeProjectionAtIndex:orgIndex.unsignedIntValue];
+        if(orgIndex.unsignedIntValue < row) {
+            row --;
+        }
+        [_editedProjection insertProjection:item atIndex:row];
+    
+        [fieldListView reloadData];
+    }
+    return YES;
+}
+
 
 @end

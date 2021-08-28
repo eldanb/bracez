@@ -352,6 +352,26 @@ static void onJqCompileError(void *ctxt, jv err) {
     [self findByJsonPathWithQuery:selectionController.currentPathAsJsonQuery];
 }
 
+- (IBAction)projectJsonPathResults:(id)sender {
+    ProjectionDefinition *jqProj = [[ProjectionDefinition alloc] init];
+    jqProj.rowSelector = self->jsonPathSearchController.searchPath;
+    
+    ProjectionFieldDefinition *projField = [[ProjectionFieldDefinition alloc] init];
+    projField.expression = @"$";
+    projField.fieldTitle = @"Result";
+    [jqProj addProjection:projField];
+    
+    ProjectionDefinitionEditor *editor = [[ProjectionDefinitionEditor alloc]
+                                          initWithDefinition:jqProj
+                                          previewDocument:self.document];
+    [self beginSheet:editor.window completionHandler:^(NSModalResponse returnCode) {
+        if(returnCode == NSModalResponseOK) {
+            self->guiModeControl.showProjectionView = YES;
+            [self setProjectionDefinition:editor.editedProjection];
+        }
+    }];
+}
+
 -(JsonDocument*)document {
     return (JsonDocument*)self.delegate;
 }
@@ -399,7 +419,9 @@ static void onJqCompileError(void *ctxt, jv err) {
                                           initWithDefinition:projectionTableController.projectionDefinition
                                           previewDocument:self.document];
     [self beginSheet:editor.window completionHandler:^(NSModalResponse returnCode) {
-        [self setProjectionDefinition:editor.editedProjection];
+        if(returnCode == NSModalResponseOK) {
+            [self setProjectionDefinition:editor.editedProjection];
+        }
     }];
 }
 

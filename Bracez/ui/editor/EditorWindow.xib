@@ -700,14 +700,14 @@
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <subviews>
                                                                             <box fixedFrame="YES" boxType="custom" borderWidth="0.0" cornerRadius="4" title="Box" id="sVf-Lx-oPF">
-                                                                                <rect key="frame" x="0.0" y="0.0" width="261" height="138"/>
+                                                                                <rect key="frame" x="0.0" y="0.0" width="261" height="79"/>
                                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                                 <view key="contentView" id="1Fz-IB-9v3">
-                                                                                    <rect key="frame" x="0.0" y="0.0" width="261" height="138"/>
+                                                                                    <rect key="frame" x="0.0" y="0.0" width="261" height="79"/>
                                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                     <subviews>
                                                                                         <box boxType="custom" borderType="none" borderWidth="0.0" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="QfS-bc-n5q">
-                                                                                            <rect key="frame" x="0.0" y="108" width="158" height="30"/>
+                                                                                            <rect key="frame" x="0.0" y="49" width="158" height="30"/>
                                                                                             <view key="contentView" id="R7Z-nc-be7">
                                                                                                 <rect key="frame" x="0.0" y="0.0" width="158" height="30"/>
                                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -761,44 +761,46 @@
                                                                                             </constraints>
                                                                                             <color key="fillColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                                                         </box>
-                                                                                        <box boxType="custom" cornerRadius="4" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="ydm-I5-Lnz">
-                                                                                            <rect key="frame" x="194" y="108" width="67" height="30"/>
-                                                                                            <view key="contentView" id="5ov-ga-xAz">
+                                                                                        <box ambiguous="YES" boxType="custom" cornerRadius="4" title="Box" translatesAutoresizingMaskIntoConstraints="NO" id="ydm-I5-Lnz">
+                                                                                            <rect key="frame" x="194" y="49" width="67" height="30"/>
+                                                                                            <view key="contentView" ambiguous="YES" id="5ov-ga-xAz">
                                                                                                 <rect key="frame" x="1" y="1" width="65" height="28"/>
                                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                                 <subviews>
-                                                                                                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="BKu-5Z-n4J">
-                                                                                                        <rect key="frame" x="0.0" y="-1" width="65" height="27"/>
-                                                                                                        <buttonCell key="cell" type="push" title="Search" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="93t-gr-EdM">
-                                                                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                                                            <font key="font" metaFont="smallSystem"/>
-                                                                                                        </buttonCell>
+                                                                                                    <customView ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZMb-5O-la8" customClass="ButtonWithMenu">
+                                                                                                        <rect key="frame" x="6" y="2" width="53" height="24"/>
+                                                                                                        <userDefinedRuntimeAttributes>
+                                                                                                            <userDefinedRuntimeAttribute type="string" keyPath="label" value="Search"/>
+                                                                                                        </userDefinedRuntimeAttributes>
                                                                                                         <connections>
-                                                                                                            <action selector="executeJsonPath:" target="J9G-cz-Plk" id="z3N-XW-fmj"/>
+                                                                                                            <action selector="executeJsonPath:" target="J9G-cz-Plk" id="7GM-Yl-07y"/>
+                                                                                                            <outlet property="menu" destination="9wJ-Wc-1Ef" id="b5d-dD-CBL"/>
                                                                                                         </connections>
-                                                                                                    </button>
+                                                                                                    </customView>
                                                                                                 </subviews>
                                                                                                 <constraints>
-                                                                                                    <constraint firstAttribute="trailing" secondItem="BKu-5Z-n4J" secondAttribute="trailing" constant="6" id="BN6-Gh-Po3"/>
-                                                                                                    <constraint firstItem="BKu-5Z-n4J" firstAttribute="centerY" secondItem="5ov-ga-xAz" secondAttribute="centerY" id="cHq-ai-vJG"/>
-                                                                                                    <constraint firstItem="BKu-5Z-n4J" firstAttribute="leading" secondItem="5ov-ga-xAz" secondAttribute="leading" constant="6" id="y7i-vM-8ap"/>
+                                                                                                    <constraint firstAttribute="trailing" secondItem="ZMb-5O-la8" secondAttribute="trailing" constant="6" id="4hu-nO-dPn"/>
+                                                                                                    <constraint firstItem="ZMb-5O-la8" firstAttribute="centerY" secondItem="5ov-ga-xAz" secondAttribute="centerY" id="5ZT-1f-DhF"/>
+                                                                                                    <constraint firstAttribute="bottom" secondItem="ZMb-5O-la8" secondAttribute="bottom" constant="2" id="9XT-iI-diH"/>
+                                                                                                    <constraint firstItem="ZMb-5O-la8" firstAttribute="top" secondItem="5ov-ga-xAz" secondAttribute="top" constant="2" id="XTG-72-RsS"/>
+                                                                                                    <constraint firstItem="ZMb-5O-la8" firstAttribute="leading" secondItem="5ov-ga-xAz" secondAttribute="leading" constant="6" id="jyo-fb-WWh"/>
                                                                                                 </constraints>
                                                                                             </view>
                                                                                             <color key="borderColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                                             <color key="fillColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                                                         </box>
                                                                                         <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Het-PW-6a4">
-                                                                                            <rect key="frame" x="0.0" y="0.0" width="261" height="108"/>
+                                                                                            <rect key="frame" x="0.0" y="0.0" width="261" height="49"/>
                                                                                             <clipView key="contentView" drawsBackground="NO" id="9IZ-fS-urd">
-                                                                                                <rect key="frame" x="0.0" y="0.0" width="261" height="108"/>
+                                                                                                <rect key="frame" x="0.0" y="0.0" width="261" height="49"/>
                                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                                 <subviews>
                                                                                                     <textView importsGraphics="NO" richText="NO" verticallyResizable="YES" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" id="ULP-Sd-xav" customClass="SyntaxEditingField">
-                                                                                                        <rect key="frame" x="0.0" y="0.0" width="261" height="108"/>
+                                                                                                        <rect key="frame" x="0.0" y="0.0" width="261" height="49"/>
                                                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                                                                        <size key="minSize" width="261" height="108"/>
+                                                                                                        <size key="minSize" width="261" height="49"/>
                                                                                                         <size key="maxSize" width="261" height="10000000"/>
                                                                                                         <color key="insertionPointColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                                                                         <connections>
@@ -817,7 +819,7 @@
                                                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                                             </scroller>
                                                                                             <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="BZJ-C3-8j1">
-                                                                                                <rect key="frame" x="245" y="0.0" width="16" height="108"/>
+                                                                                                <rect key="frame" x="245" y="0.0" width="16" height="49"/>
                                                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                                             </scroller>
                                                                                         </scrollView>
@@ -836,11 +838,11 @@
                                                                                 </view>
                                                                             </box>
                                                                             <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="0.0" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" id="SYd-5I-fIi">
-                                                                                <rect key="frame" x="0.0" y="148" width="261" height="212"/>
+                                                                                <rect key="frame" x="0.0" y="89" width="261" height="271"/>
                                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                                 <subviews>
                                                                                     <stackView distribution="fill" orientation="vertical" alignment="leading" spacing="0.0" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" horizontalCompressionResistancePriority="1" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Kxg-Dg-UGd">
-                                                                                        <rect key="frame" x="0.0" y="188" width="261" height="24"/>
+                                                                                        <rect key="frame" x="0.0" y="247" width="261" height="24"/>
                                                                                         <subviews>
                                                                                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" translatesAutoresizingMaskIntoConstraints="NO" id="Mux-ew-Apz">
                                                                                                 <rect key="frame" x="3" y="5" width="58" height="14"/>
@@ -863,16 +865,16 @@
                                                                                         </customSpacing>
                                                                                     </stackView>
                                                                                     <box verticalHuggingPriority="750" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="iHa-rn-SrH">
-                                                                                        <rect key="frame" x="0.0" y="185" width="96" height="5"/>
+                                                                                        <rect key="frame" x="0.0" y="244" width="96" height="5"/>
                                                                                     </box>
                                                                                     <scrollView verticalHuggingPriority="249" borderType="none" autohidesScrollers="YES" horizontalLineScroll="40" horizontalPageScroll="10" verticalLineScroll="40" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="x4a-44-eeN">
-                                                                                        <rect key="frame" x="0.0" y="0.0" width="240" height="187"/>
+                                                                                        <rect key="frame" x="0.0" y="0.0" width="240" height="246"/>
                                                                                         <clipView key="contentView" drawsBackground="NO" id="7L0-FR-TwL">
-                                                                                            <rect key="frame" x="0.0" y="0.0" width="240" height="187"/>
+                                                                                            <rect key="frame" x="0.0" y="0.0" width="240" height="246"/>
                                                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                             <subviews>
                                                                                                 <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="40" viewBased="YES" id="S9U-TC-mCd">
-                                                                                                    <rect key="frame" x="0.0" y="0.0" width="240" height="187"/>
+                                                                                                    <rect key="frame" x="0.0" y="0.0" width="240" height="246"/>
                                                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                                     <size key="intercellSpacing" width="17" height="0.0"/>
                                                                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -1319,6 +1321,17 @@
                 </menuItem>
             </items>
             <point key="canvasLocation" x="7" y="-470"/>
+        </menu>
+        <menu id="9wJ-Wc-1Ef">
+            <items>
+                <menuItem title="Project results..." id="PTj-f6-uah">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="projectJsonPathResults:" target="3" id="nlx-Yk-o17"/>
+                    </connections>
+                </menuItem>
+            </items>
+            <point key="canvasLocation" x="455" y="236"/>
         </menu>
     </objects>
     <resources>

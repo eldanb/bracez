@@ -17,6 +17,7 @@
 		B945F9311192E0A800DCFAAE /* JsonCocoaNode.mm in Sources */ = {isa = PBXBuildFile; fileRef = B945F9301192E0A800DCFAAE /* JsonCocoaNode.mm */; };
 		B945FD57119E832B00DCFAAE /* JsonDocument.mm in Sources */ = {isa = PBXBuildFile; fileRef = B945FD56119E832B00DCFAAE /* JsonDocument.mm */; };
 		B9496DF826D8A94100BF5B11 /* SyntaxEditingField.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9496DF726D8A94100BF5B11 /* SyntaxEditingField.mm */; };
+		B9496DFB26DA2A4100BF5B11 /* ButtonWithMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = B9496DFA26DA2A4100BF5B11 /* ButtonWithMenu.m */; };
 		B94D2A0112B2C316007B9DA2 /* JsonMarker.mm in Sources */ = {isa = PBXBuildFile; fileRef = B94D2A0012B2C316007B9DA2 /* JsonMarker.mm */; };
 		B9625D2F26AC93AF00214407 /* ProjectionDefinitionEditor.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9625D2D26AC909400214407 /* ProjectionDefinitionEditor.mm */; };
 		B9625D3026AC93B600214407 /* ProjectionDefinitionEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9625D2E26AC909400214407 /* ProjectionDefinitionEditor.xib */; };
@@ -94,6 +95,8 @@
 		B945FD56119E832B00DCFAAE /* JsonDocument.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = JsonDocument.mm; path = json_cocoa_model/JsonDocument.mm; sourceTree = "<group>"; };
 		B9496DF626D8A94100BF5B11 /* SyntaxEditingField.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SyntaxEditingField.h; sourceTree = "<group>"; };
 		B9496DF726D8A94100BF5B11 /* SyntaxEditingField.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SyntaxEditingField.mm; sourceTree = "<group>"; };
+		B9496DF926DA2A4100BF5B11 /* ButtonWithMenu.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ButtonWithMenu.h; sourceTree = "<group>"; };
+		B9496DFA26DA2A4100BF5B11 /* ButtonWithMenu.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ButtonWithMenu.m; sourceTree = "<group>"; };
 		B94D29FF12B2C316007B9DA2 /* JsonMarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsonMarker.h; path = json_cocoa_model/JsonMarker.h; sourceTree = "<group>"; };
 		B94D2A0012B2C316007B9DA2 /* JsonMarker.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = JsonMarker.mm; path = json_cocoa_model/JsonMarker.mm; sourceTree = "<group>"; };
 		B9625D2C26AC909400214407 /* ProjectionDefinitionEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProjectionDefinitionEditor.h; sourceTree = "<group>"; };
@@ -475,6 +478,8 @@
 				B9F8ACB526B41F9B00602302 /* FavoriteNameInputWindowConrtoller.xib */,
 				B9496DF626D8A94100BF5B11 /* SyntaxEditingField.h */,
 				B9496DF726D8A94100BF5B11 /* SyntaxEditingField.mm */,
+				B9496DF926DA2A4100BF5B11 /* ButtonWithMenu.h */,
+				B9496DFA26DA2A4100BF5B11 /* ButtonWithMenu.m */,
 			);
 			path = common;
 			sourceTree = "<group>";
@@ -626,6 +631,7 @@
 				B94D2A0112B2C316007B9DA2 /* JsonMarker.mm in Sources */,
 				B9625D2F26AC93AF00214407 /* ProjectionDefinitionEditor.mm in Sources */,
 				B9FC2B5025F90E0200484EA3 /* BracezPreferences.mm in Sources */,
+				B9496DFB26DA2A4100BF5B11 /* ButtonWithMenu.m in Sources */,
 				B9FC2B3725F90D6000484EA3 /* JsonTreeDataSource.mm in Sources */,
 				B9FC2B3825F90D6000484EA3 /* JSONWindow.mm in Sources */,
 				B9FC2B4225F90D6000484EA3 /* KvoAnimation.m in Sources */,

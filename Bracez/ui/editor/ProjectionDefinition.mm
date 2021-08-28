@@ -96,6 +96,10 @@
     [_fieldDefinitions addObject:definition];
 }
 
+-(void)insertProjection:(ProjectionFieldDefinition*)definition atIndex:(NSUInteger)index {
+    [_fieldDefinitions insertObject:definition atIndex:index];
+}
+
 -(void)removeProjectionAtIndex:(NSUInteger)index {
     [_fieldDefinitions removeObjectAtIndex:index];
 }
