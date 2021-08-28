@@ -19,8 +19,9 @@
         textEditor    = YES;
         treeEditor    = YES;
         verticalSplit = NO;
-        bookmarksList = YES;
+        jsonPathPanel = YES;
         projectionViewShown = NO;
+        showNavPanel = YES;
     }
     
     return self;
