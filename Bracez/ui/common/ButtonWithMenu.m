@@ -74,6 +74,8 @@
 }
 
 -(NSSize)intrinsicContentSize {
-    return _segmentedControl.intrinsicContentSize;
+    NSSize ret = _segmentedControl.intrinsicContentSize;
+    ret.width += 6;
+    return ret;
 }
 @end
