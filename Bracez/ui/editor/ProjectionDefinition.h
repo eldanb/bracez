@@ -10,6 +10,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 
+@class JsonDocument;
+
 @interface ProjectionFieldDefinition : NSObject <NSCopying, NSSecureCoding>
 
 -(BOOL)isEqual:(id __nullable)other;
@@ -29,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)addProjection:(ProjectionFieldDefinition*)definition;
 -(void)removeProjectionAtIndex:(NSUInteger)index;
 -(void)insertProjection:(ProjectionFieldDefinition*)definition atIndex:(NSUInteger)index;
+-(NSArray<ProjectionFieldDefinition*> *)suggestFieldsBasedOnDocument:(JsonDocument*)document;
 
 -(BOOL)isEqual:(id __nullable)other;
 

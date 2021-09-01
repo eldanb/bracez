@@ -21,6 +21,8 @@
 #import "ProjectionTableController.h"
 #import "ProjectionDefinitionEditor.h"
 
+#include <algorithm>
+
 extern "C" {
 #include "jq.h"
 }
@@ -356,10 +358,10 @@ static void onJqCompileError(void *ctxt, jv err) {
     ProjectionDefinition *jqProj = [[ProjectionDefinition alloc] init];
     jqProj.rowSelector = self->jsonPathSearchController.searchPath;
     
-    ProjectionFieldDefinition *projField = [[ProjectionFieldDefinition alloc] init];
-    projField.expression = @"$";
-    projField.fieldTitle = @"Result";
-    [jqProj addProjection:projField];
+    NSArray<ProjectionFieldDefinition*> *fields = [jqProj suggestFieldsBasedOnDocument:self.document];
+    for(ProjectionFieldDefinition* def in [fields subarrayWithRange:NSMakeRange(0, std::min((unsigned long)5, fields.count))]) {
+        [jqProj addProjection:def];
+    }
     
     ProjectionDefinitionEditor *editor = [[ProjectionDefinitionEditor alloc]
                                           initWithDefinition:jqProj

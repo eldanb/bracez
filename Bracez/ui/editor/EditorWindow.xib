@@ -185,7 +185,7 @@
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                                    <size key="minSize" width="405" height="362"/>
+                                                                    <size key="minSize" width="239" height="362"/>
                                                                     <size key="maxSize" width="762" height="10000000"/>
                                                                     <color key="insertionPointColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                                     <connections>
@@ -410,7 +410,7 @@
                                                     <tabViewItems>
                                                         <tabViewItem label="Problems" identifier="problemsList" id="630">
                                                             <view key="view" autoresizesSubviews="NO" id="633">
-                                                                <rect key="frame" x="0.0" y="0.0" width="261" height="360"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="261" height="487"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <subviews>
                                                                     <scrollView fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="46" horizontalPageScroll="10" verticalLineScroll="46" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="181" userLabel="ProblemsScroll">
@@ -793,7 +793,7 @@
                                                                                             <rect key="frame" x="0.0" y="29" width="261" height="49"/>
                                                                                             <clipView key="contentView" drawsBackground="NO" id="9IZ-fS-urd">
                                                                                                 <rect key="frame" x="0.0" y="0.0" width="261" height="49"/>
-                                                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                                <autoresizingMask key="autoresizingMask"/>
                                                                                                 <subviews>
                                                                                                     <textView importsGraphics="NO" richText="NO" verticallyResizable="YES" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" id="ULP-Sd-xav" customClass="SyntaxEditingField">
                                                                                                         <rect key="frame" x="0.0" y="0.0" width="261" height="49"/>
@@ -871,7 +871,7 @@
                                                                                         <rect key="frame" x="0.0" y="98" width="240" height="246"/>
                                                                                         <clipView key="contentView" drawsBackground="NO" id="7L0-FR-TwL">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="240" height="246"/>
-                                                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                            <autoresizingMask key="autoresizingMask"/>
                                                                                             <subviews>
                                                                                                 <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="40" viewBased="YES" id="S9U-TC-mCd">
                                                                                                     <rect key="frame" x="0.0" y="0.0" width="240" height="246"/>

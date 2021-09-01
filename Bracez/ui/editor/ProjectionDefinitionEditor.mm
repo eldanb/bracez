@@ -7,6 +7,9 @@
 
 #import "ProjectionDefinitionEditor.h"
 #import "ProjectionTableController.h"
+#import "JsonPathExpressionCompiler.hpp"
+#import "NSString+WStringUtils.h"
+
 
 @interface ProjectionDefinitionEditor () <NSTableViewDataSource> {
     ProjectionDefinition *_editedProjection;
@@ -106,5 +109,5 @@
     return YES;
 }
 
-
 @end
+
