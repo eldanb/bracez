@@ -255,7 +255,12 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
         selectionRange = NSMakeRange(0, textEditor.textStorage.length);
     }
     
-    [self.document reindentStartingAt:TextCoordinate(selectionRange.location) len:selectionRange.length];
+    TextCoordinate newEndLocation;
+    [self.document reindentStartingAt:TextCoordinate(selectionRange.location) len:selectionRange.length suggestNewEndLocation:&newEndLocation];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self->selectionController selectTextRange:NSMakeRange(newEndLocation, 0)];
+    });
+
 }
 
 static void onJqCompileError(void *ctxt, jv err) {

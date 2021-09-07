@@ -63,6 +63,7 @@ public:
                         TextCoordinate aOffsetStart, TextLength aLen, int indentSize);
     
     const std::wstring &getIndented();
+    TextLength getIndentedLength();
     
 private:
     void reindent();

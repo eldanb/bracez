@@ -13,6 +13,8 @@
 
 #include <random>
 #include <algorithm>
+#include <iostream>
+#include <iomanip>
 
 std::vector<std::wstring> suggestFields(const JsonPathResultNodeList &nodeList);
 
@@ -102,7 +104,9 @@ std::vector<std::wstring> suggestFields(const JsonPathResultNodeList &nodeList);
 }
 
 -(void)addProjection:(ProjectionFieldDefinition*)definition {
+    [self willChangeValueForKey:@"fieldDefinitions"];
     [_fieldDefinitions addObject:definition];
+    [self didChangeValueForKey:@"fieldDefinitions"];
 }
 
 -(void)insertProjection:(ProjectionFieldDefinition*)definition atIndex:(NSUInteger)index {
@@ -227,6 +231,28 @@ double calculateEntropy(It start, It end) {
     return -entSum;
 }
 
+std::map<std::wstring, double> FIELD_BOOST_VALUES = {
+    { L"time", 1.2 },
+    { L"timestamp", 1.2 },
+    { L"id", 1.2 },
+    { L"name", 1.2 },
+    { L"title", 1.2 },
+    { L"description", 1.2 }
+};
+
+double calculateBoostForField(const std::wstring &field) {
+    wstringstream parsed(field);
+    double ret = 1;
+    std::wstring tok;
+    while(std::getline(parsed, tok, L'.')) {
+        auto iter = FIELD_BOOST_VALUES.find(tok);
+        if(iter != FIELD_BOOST_VALUES.end()) {
+            ret *= iter->second;
+        }
+    }
+    
+    return ret;
+}
 
 std::vector<std::wstring> suggestFields(const JsonPathResultNodeList &nodeList) {
     // Sample row nodes
@@ -252,18 +278,38 @@ std::vector<std::wstring> suggestFields(const JsonPathResultNodeList &nodeList) 
         });
     });
         
-    // Sort by quantized number of fields
+    // Compute scores
     struct field_stats_record {
         std::wstring field;
         int nOccurences;
         double entropy;
+        double boost;
         
-        double score() const { return nOccurences * entropy; }
+        double score() const { return pow(nOccurences, 1.5) * entropy * boost; }
+        
+        std::wstring debugDescription() const {
+            wstringstream ret;
+            ret << left << std::setw(40) << field
+                << std::setw(6) << nOccurences
+                << std::setw(6) <<  std::setprecision(2) << entropy
+                << std::setw(6) <<  std::setprecision(2) << boost
+            << L"[" << std::setw(6) <<  std::setprecision(2) << score() << L"]";
+                
+            
+            return ret.str();
+        }
     };
     
     std::vector<field_stats_record> field_stats;
     std::transform(valuesForFields.begin(), valuesForFields.end(), std::back_inserter(field_stats), [](const decltype(valuesForFields)::value_type &e) {
-        return field_stats_record { e.first, (int)e.second.size(), calculateEntropy(e.second.begin(), e.second.end()) };
+        field_stats_record ret = {
+            e.first,
+            (int)e.second.size(),
+            calculateEntropy(e.second.begin(), e.second.end()),
+            calculateBoostForField(e.first)
+        };
+        
+        return ret;
     });
     
     std::sort(field_stats.begin(), field_stats.end(), [](field_stats_record &field_a, field_stats_record &field_b) {
@@ -272,6 +318,7 @@ std::vector<std::wstring> suggestFields(const JsonPathResultNodeList &nodeList) 
 
     std::vector<std::wstring> results;
     std::transform(field_stats.begin(), field_stats.end(), std::back_inserter(results), [](const field_stats_record &e) {
+        NSLog(@"%ls\n", (const unichar*)e.debugDescription().c_str());
         return e.field;
     });
     

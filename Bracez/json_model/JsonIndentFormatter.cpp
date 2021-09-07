@@ -43,6 +43,14 @@ JsonIndentFormatter::JsonIndentFormatter(const std::wstring &text,
     endOffset = startOffset + aLen;
 }
 
+TextLength JsonIndentFormatter::getIndentedLength() {
+    if(!output.length()) {
+        reindent();
+    }
+
+    return endOffset - startOffset;
+}
+
 const std::wstring &JsonIndentFormatter::getIndented() {
     if(!output.length()) {
         reindent();
@@ -59,6 +67,7 @@ void JsonIndentFormatter::reindent() {
         skipInputWhitespace();
     }
             
+    TextCoordinate lastIndented = startOffset;
     while(!tokStreamAndCo.tokenStream.EOS() &&
             tokStreamAndCo.tokenStream.Peek().locBegin < endOffset) {
         json::Token tok = tokStreamAndCo.tokenStream.Get();
@@ -97,7 +106,10 @@ void JsonIndentFormatter::reindent() {
                 break;
             
         }
+        
+        lastIndented = tok.locEnd;
     }
+    endOffset = lastIndented;
 }
 
 void JsonIndentFormatter::skipInputWhitespace() {

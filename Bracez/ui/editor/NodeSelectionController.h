@@ -91,6 +91,9 @@
 
 -(NSString*)currentPathAsJsonQuery;
 
+-(void)selectTextRange:(NSRange)range;
+
+
 @property (weak) IBOutlet ProjectionTableController *projectionTableDs;
 
 @end

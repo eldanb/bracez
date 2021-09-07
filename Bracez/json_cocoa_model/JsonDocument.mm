@@ -357,18 +357,24 @@ private:
 }
 
 
--(void)reindentStartingAt:(TextCoordinate)aOffsetStart len:(TextLength)aLen {
+-(void)reindentStartingAt:(TextCoordinate)aOffsetStart len:(TextLength)aLen suggestNewEndLocation:(TextCoordinate*)newEndLocation {
     std::wstring jsonText = _textStorage.string.cStringWstring;
     
+    // Get line start
     int row, col;
     linesAndBookmarks.getCoordinateRowCol(aOffsetStart, row, col);
     aOffsetStart = aOffsetStart - (col - 1);
+    aLen += (col - 1);
     
     JsonIndentFormatter fixer(jsonText, *file, linesAndBookmarks, aOffsetStart, aLen,
                               [BracezPreferences sharedPreferences].indentSize);
     const std::wstring &indent = fixer.getIndented();
+    aLen = fixer.getIndentedLength();
     
     [_textStorage replaceCharactersInRange:NSMakeRange(aOffsetStart, aLen) withString:[NSString stringWithWstring:indent]];
+    if(newEndLocation) {
+        *newEndLocation = aOffsetStart + indent.length();
+    }
 }
 
 -(int)suggestIdentForNewLineAt:(TextCoordinate)where {
@@ -465,14 +471,12 @@ private:
 -(void)notifyNodeInvalidated:(json::JsonFile*)aSender nodePath:(const json::JsonPath&)nodePath {
     
     JsonCocoaNode *node = self.rootNode;
-    JsonCocoaNode *parentNode = nil;
     
     for(auto iter = nodePath.begin(); iter != nodePath.end(); iter++) {
-        parentNode = node;
         node = [node objectInChildrenAtIndex:*iter];
     }
     
-    [node reloadFromElement: ((json::ContainerNode*)parentNode.proxiedElement)->GetChildAt(nodePath.back())];
+    [node reloadFromElement: ((json::ContainerNode*)node.proxiedElement->GetParent())->GetChildAt(nodePath.back())];
     
     [self notifySemanticModelUpdated];
 }

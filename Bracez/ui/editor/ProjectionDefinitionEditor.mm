@@ -109,5 +109,39 @@
     return YES;
 }
 
+- (void) suggestedFieldSelected:(id)sender {
+    NSMenuItem *fieldItem = sender;
+    ProjectionFieldDefinition *def = fieldItem.representedObject;
+    [_editedProjection addProjection:def];
+}
+
+- (IBAction)suggestFields:(id)sender {
+    NSMenu *suggestionMenu = [[NSMenu alloc] initWithTitle:@"Field suggestions"];
+    for(ProjectionFieldDefinition *def in [_editedProjection suggestFieldsBasedOnDocument:_previewDocument]) {
+        NSMenuItem *suggestionItem = [[NSMenuItem alloc] initWithTitle:def.expression
+                                                                action:@selector(suggestedFieldSelected:)
+                                                         keyEquivalent:@""];
+        suggestionItem.representedObject = def;
+        suggestionItem.target = self;
+        [suggestionMenu addItem:suggestionItem];
+        
+        if(suggestionMenu.itemArray.count > 20) {
+            break;
+        }
+    }
+    
+    if(!suggestionMenu.itemArray.count) {
+        NSMenuItem *placeholder = [[NSMenuItem alloc] initWithTitle:@"No suggestions"
+                                                             action:nil
+                                                      keyEquivalent:@""];
+        placeholder.enabled = NO;
+        [suggestionMenu addItem:placeholder];
+    }
+        
+    [NSMenu popUpContextMenu:suggestionMenu
+                   withEvent:[NSApplication sharedApplication].currentEvent
+                     forView:sender];
+}
+
 @end
 
