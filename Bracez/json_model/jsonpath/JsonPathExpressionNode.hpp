@@ -29,6 +29,7 @@ class JsonPathExpressionNodeEvalResult {
 public:
     JsonPathResultNodeList nodeList;
     bool getTruthValue() const;
+    double getNumericValue() const;
     
 public:
     std::list<std::shared_ptr<json::Node>> localOwners;
@@ -36,6 +37,8 @@ public:
 public:
     static JsonPathExpressionNodeEvalResult booleanResult(bool r);
     static JsonPathExpressionNodeEvalResult nullResult();
+    static JsonPathExpressionNodeEvalResult doubleResult(double result);
+    static JsonPathExpressionNodeEvalResult stringResult(const std::wstring &result);
 } ;
 
 
@@ -201,6 +204,12 @@ namespace JsonPathExpressionNodeBinaryOperators {
     expr_operand_value relLte(expr_operand_value opLeft,  expr_operand_value opRight);
     expr_operand_value relGt(expr_operand_value opLeft,  expr_operand_value opRight);
     expr_operand_value relLt(expr_operand_value opLeft,  expr_operand_value opRight);
+
+    expr_operand_value div(expr_operand_value opLeft,  expr_operand_value opRight);
+    expr_operand_value mul(expr_operand_value opLeft,  expr_operand_value opRight);
+    expr_operand_value mod(expr_operand_value opLeft,  expr_operand_value opRight);
+    expr_operand_value add(expr_operand_value opLeft,  expr_operand_value opRight);
+    expr_operand_value subtract(expr_operand_value opLeft,  expr_operand_value opRight);
 }
 
 class JsonPathExpressionNodeBinaryOp: public JsonPathExpressionNode {
@@ -235,7 +244,7 @@ public:
     virtual JsonPathExpressionNodeEvalResult evaluate(JsonPathExpressionNodeEvalContext &context);
 
 private:
-    std::unique_ptr<json::Node> _literal;
+    std::shared_ptr<json::Node> _literal;
 };
 
 #endif /* JsonPathExpressionNode_hpp */

@@ -323,13 +323,14 @@ auto subscript_qualify =
 
 auto filter_by_expression =
     define("filter_expression",
-        all([](JsonPathExpressionNodeNavPipelineStep **result, JsonPathExpressionNode *expression) {
-            *result = new JsonPathExpressionNodeFilterChildren(
-                        std::unique_ptr<JsonPathExpressionNode>(expression));
-        },
-        (discard(start_subscript_token) &&
-         discard(open_filter_paren_token) &&
-         strict("filter_expression", reference("expression", &expression) &&
+        (attempt(discard(start_subscript_token) &&
+         discard(open_filter_paren_token)) &&
+         strict("filter_expression",
+            all([](JsonPathExpressionNodeNavPipelineStep **result, JsonPathExpressionNode *expression) {
+                    *result = new JsonPathExpressionNodeFilterChildren(
+                                std::unique_ptr<JsonPathExpressionNode>(expression));
+                },
+                reference("expression", &expression) &&
                 discard(close_filter_paren_token) &&
                 discard(end_subscript_token)))));
 
@@ -337,7 +338,7 @@ auto filter_by_expression =
 
 const auto navigation_step =
     dot_qualify ||
-    attempt(filter_by_expression) ||
+    filter_by_expression ||
     subscript_qualify;
     
 struct construct_navigation_pipe {
@@ -372,7 +373,8 @@ constexpr auto binary_operator(P1 const &opand, P2 const &opor) {
                       opor, strict("operand", opand))));
 }
 
-constexpr auto operator_parser(const char *operatorSyntax, expr_operand_value(*operatorFn)(expr_operand_value, expr_operand_value)) {
+constexpr auto operator_parser(const char *operatorSyntax,
+                               expr_operand_value(*operatorFn)(expr_operand_value, expr_operand_value)) {
     return all([operatorFn](binary_operator_fn *result, std::string opname) {
         *result = operatorFn;
     }, tokenise(accept_str(operatorSyntax)));
@@ -386,11 +388,22 @@ auto expression_terminal = attempt(navigation_pipe) ||
                             attempt(discard(open_paren_token) && reference("expression", &expression) && discard(close_paren_token)) ||
                             json_literal;
 
-auto negate_expression = attempt(expression_terminal) ||
+auto muldiv_expression = binary_operator(expression_terminal,
+                                        attempt(operator_parser("*", JsonPathExpressionNodeBinaryOperators::mul)) ||
+                                        attempt(operator_parser("/", JsonPathExpressionNodeBinaryOperators::div)) ||
+                                        operator_parser("%", JsonPathExpressionNodeBinaryOperators::mod)
+                                        );
+
+auto addsub_expression = binary_operator(muldiv_expression,
+                                        attempt(operator_parser("+", JsonPathExpressionNodeBinaryOperators::add)) ||
+                                        operator_parser("-", JsonPathExpressionNodeBinaryOperators::subtract)
+                                        );
+
+auto negate_expression = attempt(addsub_expression) ||
                         all([](JsonPathExpressionNode **result, JsonPathExpressionNode *operand) {
                             *result = new JsonPathExpressionNodeNegateOp(std::unique_ptr<JsonPathExpressionNode>(operand));
-                            }, discard(logical_negate_token) && expression_terminal);
-                                      
+                            }, discard(logical_negate_token) && addsub_expression);
+
 auto rel_expression = binary_operator(negate_expression,
                                         attempt(operator_parser(">=", JsonPathExpressionNodeBinaryOperators::relGte)) ||
                                         attempt(operator_parser("<=", JsonPathExpressionNodeBinaryOperators::relLte)) ||

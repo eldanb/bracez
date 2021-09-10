@@ -15,12 +15,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(void)syntaxEditingFieldChanged:(SyntaxEditingField*)sender;
 
-@end
+@optional
+-(void)syntaxEditingField:(SyntaxEditingField*)sender checkSyntax:(NSString*)text;
 
+@end
 
 @interface SyntaxEditingField : NSTextView
 
--(void)markErrorRange:(NSRange)errorRange;
+-(void)markErrorRange:(NSRange)errorRange withErrorMessage:(NSString*)message;
 -(void)clearErrorRanges;
 
 @property (weak) IBOutlet id<SyntaxEditingFieldDelegate> syntaxEditingFieldDelegate;

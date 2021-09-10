@@ -36,7 +36,7 @@
 }
 
 - (void)showErrorResult:(NSString*)error forRange:(NSRange)range {
-    [JSONPathInput markErrorRange:range];
+    [JSONPathInput markErrorRange:range withErrorMessage:error];
     
     JSONPathQueryStatus.textColor = [NSColor redColor];
     JSONPathQueryStatus.font = [NSFont monospacedSystemFontOfSize:[NSFont smallSystemFontSize] weight:NSFontWeightRegular];

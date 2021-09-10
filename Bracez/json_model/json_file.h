@@ -88,6 +88,8 @@ namespace json
       virtual bool ValueEquals(Node *other) const = 0;
       virtual bool ValueLt(Node *other) const = 0;
        
+    virtual std::wstring ToString() const = 0;
+
    private:
       friend class Reader;
       friend class ArrayNode;
@@ -169,6 +171,9 @@ namespace json
       // DOM-only modifiers
       void DomAddElementNode(Node *aElement);
       
+       virtual std::wstring ToString() const {
+           return L"[Array]";
+       }
    protected:
        virtual void StoreChildAt(int aIdx, Node *aNode);
 
@@ -229,6 +234,10 @@ namespace json
 
       bool ValueEquals(Node *other) const;
 
+       virtual std::wstring ToString() const {
+           return L"[Object]";
+       }
+
    protected:
       void AdjustChildRangeAt(int aIdx, long aDiff);
       virtual void StoreChildAt(int aIdx, Node *aNode);
@@ -261,6 +270,10 @@ namespace json
       
       void CalculateJsonTextRepresentation(std::wstring &aDest) const;
 
+       virtual std::wstring ToString() const {
+           return L"[Document]";
+       }
+
    protected:
        virtual void StoreChildAt(int aIdx, Node *aNode);
 
@@ -286,6 +299,11 @@ namespace json
 
       bool ValueEquals(Node *other) const;
       bool ValueLt(Node *other) const;
+
+       
+       virtual std::wstring ToString() const {
+           return L"null";
+       }
 
    protected:  
 
@@ -314,11 +332,25 @@ namespace json
            ValueNode<ValueType, NodeTypeConst> *otherTyped = dynamic_cast< ValueNode<ValueType, NodeTypeConst> *>(other);
            return otherTyped && otherTyped->GetValue() > GetValue();
        }
+       
+       std::wstring ToString() const {
+           return computeString(value);
+       }
 
    protected:
 
    private:
       ValueType value;
+       
+      template<class T>
+       static std::wstring computeString(const T &t) { return std::to_wstring(t); }
+
+       template<>
+       static std::wstring computeString(const std::wstring &t) { return t; }
+
+       template<>
+       static std::wstring computeString(const bool &t) { return t ? L"true" : L"false"; }
+
    } ;
 
    typedef ValueNode<std::wstring, ntString> StringNode;

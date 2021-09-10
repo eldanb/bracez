@@ -11,6 +11,22 @@
 using convert_type = std::codecvt_utf8<wchar_t>;
 static std::wstring_convert<convert_type, wchar_t> wide_utf8_converter;
 
+
+class JsonPathEvalError : public std::exception {
+public:
+    JsonPathEvalError(const char *what): _what(what) {
+        
+    }
+    
+    const char *what() const noexcept {
+        return _what;
+    }
+    
+private:
+    const char* _what;
+} ;
+
+
 bool JsonPathExpressionNodeEvalResult::getTruthValue() const {
     if(!nodeList.size()) {
         return false;
@@ -44,6 +60,24 @@ bool JsonPathExpressionNodeEvalResult::getTruthValue() const {
     return true;
 }
 
+double JsonPathExpressionNodeEvalResult::getNumericValue() const {
+    if(!nodeList.size()) {
+        throw JsonPathEvalError("Invalid numeric value");
+    }
+    
+    json::Node *node = nodeList.front();
+    if(!node) {
+        throw JsonPathEvalError("Invalid numeric value");
+    }
+    
+    json::NumberNode *numNode = dynamic_cast<json::NumberNode*>(node);
+    if(!numNode) {
+        throw JsonPathEvalError("Invalid numeric value");
+    }
+
+    return numNode->GetValue();
+}
+
 JsonPathExpressionNodeEvalResult JsonPathExpressionNodeEvalResult::booleanResult(bool r) {
     JsonPathExpressionNodeEvalResult ret;
     
@@ -62,6 +96,28 @@ JsonPathExpressionNodeEvalResult JsonPathExpressionNodeEvalResult::nullResult() 
     
     ret.localOwners.push_back(std::shared_ptr<json::Node>(b));
     ret.nodeList.push_back(b);
+    
+    return ret;
+}
+
+JsonPathExpressionNodeEvalResult JsonPathExpressionNodeEvalResult::doubleResult(double result) {
+    JsonPathExpressionNodeEvalResult ret;
+    
+    json::NumberNode *n = new json::NumberNode(result);
+    
+    ret.localOwners.push_back(std::shared_ptr<json::Node>(n));
+    ret.nodeList.push_back(n);
+    
+    return ret;
+}
+
+JsonPathExpressionNodeEvalResult JsonPathExpressionNodeEvalResult::stringResult(const std::wstring &result) {
+    JsonPathExpressionNodeEvalResult ret;
+    
+    json::StringNode *n = new json::StringNode(result);
+    
+    ret.localOwners.push_back(std::shared_ptr<json::Node>(n));
+    ret.nodeList.push_back(n);
     
     return ret;
 }
@@ -398,8 +454,25 @@ JsonPathExpressionNodeIndexByExpression::JsonPathExpressionNodeIndexByExpression
 }
 
 void JsonPathExpressionNodeIndexByExpression::stepFromNode(JsonPathExpressionNodeEvalContext &context,
-                                                           JsonPathExpressionNodeEvalResult &node) {
+                                                           JsonPathExpressionNodeEvalResult &nodes) {
+    json::Node *oldContext = context.contextNode;
+
+    JsonPathResultNodeList resultList;
+    std::for_each(nodes.nodeList.begin(),
+                  nodes.nodeList.end(),
+                  [this, &context, &resultList](json::Node* node) {
+                        json::ArrayNode *arrNode = dynamic_cast<json::ArrayNode*>(node);
+                        if(arrNode) {
+                            context.contextNode = arrNode;
+                            double filterRes = _filter->evaluate(context).getNumericValue();
+                            if(filterRes < arrNode->GetChildCount()) {
+                                resultList.push_back(arrNode->GetChildAt((int)filterRes));
+                            }
+                        }
+                  });
     
+    nodes.nodeList = std::move(resultList);
+    context.contextNode = oldContext;
 }
 
 
@@ -477,6 +550,7 @@ void JsonPathExpressionNodeJsonLiteral::inspect(std::ostream &out) const {
 JsonPathExpressionNodeEvalResult JsonPathExpressionNodeJsonLiteral::evaluate(JsonPathExpressionNodeEvalContext &context) {
     JsonPathExpressionNodeEvalResult ret;
     ret.nodeList.push_back(_literal.get());
+    ret.localOwners.push_back(_literal);
     return ret;
 }
 
@@ -536,6 +610,19 @@ namespace JsonPathExpressionNodeBinaryOperators {
         }
     }
 
+    template<class F>
+    inline expr_operand_value operate_on_numbers(expr_operand_value opLeft,  expr_operand_value opRight, const F &f) {
+        if(opLeft.nodeList.size() == 1 && opRight.nodeList.size() == 1) {
+            json::NumberNode *numLeft = dynamic_cast<json::NumberNode*>(opLeft.nodeList.front());
+            json::NumberNode *numRight = dynamic_cast<json::NumberNode*>(opRight.nodeList.front());
+            if(numLeft && numRight) {
+                return expr_operand_value::doubleResult(f(numLeft->GetValue(), numRight->GetValue()));
+            }
+        }
+
+        return expr_operand_value::nullResult();
+    }
+
 
     expr_operand_value relGte(expr_operand_value opLeft,  expr_operand_value opRight) {
         return operate_on_scalars(opLeft, opRight, [](json::Node *left, json::Node *right) {
@@ -558,6 +645,50 @@ namespace JsonPathExpressionNodeBinaryOperators {
     expr_operand_value relLt(expr_operand_value opLeft,  expr_operand_value opRight) {
         return operate_on_scalars(opLeft, opRight, [](json::Node *left, json::Node *right) {
             return expr_operand_value::booleanResult(left->ValueLt(right));
+        });
+    }
+
+    expr_operand_value div(expr_operand_value opLeft,  expr_operand_value opRight) {
+        return operate_on_numbers(opLeft, opRight, [](double left, double right) {
+            return left / right;
+        });
+    }
+
+    expr_operand_value mod(expr_operand_value opLeft,  expr_operand_value opRight) {
+        return operate_on_numbers(opLeft, opRight, [](double left, double right) {
+            return (long)left % (long)right;
+        });
+    }
+
+
+    expr_operand_value mul(expr_operand_value opLeft,  expr_operand_value opRight) {
+        return operate_on_numbers(opLeft, opRight, [](double left, double right) {
+            return left * right;
+        });
+    }
+    
+    expr_operand_value add(expr_operand_value opLeft,  expr_operand_value opRight) {
+        if(opLeft.nodeList.size() == 1 && opRight.nodeList.size() == 1) {
+            json::NumberNode *numLeft = dynamic_cast<json::NumberNode*>(opLeft.nodeList.front());
+            if(numLeft) {
+                json::NumberNode *numRight = dynamic_cast<json::NumberNode*>(opRight.nodeList.front());
+                if(numRight) {
+                    return expr_operand_value::doubleResult(numLeft->GetValue() + numRight->GetValue());
+                }
+            }
+            
+            json::StringNode *strLeft = dynamic_cast<json::StringNode*>(opLeft.nodeList.front());
+            if(strLeft) {
+                return expr_operand_value::stringResult(strLeft->GetValue() + opRight.nodeList.front()->ToString());
+            }
+        }
+         
+        return expr_operand_value::nullResult();
+    }
+    
+    expr_operand_value subtract(expr_operand_value opLeft,  expr_operand_value opRight) {
+        return operate_on_numbers(opLeft, opRight, [](double left, double right) {
+            return left - right;
         });
     }
 

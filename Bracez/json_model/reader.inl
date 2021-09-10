@@ -122,7 +122,7 @@ inline TokenStream::TokenStream(InputStream& aInputStream,
     
     
     memset(charClassLookup, Token::CHAR_CLASS_UNKNOWN, 256);
-    const char lNumericChars[] = "0123456789.eE-+";
+    const char lNumericChars[] = "0123456789";
     for(const char *lChar = lNumericChars; *lChar; lChar++) charClassLookup[*lChar] = Token::CHAR_CLASS_NUMERIC;
     
     
@@ -340,12 +340,60 @@ inline void TokenStream::MatchNumber()
 {
    currentToken.sValue.clear();
       
-   while (inputStream.EOS() == false &&
-          charClassLookup[inputStream.Peek()] == Token::CHAR_CLASS_NUMERIC)
+    enum NumParseState {
+        START,
+        BODY,
+        EXPONENT_START,
+        EXPONENT
+    } state = START;
+    
+    
+   while (inputStream.EOS() == false)
    {
-       updateLineCol(inputStream.Peek());
-      currentToken.sValue.push_back(inputStream.Get());   
-   }
+       char curChar = inputStream.Peek();
+       auto curCharClass = charClassLookup[inputStream.Peek()];
+       bool validChar = true;
+
+       switch(state) {
+           case START:
+               if(curChar == '-' || curCharClass == Token::CHAR_CLASS_NUMERIC) {
+                   state = BODY;
+               } else {
+                   validChar = false;
+               }
+               break;
+               
+           case BODY:
+               if(curChar == 'e' || curChar == 'E') {
+                   state = EXPONENT_START;
+               } else
+               if( curCharClass != Token::CHAR_CLASS_NUMERIC && curChar != '.') {
+                   validChar = false;
+               }
+               break;
+
+           case EXPONENT_START:
+               if(curChar == '+' || curChar == '-' || curCharClass == Token::CHAR_CLASS_NUMERIC) {
+                   state = EXPONENT_START;
+               } else {
+                   validChar = false;
+               }
+               break;
+
+           case EXPONENT:
+               if(curCharClass != Token::CHAR_CLASS_NUMERIC) {
+                   validChar = false;
+               }
+               break;
+       }
+             
+       if(validChar) {
+           updateLineCol(inputStream.Peek());
+           currentToken.sValue.push_back(inputStream.Get());
+       } else {
+           break;
+       }
+    }
     
     currentToken.sOrgText = currentToken.sValue;
 }

@@ -6,8 +6,17 @@
 //
 
 #import "SyntaxEditingField.h"
+#include <Carbon/Carbon.h>
 
 @implementation SyntaxEditingField
+
+-(void)didChangeText {
+    if([(NSObject*)self.syntaxEditingFieldDelegate respondsToSelector:@selector(syntaxEditingField:checkSyntax:)]) {
+        [self.syntaxEditingFieldDelegate syntaxEditingField:self
+                                                checkSyntax:self.textStorage.string];
+    }
+    [super didChangeText];
+}
 
 
 -(instancetype)initWithCoder:(NSCoder *)coder {
@@ -34,10 +43,11 @@
     return self;
 }
 
--(void)markErrorRange:(NSRange)errorRange {
+-(void)markErrorRange:(NSRange)errorRange withErrorMessage:(NSString*)message {
     [self.textStorage addAttributes:@{
         NSUnderlineStyleAttributeName: @(NSUnderlineStyleThick),
-        NSUnderlineColorAttributeName: [NSColor redColor]
+        NSUnderlineColorAttributeName: [NSColor redColor],
+        NSToolTipAttributeName: message
     }
                               range:errorRange];
 }
@@ -59,10 +69,17 @@
         if(self.syntaxEditingFieldDelegate) {
             [self.syntaxEditingFieldDelegate syntaxEditingFieldChanged:self];
         }
-    } else {
+    } else
+    if(event.keyCode == kVK_Tab) {
+        if(event.modifierFlags & NSEventModifierFlagShift) {
+            [self.window selectPreviousKeyView:nil];
+        } else {
+            [self.window selectNextKeyView:nil];
+        }
+    } else
+    {
         [super keyDown:event];
     }
 }
-
 
 @end

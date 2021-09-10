@@ -9,9 +9,11 @@
 #import "ProjectionTableController.h"
 #import "JsonPathExpressionCompiler.hpp"
 #import "NSString+WStringUtils.h"
+#import "BracezPreferences.h"
+#import "SyntaxEditingField.h"
+#import "JsonPathExpressionCompiler.hpp"
 
-
-@interface ProjectionDefinitionEditor () <NSTableViewDataSource> {
+@interface ProjectionDefinitionEditor () <NSTableViewDataSource, SyntaxEditingFieldDelegate> {
     ProjectionDefinition *_editedProjection;
     NSWindow* _overrideSheetParent;
     __weak IBOutlet NSTableView *projectionTable;
@@ -21,6 +23,9 @@
     __weak IBOutlet NSTableView *fieldListView;
     ProjectionDefinition *_previewedProjection;
     NSTimer *_refreshTimer;
+    
+    __unsafe_unretained IBOutlet SyntaxEditingField *rowSelectorEditor;
+    __unsafe_unretained IBOutlet SyntaxEditingField *fieldExpressionEditor;
 }
 
 @end
@@ -60,15 +65,23 @@
     _refreshTimer = [NSTimer scheduledTimerWithTimeInterval:0.5
                                                     repeats:YES
                                                       block:^(NSTimer * _Nonnull timer) {
-        if(![self->_previewedProjection isEqualTo:self->_editedProjection]) {
-            self->_previewedProjection = [self->_editedProjection copy];
-            self->_projectionController.projectionDefinition = self->_previewedProjection;
-        }
+        [self updatePreviewedProjection];
     }];
     
     [fieldListView registerForDraggedTypes: [NSArray arrayWithObject: @"public.text"]];
+    
+    BracezPreferences *prefs = [BracezPreferences sharedPreferences];
+    rowSelectorEditor.font = prefs.editorFont;
+    fieldExpressionEditor.font = prefs.editorFont;
 }
 
+
+-(void)updatePreviewedProjection {
+    if(![_previewedProjection isEqualTo:_editedProjection]) {
+        _previewedProjection = [_editedProjection copy];
+        _projectionController.projectionDefinition = _previewedProjection;
+    }
+}
 
 -(id<NSPasteboardWriting>)tableView:(NSTableView *)tableView pasteboardWriterForRow:(NSInteger)row {
     NSData *item = [NSKeyedArchiver archivedDataWithRootObject:[_editedProjection.fieldDefinitions objectAtIndex:row]
@@ -143,5 +156,27 @@
                      forView:sender];
 }
 
+- (void)syntaxEditingFieldChanged:(nonnull SyntaxEditingField *)sender {
+    [self updatePreviewedProjection];
+}
+
+-(void)syntaxEditingField:(SyntaxEditingField *)sender checkSyntax:(NSString *)text {
+    [sender clearErrorRanges];
+    try {
+        JsonPathExpression::compile([text cStringWstring]);
+    } catch(const parse_error &e) {
+        [sender markErrorRange: NSMakeRange(
+                                           std::min(e._offset_start, sender.textStorage.length-1),
+                                           std::max(e._len, (size_t)1))
+              withErrorMessage: [NSString stringWithFormat:@"Invalid JSON path syntax: %s; expected: %s",
+                               e._what.c_str(), e._expecting.c_str()]
+         ];
+        
+    } catch(const std::exception &e) {
+        [sender markErrorRange: NSMakeRange(0, sender.textStorage.length)
+              withErrorMessage: [NSString stringWithFormat:@"Invalid JSON path syntax: %s", e.what()]
+         ];
+    }
+}
 @end
 
