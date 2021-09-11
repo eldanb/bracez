@@ -68,9 +68,11 @@ struct is_oneof {
         return "isOneof";
     }
 };
+
+constexpr is_oneof is_name_start = {"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_"};
 constexpr is_oneof is_name_char = {"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789"};
 
-auto const name_token = define("name", tokenise(some(accept(is_name_char))));
+auto const name_token = define("name", tokenise(accept(is_name_start) && many(accept(is_name_char))));
 auto const wildcard_token = tokenise(accept(is_char('*')));
 
 auto const qualify_token = tokenise(accept(is_char('.')));
@@ -380,13 +382,43 @@ constexpr auto operator_parser(const char *operatorSyntax,
     }, tokenise(accept_str(operatorSyntax)));
 }
 
+auto exprlist =        sep_by(all([](std::list<std::unique_ptr<JsonPathExpressionNode>> *result,
+                                     JsonPathExpressionNode* expr) {
+                                    result->push_back(std::unique_ptr<JsonPathExpressionNode>(expr));
+                                  },
+                                  reference("expression", &expression)),
+                              tokenise(accept(is_char(','))));
+
+auto function_call = define("function_call", all([](JsonPathExpressionNode** result,
+                                                    std::string fnName,
+                                                    std::list<std::unique_ptr<JsonPathExpressionNode>> &args) {
+                                                        auto fnIter = JsonPathExpressionFunction::functions.find(fnName);
+                                                        if(fnIter == JsonPathExpressionFunction::functions.end()) {
+                                                            throw JsonPathEvalError("Unknown function.");
+                                                        }
+                                                        
+                                                        if(fnIter->second->arity() != args.size()) {
+                                                            throw JsonPathEvalError("Invalid argument count for function.");
+                                                        }
+    
+                                                        *result = new JsonPathExpressionNodeFunctionInvoke(fnIter->second, std::move(args));
+                                                 },
+                                                 name_token,
+                                                 discard(open_paren_token) &&
+                                                      strict("function_call",
+                                                             exprlist && discard(close_paren_token))));
+
+
+                                     
 auto json_literal = all([](JsonPathExpressionNode** result, json::Node* node) {
                             *result = new JsonPathExpressionNodeJsonLiteral(std::unique_ptr<json::Node>(node));
                         }, parse_json());
 
 auto expression_terminal = attempt(navigation_pipe) ||
+                            function_call ||
                             attempt(discard(open_paren_token) && reference("expression", &expression) && discard(close_paren_token)) ||
                             json_literal;
+                            
 
 auto muldiv_expression = binary_operator(expression_terminal,
                                         attempt(operator_parser("*", JsonPathExpressionNodeBinaryOperators::mul)) ||
@@ -446,14 +478,12 @@ JsonPathExpression JsonPathExpression::compile(const std::string &inputExpressio
     return compile(wide_utf8_converter.from_bytes(inputExpression));
 }
 
-
 void assertResult(json::Node* doc, const std::wstring &expression, const JsonPathResultNodeList &expectedResult) {
     JsonPathResultNodeList result = JsonPathExpression::compile(L"$.store.*").execute(doc);
     if(result != expectedResult) {
-        throw "Invalid result";
+        throw JsonPathEvalError("Invalid result type");
     }
 }
-
 
 void testjsonpathexpressionparser() {
     wstringstream docText(L"{"
@@ -508,7 +538,7 @@ void testjsonpathexpressionparser() {
     JsonPathExpression::compile(L"$..book[?(@.category == \"fiction\" || @.category == \"reference\")]").execute(doc);
     JsonPathResultNodeList result16 = JsonPathExpression::compile(L"$..book[?(@.price < 10)]").execute(doc);
     JsonPathResultNodeList result17 = JsonPathExpression::compile(L"$..book[?(@.price > $.expensive)]").execute(doc);
-    
+    JsonPathResultNodeList result18 = JsonPathExpression::compile(L"$..book[(cos($.expensive))]").execute(doc);
     // TODO
     //JsonPathResultNodeList result18 = JsonPathExpression::compile(L"$..book[?(@.author =~ /.*Tolkien/i)]").execute(doc);
     

@@ -7,24 +7,11 @@
 
 #include "JsonPathExpressionNode.hpp"
 #include "JsonPathExpressionCompiler.hpp"
+#include <math.h>
 
 using convert_type = std::codecvt_utf8<wchar_t>;
 static std::wstring_convert<convert_type, wchar_t> wide_utf8_converter;
 
-
-class JsonPathEvalError : public std::exception {
-public:
-    JsonPathEvalError(const char *what): _what(what) {
-        
-    }
-    
-    const char *what() const noexcept {
-        return _what;
-    }
-    
-private:
-    const char* _what;
-} ;
 
 
 bool JsonPathExpressionNodeEvalResult::getTruthValue() const {
@@ -554,6 +541,27 @@ JsonPathExpressionNodeEvalResult JsonPathExpressionNodeJsonLiteral::evaluate(Jso
     return ret;
 }
 
+
+JsonPathExpressionNodeFunctionInvoke::JsonPathExpressionNodeFunctionInvoke(JsonPathExpressionFunction *fn,  std::list<std::unique_ptr<JsonPathExpressionNode>> &&args)
+ : _fn(fn), _args(std::move(args))
+{
+    
+}
+    
+void JsonPathExpressionNodeFunctionInvoke::inspect(std::ostream &out) const {
+    
+}
+
+JsonPathExpressionNodeEvalResult JsonPathExpressionNodeFunctionInvoke::evaluate(JsonPathExpressionNodeEvalContext &context) {
+    std::list<JsonPathExpressionNodeEvalResult> evaledArgs;
+    
+    std::transform(_args.begin(), _args.end(), back_inserter(evaledArgs), [&context](std::unique_ptr<JsonPathExpressionNode>& arg) {
+        return arg->evaluate(context);
+    });
+    
+    return _fn->invoke(evaledArgs);
+}
+
 namespace JsonPathExpressionNodeBinaryOperators {
 
     expr_operand_value logicalOr(expr_operand_value opLeft,  expr_operand_value opRight) {
@@ -693,3 +701,124 @@ namespace JsonPathExpressionNodeBinaryOperators {
     }
 
 }
+
+template <class T>
+inline T convertToArgType(const JsonPathExpressionNodeEvalResult &r) {
+    throw JsonPathEvalError("Cannot convert parameter");
+}
+
+template<>
+inline const JsonPathExpressionNodeEvalResult &convertToArgType<const JsonPathExpressionNodeEvalResult&>(const JsonPathExpressionNodeEvalResult &r) {
+    return r;
+}
+
+template<>
+inline double convertToArgType<double>(const JsonPathExpressionNodeEvalResult &r) {
+    return r.getNumericValue();
+}
+
+
+template<class ... FuncArgs>
+class JsonPathExpressionFunctionAdapter: public JsonPathExpressionFunction {
+public:
+    typedef std::function<JsonPathExpressionNodeEvalResult (FuncArgs...)> FunctionType;
+    
+    JsonPathExpressionFunctionAdapter(const FunctionType &f): _function(f) {}
+    JsonPathExpressionFunctionAdapter(JsonPathExpressionFunctionAdapter<FuncArgs...> &&o): _function(o.f) {}
+        
+    virtual JsonPathExpressionNodeEvalResult invoke(const std::list<JsonPathExpressionNodeEvalResult> &args) {
+        auto iter = args.begin();
+        return call_builder<sizeof...(FuncArgs),
+                            decltype(iter),
+                            FunctionType>::call(_function, iter, args.end());
+    }
+    
+    virtual int arity() {
+        return sizeof...(FuncArgs);
+    }
+    
+private:
+    template<size_t AC, class Iter, class Func, class ... ArgTypes>
+    class call_builder {
+    public:
+        inline static typename Func::result_type call(const Func &f, Iter &s, const Iter &e, const ArgTypes& ... args) {
+            return call_builder<AC-1, Iter, Func, ArgTypes..., typename Iter::value_type>::call(f, s, e, args..., *(s++));
+        }
+    };
+
+    template<class Iter, class Func, class ... ArgTypes>
+    class call_builder<0, Iter, Func, ArgTypes...> {
+    public:
+        inline static typename Func::result_type call(const Func &f, Iter &s, const Iter &e, const ArgTypes& ... args) {
+            if(s != e) {
+                throw JsonPathEvalError("Improper number of arguments passed to function.");
+            }
+            
+            return f(convertToArgType<FuncArgs>(args)...);
+        }
+    };
+    
+    FunctionType _function;
+};
+
+
+template<class ... A>
+JsonPathExpressionFunction* AdaptToJsonPathExpressionFunction(const std::function<JsonPathExpressionNodeEvalResult (A...)> &f)  {
+    return new JsonPathExpressionFunctionAdapter<A...>(f);
+}
+
+template<class ... A>
+JsonPathExpressionFunction* AdaptToJsonPathExpressionFunction(JsonPathExpressionNodeEvalResult (*f)(A...))  {
+    return new JsonPathExpressionFunctionAdapter<A...>(f);
+}
+
+namespace JsonPathExpressionNodeFunctions {
+    JsonPathExpressionNodeEvalResult cos(double arg) {
+        return JsonPathExpressionNodeEvalResult::doubleResult(::cos(arg));
+    }
+
+    JsonPathExpressionNodeEvalResult sin(double arg) {
+        return JsonPathExpressionNodeEvalResult::doubleResult(::sin(arg));
+    }
+
+    JsonPathExpressionNodeEvalResult tan(double arg) {
+        return JsonPathExpressionNodeEvalResult::doubleResult(::tan(arg));
+    }
+
+    JsonPathExpressionNodeEvalResult acos(double arg) {
+        return JsonPathExpressionNodeEvalResult::doubleResult(::acos(arg));
+    }
+
+    JsonPathExpressionNodeEvalResult asin(double arg) {
+        return JsonPathExpressionNodeEvalResult::doubleResult(::asin(arg));
+    }
+
+    JsonPathExpressionNodeEvalResult atan(double arg) {
+        return JsonPathExpressionNodeEvalResult::doubleResult(::atan(arg));
+    }
+
+    JsonPathExpressionNodeEvalResult log(double arg) {
+        return JsonPathExpressionNodeEvalResult::doubleResult(::log(arg));
+    }
+
+    JsonPathExpressionNodeEvalResult exp(double arg) {
+        return JsonPathExpressionNodeEvalResult::doubleResult(::exp(arg));
+    }
+
+    JsonPathExpressionNodeEvalResult pow(double arg1, double arg2) {
+        return JsonPathExpressionNodeEvalResult::doubleResult(::pow(arg1, arg2));
+    }
+
+}
+
+std::map<std::string, JsonPathExpressionFunction*> JsonPathExpressionFunction::functions {
+    { "cos", AdaptToJsonPathExpressionFunction(JsonPathExpressionNodeFunctions::cos) },
+    { "sin", AdaptToJsonPathExpressionFunction(JsonPathExpressionNodeFunctions::sin) },
+    { "tan", AdaptToJsonPathExpressionFunction(JsonPathExpressionNodeFunctions::tan) },
+    { "acos", AdaptToJsonPathExpressionFunction(JsonPathExpressionNodeFunctions::acos) },
+    { "asin", AdaptToJsonPathExpressionFunction(JsonPathExpressionNodeFunctions::asin) },
+    { "atan", AdaptToJsonPathExpressionFunction(JsonPathExpressionNodeFunctions::atan) },
+    { "log", AdaptToJsonPathExpressionFunction(JsonPathExpressionNodeFunctions::log) },
+    { "exp", AdaptToJsonPathExpressionFunction(JsonPathExpressionNodeFunctions::exp) },
+    { "pow", AdaptToJsonPathExpressionFunction(JsonPathExpressionNodeFunctions::pow) }
+};

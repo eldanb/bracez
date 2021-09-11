@@ -25,6 +25,8 @@
 -(void)loadDefaults {
     BracezPreferences *prefs = [BracezPreferences sharedPreferences];
     JSONPathInput.font = prefs.editorFont;
+    testjsonpathexpressionparser();
+
 }
 
 -(void)startJsonPathQuery:(NSString*)query {

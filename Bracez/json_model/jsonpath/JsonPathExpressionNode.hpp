@@ -12,6 +12,7 @@
 #include <memory>
 #include <string>
 #include <sstream>
+#include <map>
 
 #include "reader.h"
 
@@ -212,6 +213,7 @@ namespace JsonPathExpressionNodeBinaryOperators {
     expr_operand_value subtract(expr_operand_value opLeft,  expr_operand_value opRight);
 }
 
+
 class JsonPathExpressionNodeBinaryOp: public JsonPathExpressionNode {
 public:
     JsonPathExpressionNodeBinaryOp(std::unique_ptr<JsonPathExpressionNode> &&leftMost, std::list<binary_operator_and_operand> &operands);
@@ -246,5 +248,42 @@ public:
 private:
     std::shared_ptr<json::Node> _literal;
 };
+
+
+class JsonPathExpressionFunction {
+public:
+    virtual JsonPathExpressionNodeEvalResult invoke(const std::list<JsonPathExpressionNodeEvalResult> &args) = 0;
+    virtual int arity() = 0;
+
+    static std::map<std::string, JsonPathExpressionFunction*> functions;
+};
+
+class JsonPathExpressionNodeFunctionInvoke: public JsonPathExpressionNode {
+public:
+    JsonPathExpressionNodeFunctionInvoke(JsonPathExpressionFunction *fn, std::list<std::unique_ptr<JsonPathExpressionNode>> &&args);
+    
+    virtual void inspect(std::ostream &out) const;
+    virtual JsonPathExpressionNodeEvalResult evaluate(JsonPathExpressionNodeEvalContext &context);
+
+private:
+    JsonPathExpressionFunction *_fn;
+    std::list<std::unique_ptr<JsonPathExpressionNode>> _args;
+};
+
+class JsonPathEvalError : public std::exception {
+public:
+    JsonPathEvalError(const char *what): _what(what) {
+        
+    }
+    
+    const char *what() const noexcept {
+        return _what;
+    }
+    
+private:
+    const char* _what;
+} ;
+
+
 
 #endif /* JsonPathExpressionNode_hpp */
