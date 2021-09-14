@@ -32,6 +32,9 @@ public:
     bool getTruthValue() const;
     double getNumericValue() const;
     
+    inline operator double () const { return getNumericValue(); }
+    inline operator bool () const { return getTruthValue(); }
+
 public:
     std::list<std::shared_ptr<json::Node>> localOwners;
     

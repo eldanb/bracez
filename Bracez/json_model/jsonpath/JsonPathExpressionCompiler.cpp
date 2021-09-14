@@ -478,6 +478,12 @@ JsonPathExpression JsonPathExpression::compile(const std::string &inputExpressio
     return compile(wide_utf8_converter.from_bytes(inputExpression));
 }
 
+bool JsonPathExpression::isValidIdentifier(const std::wstring &input) {
+    string_stream_range strrange(input);
+    auto i = strrange.first;
+    return name_token(i, strrange, nullptr, (void*)nullptr) && i == strrange.last;
+}
+
 void assertResult(json::Node* doc, const std::wstring &expression, const JsonPathResultNodeList &expectedResult) {
     JsonPathResultNodeList result = JsonPathExpression::compile(L"$.store.*").execute(doc);
     if(result != expectedResult) {
@@ -538,7 +544,7 @@ void testjsonpathexpressionparser() {
     JsonPathExpression::compile(L"$..book[?(@.category == \"fiction\" || @.category == \"reference\")]").execute(doc);
     JsonPathResultNodeList result16 = JsonPathExpression::compile(L"$..book[?(@.price < 10)]").execute(doc);
     JsonPathResultNodeList result17 = JsonPathExpression::compile(L"$..book[?(@.price > $.expensive)]").execute(doc);
-    JsonPathResultNodeList result18 = JsonPathExpression::compile(L"$..book[(cos($.expensive))]").execute(doc);
+    JsonPathResultNodeList result18 = JsonPathExpression::compile(L"$..book[(pow(2, $.expensive))]").execute(doc);
     // TODO
     //JsonPathResultNodeList result18 = JsonPathExpression::compile(L"$..book[?(@.author =~ /.*Tolkien/i)]").execute(doc);
     

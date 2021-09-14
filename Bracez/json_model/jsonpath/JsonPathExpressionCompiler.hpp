@@ -22,6 +22,7 @@ public:
 public:
     static JsonPathExpression compile(const std::wstring &inputExpression);
     static JsonPathExpression compile(const std::string &inputExpression);
+    static bool isValidIdentifier(const std::wstring &input);
     
     JsonPathExpression(JsonPathExpression &&expr) : _rootNode(std::move(expr._rootNode)) {}
     JsonPathExpression() {}

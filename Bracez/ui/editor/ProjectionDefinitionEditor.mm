@@ -162,20 +162,22 @@
 
 -(void)syntaxEditingField:(SyntaxEditingField *)sender checkSyntax:(NSString *)text {
     [sender clearErrorRanges];
-    try {
-        JsonPathExpression::compile([text cStringWstring]);
-    } catch(const parse_error &e) {
-        [sender markErrorRange: NSMakeRange(
-                                           std::min(e._offset_start, sender.textStorage.length-1),
-                                           std::max(e._len, (size_t)1))
-              withErrorMessage: [NSString stringWithFormat:@"Invalid JSON path syntax: %s; expected: %s",
-                               e._what.c_str(), e._expecting.c_str()]
-         ];
-        
-    } catch(const std::exception &e) {
-        [sender markErrorRange: NSMakeRange(0, sender.textStorage.length)
-              withErrorMessage: [NSString stringWithFormat:@"Invalid JSON path syntax: %s", e.what()]
-         ];
+    if(text.length) {
+        try {
+            JsonPathExpression::compile([text cStringWstring]);
+        } catch(const parse_error &e) {
+            [sender markErrorRange: NSMakeRange(
+                                               std::min(e._offset_start, sender.textStorage.length-1),
+                                               std::max(e._len, (size_t)1))
+                  withErrorMessage: [NSString stringWithFormat:@"Invalid JSON path syntax: %s; expected: %s",
+                                   e._what.c_str(), e._expecting.c_str()]
+             ];
+            
+        } catch(const std::exception &e) {
+            [sender markErrorRange: NSMakeRange(0, sender.textStorage.length)
+                  withErrorMessage: [NSString stringWithFormat:@"Invalid JSON path syntax: %s", e.what()]
+             ];
+        }
     }
 }
 @end

@@ -202,8 +202,11 @@ static void walkPathsForNode(const json::Node *node, const std::wstring &pathToN
         if(maxDepth > 0) {
             std::for_each(objNode->Begin(), objNode->End(),
                           [&callback, maxDepth, &pathToNode](const json::ObjectNode::Member &member) {
+                                    std::wstring navPath = JsonPathExpression::isValidIdentifier(member.name) ?
+                                                                std::wstring(L".") + member.name :
+                                                                std::wstring(L"[\"") + member.name + std::wstring(L"\"]");
                                     walkPathsForNode(member.node.get(),
-                                                     pathToNode + L"." + member.name,
+                                                     pathToNode + navPath,
                                                      maxDepth-1, callback);
                             });
         }

@@ -214,7 +214,7 @@ JsonIndentationContext JsonIndentationContext::approximateWithDocument(const jso
     linesAndBookmarks.getCoordinateRowCol(aOffset, row, col);
     
     TextCoordinate lineStartCoord = aOffset - (col-1);
-    const json::Node *startNode = file.FindNodeContaining(lineStartCoord, nullptr);
+    const json::Node *startNode = file.FindNodeContaining(lineStartCoord, nullptr, true);
     
     std::vector<int> indentLevels;
     
