@@ -25,6 +25,7 @@
 -(void)loadDefaults {
     BracezPreferences *prefs = [BracezPreferences sharedPreferences];
     JSONPathInput.font = prefs.editorFont;
+    
     testjsonpathexpressionparser();
 
 }
@@ -66,7 +67,7 @@
         
         nodeList = expr.execute(document.rootNode.proxiedElement, &opts);
         
-        JSONPathQueryStatus.textColor = [NSColor blackColor];
+        JSONPathQueryStatus.textColor = [NSColor labelColor];
         JSONPathQueryStatus.font = [NSFont systemFontOfSize:[NSFont smallSystemFontSize]];
         JSONPathQueryStatus.stringValue = [NSString stringWithFormat:@"%ld results", nodeList.size()];
     } catch(const parse_error &e) {

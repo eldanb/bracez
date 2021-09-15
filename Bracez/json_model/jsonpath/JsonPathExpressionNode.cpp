@@ -773,44 +773,6 @@ JsonPathExpressionFunction* AdaptToJsonPathExpressionFunction(R (*f)(A...))  {
     return new JsonPathExpressionFunctionAdapter<R, A...>(f);
 }
 
-namespace JsonPathExpressionNodeFunctions {
-    JsonPathExpressionNodeEvalResult cos(double arg) {
-        return JsonPathExpressionNodeEvalResult::doubleResult(::cos(arg));
-    }
-
-    JsonPathExpressionNodeEvalResult sin(double arg) {
-        return JsonPathExpressionNodeEvalResult::doubleResult(::sin(arg));
-    }
-
-    JsonPathExpressionNodeEvalResult tan(double arg) {
-        return JsonPathExpressionNodeEvalResult::doubleResult(::tan(arg));
-    }
-
-    JsonPathExpressionNodeEvalResult acos(double arg) {
-        return JsonPathExpressionNodeEvalResult::doubleResult(::acos(arg));
-    }
-
-    JsonPathExpressionNodeEvalResult asin(double arg) {
-        return JsonPathExpressionNodeEvalResult::doubleResult(::asin(arg));
-    }
-
-    JsonPathExpressionNodeEvalResult atan(double arg) {
-        return JsonPathExpressionNodeEvalResult::doubleResult(::atan(arg));
-    }
-
-    JsonPathExpressionNodeEvalResult log(double arg) {
-        return JsonPathExpressionNodeEvalResult::doubleResult(::log(arg));
-    }
-
-    JsonPathExpressionNodeEvalResult exp(double arg) {
-        return JsonPathExpressionNodeEvalResult::doubleResult(::exp(arg));
-    }
-
-    JsonPathExpressionNodeEvalResult pow(double arg1, double arg2) {
-        return JsonPathExpressionNodeEvalResult::doubleResult(::pow(arg1, arg2));
-    }
-
-}
 
 std::map<std::string, JsonPathExpressionFunction*> JsonPathExpressionFunction::functions {
     { "cos", AdaptToJsonPathExpressionFunction<double,double>(::cos) },

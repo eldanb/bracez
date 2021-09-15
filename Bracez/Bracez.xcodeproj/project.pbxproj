@@ -11,6 +11,7 @@
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		B9264D9812A2D7C00037AD39 /* JsonFileListenerObjCBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9264D9712A2D7C00037AD39 /* JsonFileListenerObjCBridge.mm */; };
+		B92F119126F1D26200954698 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B92F119026F1D26200954698 /* UniformTypeIdentifiers.framework */; };
 		B934AD19121C7503005B06D6 /* NSIndexPathAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = B934AD18121C7502005B06D6 /* NSIndexPathAdditions.m */; };
 		B945F9001192DAC800DCFAAE /* reader.inl in Resources */ = {isa = PBXBuildFile; fileRef = B945F8FB1192DAC800DCFAAE /* reader.inl */; };
 		B945F91C1192DDAC00DCFAAE /* json_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B945F91B1192DDAC00DCFAAE /* json_file.cpp */; };
@@ -83,6 +84,7 @@
 		8D1107320486CEB800E47090 /* Bracez.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bracez.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9264D9612A2D7C00037AD39 /* JsonFileListenerObjCBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsonFileListenerObjCBridge.h; path = json_cocoa_model/JsonFileListenerObjCBridge.h; sourceTree = "<group>"; };
 		B9264D9712A2D7C00037AD39 /* JsonFileListenerObjCBridge.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = JsonFileListenerObjCBridge.mm; path = json_cocoa_model/JsonFileListenerObjCBridge.mm; sourceTree = "<group>"; };
+		B92F119026F1D26200954698 /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UniformTypeIdentifiers.framework; path = System/Library/Frameworks/UniformTypeIdentifiers.framework; sourceTree = SDKROOT; };
 		B934AD17121C7502005B06D6 /* NSIndexPathAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSIndexPathAdditions.h; path = Util/NSIndexPathAdditions.h; sourceTree = "<group>"; };
 		B934AD18121C7502005B06D6 /* NSIndexPathAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NSIndexPathAdditions.m; path = Util/NSIndexPathAdditions.m; sourceTree = "<group>"; };
 		B945F8FA1192DAC800DCFAAE /* reader.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.h; name = reader.h; path = json_model/reader.h; sourceTree = "<group>"; tabWidth = 4; usesTabs = 0; };
@@ -211,6 +213,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B92F119126F1D26200954698 /* UniformTypeIdentifiers.framework in Frameworks */,
 				B99D0DD725BC989C0006EA1F /* libjq.a in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				B99B5A7311C6DF0000A33231 /* QuartzCore.framework in Frameworks */,
@@ -281,6 +284,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B92F119026F1D26200954698 /* UniformTypeIdentifiers.framework */,
 				B99D0DD625BC98810006EA1F /* libjq.a */,
 				B99D0DD125BC98600006EA1F /* libjq.1.dylib */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,

@@ -21,6 +21,8 @@
 #import "ProjectionTableController.h"
 #import "ProjectionDefinitionEditor.h"
 
+#include <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+
 #include <algorithm>
 
 extern "C" {
@@ -33,6 +35,8 @@ extern "C" {
     IBOutlet GuiModeControl *guiModeControl;
     IBOutlet ProjectionTableController *projectionTableController;
     IBOutlet HistoryAndFavoritesControl *projectionDefinitionsHistory;
+    
+    BOOL hasValidJqResult;
 }
 
 @end
@@ -109,7 +113,7 @@ extern "C" {
     
     jqQueryInput.font = prefs.editorFont;
     jqQueryResult.font = prefs.editorFont;
-    
+
     [jsonPathSearchController loadDefaults];
 }
 
@@ -271,6 +275,44 @@ static void onJqCompileError(void *ctxt, jv err) {
     [outArray addObject:[NSString stringWithCString:errCStr encoding:NSUTF8StringEncoding]];
 }
 
+- (IBAction)saveJqQueryResults:(id)sender {
+    NSSavePanel *panel = [NSSavePanel savePanel];
+    [panel setAllowedContentTypes:@[UTTypeText, UTTypeJSON]];
+    panel.allowsOtherFileTypes = YES;
+    if([panel runModal] == NSModalResponseOK) {
+        NSData *resultData = [jqQueryResult.textStorage.string dataUsingEncoding:NSUTF8StringEncoding];
+        [resultData writeToURL:panel.URL atomically:YES];
+    }
+}
+
+
+- (IBAction)jqQueryResultsToNewTab:(id)sender {
+
+    [self executeJqQuery:sender];
+    
+    if(hasValidJqResult) {
+        NSError *err = nil;
+        JsonDocument *newDoc = [[JsonDocument alloc] init];
+
+        [newDoc readFromData:[jqQueryResult.textStorage.string dataUsingEncoding:NSUTF8StringEncoding]
+                      ofType:@"application/json"
+                       error:&err];
+         if(err) {
+            [NSAlert alertWithError:err];
+            return;
+        }
+
+        [newDoc reindentStartingAt:(TextCoordinate)0
+                               len:newDoc.textStorage.string.length
+             suggestNewEndLocation:nil];
+
+        [[NSDocumentController sharedDocumentController] addDocument:newDoc];
+        [newDoc makeWindowControllers];
+        [newDoc showWindows];
+    }
+}
+
+
 - (IBAction)executeJqQuery:(id)sender {
     NSString *docText = self.document.textStorage.string;
     
@@ -282,6 +324,8 @@ static void onJqCompileError(void *ctxt, jv err) {
                                                 NSForegroundColorAttributeName: [NSColor systemRedColor],
                                                 NSFontAttributeName: jqQueryResult.font
                                             }]];
+        hasValidJqResult = NO;
+        
     } else {
         jq_state *state = jq_init();
         
@@ -299,6 +343,8 @@ static void onJqCompileError(void *ctxt, jv err) {
                                                     NSForegroundColorAttributeName: [NSColor systemRedColor],
                                                     NSFontAttributeName: jqQueryResult.font
                                                 }]];
+            
+            hasValidJqResult = NO;
         } else {
             NSMutableString *resultText = [NSMutableString string];
             
@@ -315,9 +361,11 @@ static void onJqCompileError(void *ctxt, jv err) {
             
             NSAttributedString *resultAS = [[NSAttributedString alloc] initWithString:resultText
                                                                            attributes:@{
+                                                                               NSForegroundColorAttributeName: [BracezPreferences sharedPreferences].editorColorDefault,
                                                                                NSFontAttributeName: jqQueryResult.font
                                                                            }];
             [jqQueryResult.textStorage setAttributedString:resultAS];
+            hasValidJqResult = YES;
         }
         
         jq_teardown(&state);
