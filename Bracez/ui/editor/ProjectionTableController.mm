@@ -59,7 +59,48 @@
 }
 @end
 
+@interface ProjectionColumnSortDescriptor : NSSortDescriptor {
+    ProjectionTableColumn *_byColumn;
+}
 
+-(BOOL)isNode:(Node*)left lessThanNode:(Node*)right;
+
+@end
+
+@implementation ProjectionColumnSortDescriptor
+
++(ProjectionColumnSortDescriptor*)forColumn:(ProjectionTableColumn*)column
+                                  ascending:(BOOL)ascending {
+    ProjectionColumnSortDescriptor *ret = [[ProjectionColumnSortDescriptor alloc] initWithKey:column.title
+                                                                                    ascending:ascending];
+    
+    ret->_byColumn = column;
+    
+    return ret;
+}
+
+-(id)copyWithZone:(NSZone *)zone {
+    ProjectionColumnSortDescriptor *ret = [super copyWithZone:zone];
+    ret->_byColumn = _byColumn;
+    return ret;
+}
+
+-(ProjectionColumnSortDescriptor*)reversedSortDescriptor {
+    return [ProjectionColumnSortDescriptor forColumn:self->_byColumn
+                                           ascending:!self.ascending];
+}
+
+-(NSComparisonResult)compareNode:(Node*)left toNode:(Node*)right {
+    NSString *leftNodeValue = [JsonCocoaNode nodeForElement:[_byColumn resolveColumnInRow:left] withName:@""].nodeValue;
+    NSString *rightNodeValue = [JsonCocoaNode nodeForElement:[_byColumn resolveColumnInRow:right] withName:@""].nodeValue;
+
+    return self.ascending ?
+           [leftNodeValue compare:rightNodeValue] :
+           [rightNodeValue compare:leftNodeValue];
+}
+
+
+@end
 
 
 @interface ProjectionTableController () {
@@ -69,6 +110,8 @@
     
     JsonPathExpression dataSourceExpression;
     std::vector<Node*> rowNodes;
+
+    std::vector<Node*> sortedRowNodes;
     
     BOOL _validDef;
 }
@@ -128,11 +171,13 @@
         std::copy(std::begin(dataSourceList), std::end(dataSourceList), std::back_inserter(rowNodes));
     }
     
+    [self updateSortedRows];
+    
     [_tableView reloadData];
 }
 
 -(NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
-    return rowNodes.size();
+    return sortedRowNodes.size();
 }
 
 -(NSView *)tableView:(NSTableView *)tableView
@@ -141,7 +186,7 @@
     ProjectionTableColumn* projectionCol = (ProjectionTableColumn*)tableColumn;
     NSTableCellView *viewForCol = [tableView makeViewWithIdentifier:@"projectionCell" owner:tableView];
 
-    Node *valueForCol = [projectionCol resolveColumnInRow:rowNodes[row]];
+    Node *valueForCol = [projectionCol resolveColumnInRow:sortedRowNodes[row]];
     NSString *nodeValue = [JsonCocoaNode nodeForElement:valueForCol withName:@""].nodeValue;
     
     if(!nodeValue) {
@@ -156,7 +201,7 @@
     if(self.delegate) {
         NSInteger selectedRow = [(NSTableView*)notification.object selectedRow];
         if(selectedRow >= 0) {
-            Node *node = rowNodes[selectedRow];
+            Node *node = sortedRowNodes[selectedRow];
             [self.delegate projectionTableController:self didSelectNode:node];
         }
     }
@@ -189,21 +234,52 @@
     if(definition) {
         for(ProjectionFieldDefinition *def in definition.fieldDefinitions) {
             ProjectionTableColumn *projTableColumn = [[ProjectionTableColumn alloc] initWithProjectionFieldDefinition:def];
-            
+            projTableColumn.sortDescriptorPrototype =
+                [ProjectionColumnSortDescriptor forColumn:projTableColumn
+                                                ascending:NO];
             [_tableView addTableColumn:projTableColumn];
         }
     }
 }
 
+-(void)updateSortedRows {
+    NSArray<NSSortDescriptor*> *sortDescriptors = self.tableView.sortDescriptors;
+    
+    sortedRowNodes = rowNodes;
+    if(sortDescriptors.count) {
+        std::sort(sortedRowNodes.begin(),
+                  sortedRowNodes.end(), [sortDescriptors](Node *a, Node *b) {
+            for(ProjectionColumnSortDescriptor *d in sortDescriptors) {
+                NSComparisonResult r = [d compareNode:a toNode:b];
+                if(r < 0) {
+                    return true;
+                } else
+                if(r > 0) {
+                    return false;
+                }
+            }
+            
+            return false;
+        });
+    }
+}
+
+-(void)tableView:(NSTableView *)tableView sortDescriptorsDidChange:(NSArray<NSSortDescriptor *> *)oldDescriptors {
+    [self updateSortedRows];
+    [tableView reloadData];
+}
+
 -(void)selectNode:(JsonCocoaNode*)node {
     json::TextRange selectedNodeRange = node.proxiedElement->GetAbsTextRange();
-    auto iter = std::find_if(rowNodes.begin(), rowNodes.end(), [selectedNodeRange](json::Node* node) {
+    auto iter = std::find_if(sortedRowNodes.begin(), sortedRowNodes.end(), [selectedNodeRange](json::Node* node) {
         return node->GetAbsTextRange().contains(selectedNodeRange);
     });
     
-    if(iter != rowNodes.end()) {
-        [self.tableView selectRowIndexes:[NSIndexSet indexSetWithIndex:iter - rowNodes.begin()]
+    if(iter != sortedRowNodes.end()) {
+        size_t rowIndex = iter - sortedRowNodes.begin();
+        [self.tableView selectRowIndexes:[NSIndexSet indexSetWithIndex:rowIndex]
                     byExtendingSelection:NO];
+        [self.tableView scrollRowToVisible:rowIndex];
     }
 }
 

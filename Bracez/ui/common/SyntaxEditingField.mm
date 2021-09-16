@@ -45,10 +45,10 @@
 
 -(void)markErrorRange:(NSRange)errorRange withErrorMessage:(NSString*)message {
     [self.textStorage addAttributes:@{
-        NSUnderlineStyleAttributeName: @(NSUnderlineStyleThick),
-        NSUnderlineColorAttributeName: [NSColor redColor],
-        NSToolTipAttributeName: message
-    }
+                                        NSUnderlineStyleAttributeName: @(NSUnderlineStyleThick),
+                                        NSUnderlineColorAttributeName: [NSColor redColor],
+                                        NSToolTipAttributeName: message
+                                    }
                               range:errorRange];
 }
 
