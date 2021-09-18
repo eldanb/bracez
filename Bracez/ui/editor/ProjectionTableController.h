@@ -27,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)selectNode:(JsonCocoaNode*)node;
 -(void)reloadData;
 
+-(IBAction)onSearchChange:(NSSearchField*)sender;
+
 @property (weak) IBOutlet NSTableView *tableView;
 @property (weak) IBOutlet JsonDocument *projectedDocument;
 @property (weak) IBOutlet id<ProjectionTableControllerDelegate> delegate;

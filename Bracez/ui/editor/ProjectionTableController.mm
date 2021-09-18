@@ -54,6 +54,11 @@
     }
 }
 
+-(BOOL)doesMatchFilter:(NSString*)filterText forRow:(Node*)node {
+    NSString *text = [JsonCocoaNode nodeForElement:[self resolveColumnInRow:node] withName:@""].nodeValue;
+    return [text localizedStandardContainsString:filterText];
+}
+
 -(NSString *)prototypeViewIdentifier {
     return @"default";
 }
@@ -63,7 +68,7 @@
     ProjectionTableColumn *_byColumn;
 }
 
--(BOOL)isNode:(Node*)left lessThanNode:(Node*)right;
+-(NSComparisonResult)compareNode:(Node*)left toNode:(Node*)right;
 
 @end
 
@@ -108,17 +113,18 @@
     JsonDocument *jsonDocument;
     NSTableView *_tableView;
     
+    NSString *_filterText;
+    
     JsonPathExpression dataSourceExpression;
     std::vector<Node*> rowNodes;
 
-    std::vector<Node*> sortedRowNodes;
+    std::vector<Node*> displayedRowNodes;
     
     BOOL _validDef;
 }
 @end
 
 @implementation ProjectionTableController
-
 
 -(instancetype)initWithDefinition:(ProjectionDefinition*)definition projectedDocument:(JsonDocument*)jsonFile {
     self = [super init];
@@ -171,13 +177,13 @@
         std::copy(std::begin(dataSourceList), std::end(dataSourceList), std::back_inserter(rowNodes));
     }
     
-    [self updateSortedRows];
+    [self updateDisplayedRows];
     
     [_tableView reloadData];
 }
 
 -(NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
-    return sortedRowNodes.size();
+    return displayedRowNodes.size();
 }
 
 -(NSView *)tableView:(NSTableView *)tableView
@@ -186,7 +192,7 @@
     ProjectionTableColumn* projectionCol = (ProjectionTableColumn*)tableColumn;
     NSTableCellView *viewForCol = [tableView makeViewWithIdentifier:@"projectionCell" owner:tableView];
 
-    Node *valueForCol = [projectionCol resolveColumnInRow:sortedRowNodes[row]];
+    Node *valueForCol = [projectionCol resolveColumnInRow:displayedRowNodes[row]];
     NSString *nodeValue = [JsonCocoaNode nodeForElement:valueForCol withName:@""].nodeValue;
     
     if(!nodeValue) {
@@ -201,7 +207,7 @@
     if(self.delegate) {
         NSInteger selectedRow = [(NSTableView*)notification.object selectedRow];
         if(selectedRow >= 0) {
-            Node *node = sortedRowNodes[selectedRow];
+            Node *node = displayedRowNodes[selectedRow];
             [self.delegate projectionTableController:self didSelectNode:node];
         }
     }
@@ -242,13 +248,32 @@
     }
 }
 
--(void)updateSortedRows {
+-(void)updateDisplayedRows {
     NSArray<NSSortDescriptor*> *sortDescriptors = self.tableView.sortDescriptors;
+    NSArray<NSTableColumn*> *cols = self.tableView.tableColumns;
     
-    sortedRowNodes = rowNodes;
+    if(!_filterText.length) {
+        displayedRowNodes = rowNodes;
+    } else {
+        displayedRowNodes.clear();
+        displayedRowNodes.reserve(rowNodes.size()/2);
+        
+        NSString *filterText = _filterText;
+        
+        std::copy_if(rowNodes.begin(), rowNodes.end(), inserter(displayedRowNodes, displayedRowNodes.end()), [cols, filterText] (Node* node) {
+            for(ProjectionTableColumn *ptc in cols) {
+                if([ptc doesMatchFilter:filterText forRow:node]) {
+                    return true;
+                }
+            }
+            
+            return false;
+        });
+    }
+    
     if(sortDescriptors.count) {
-        std::sort(sortedRowNodes.begin(),
-                  sortedRowNodes.end(), [sortDescriptors](Node *a, Node *b) {
+        std::sort(displayedRowNodes.begin(),
+                  displayedRowNodes.end(), [sortDescriptors](Node *a, Node *b) {
             for(ProjectionColumnSortDescriptor *d in sortDescriptors) {
                 NSComparisonResult r = [d compareNode:a toNode:b];
                 if(r < 0) {
@@ -265,22 +290,28 @@
 }
 
 -(void)tableView:(NSTableView *)tableView sortDescriptorsDidChange:(NSArray<NSSortDescriptor *> *)oldDescriptors {
-    [self updateSortedRows];
+    [self updateDisplayedRows];
     [tableView reloadData];
 }
 
 -(void)selectNode:(JsonCocoaNode*)node {
     json::TextRange selectedNodeRange = node.proxiedElement->GetAbsTextRange();
-    auto iter = std::find_if(sortedRowNodes.begin(), sortedRowNodes.end(), [selectedNodeRange](json::Node* node) {
+    auto iter = std::find_if(displayedRowNodes.begin(), displayedRowNodes.end(), [selectedNodeRange](json::Node* node) {
         return node->GetAbsTextRange().contains(selectedNodeRange);
     });
     
-    if(iter != sortedRowNodes.end()) {
-        size_t rowIndex = iter - sortedRowNodes.begin();
+    if(iter != displayedRowNodes.end()) {
+        size_t rowIndex = iter - displayedRowNodes.begin();
         [self.tableView selectRowIndexes:[NSIndexSet indexSetWithIndex:rowIndex]
                     byExtendingSelection:NO];
         [self.tableView scrollRowToVisible:rowIndex];
     }
+}
+
+-(void)onSearchChange:(NSSearchField*)sender {
+    _filterText = sender.stringValue;
+    [self updateDisplayedRows];
+    [self.tableView reloadData];
 }
 
 
