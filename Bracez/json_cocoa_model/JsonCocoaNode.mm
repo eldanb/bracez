@@ -118,6 +118,13 @@ using namespace json;
    }
 }
 
+-(NSString*) longNodeValue
+{
+    std::wstring lTxt;
+    proxiedElement->CalculateJsonTextRepresentation(lTxt, 255);
+    return [NSString stringWithWstring:lTxt];
+}
+
 -(int)nodeType
 {
    return proxiedElement->GetNodeTypeId();

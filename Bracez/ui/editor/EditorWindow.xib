@@ -827,7 +827,7 @@
                                                                                             <rect key="frame" x="0.0" y="0.0" width="261" height="78"/>
                                                                                             <clipView key="contentView" drawsBackground="NO" id="9IZ-fS-urd">
                                                                                                 <rect key="frame" x="0.0" y="0.0" width="261" height="78"/>
-                                                                                                <autoresizingMask key="autoresizingMask"/>
+                                                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                                 <subviews>
                                                                                                     <textView importsGraphics="NO" richText="NO" verticallyResizable="YES" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" id="ULP-Sd-xav" customClass="SyntaxEditingField">
                                                                                                         <rect key="frame" x="0.0" y="0.0" width="261" height="78"/>
@@ -905,7 +905,7 @@
                                                                                         <rect key="frame" x="0.0" y="0.0" width="240" height="344"/>
                                                                                         <clipView key="contentView" drawsBackground="NO" id="7L0-FR-TwL">
                                                                                             <rect key="frame" x="0.0" y="0.0" width="240" height="344"/>
-                                                                                            <autoresizingMask key="autoresizingMask"/>
+                                                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                             <subviews>
                                                                                                 <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" rowHeight="40" viewBased="YES" id="S9U-TC-mCd">
                                                                                                     <rect key="frame" x="0.0" y="0.0" width="240" height="344"/>

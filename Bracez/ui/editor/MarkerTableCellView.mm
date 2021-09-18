@@ -7,9 +7,11 @@
 
 #import "MarkerTableCellView.h"
 #import "JsonMarker.h"
+#import "NodeTypeToColorTransformer.h"
 
 @interface MarkerTableCellView () {
     IBOutlet NSView *view;
+    __weak IBOutlet NSTextField *titleView;
 }
 
 @end
@@ -56,11 +58,20 @@
     JsonMarker *marker = objectValue;
     switch(marker.markerType) {
         case JsonMarkerTypeError:
+            self.imageView.hidden = NO;
             self.imageView.image = [NSImage imageNamed:NSImageNameStatusUnavailable];
+            titleView.textColor = nil;
             break;
             
         case JsonMarkerTypeBookmark:
+            self.imageView.hidden = NO;
             self.imageView.image = [NSImage imageNamed:NSImageNameStatusAvailable];
+            titleView.textColor = nil;
+            break;
+            
+        case JsonMarkerTypeNode:
+            self.imageView.hidden = YES;
+            titleView.textColor = [[NodeTypeToColorTransformer sharedInstance] colorForNodeType:marker.code];
             break;
     }
 }

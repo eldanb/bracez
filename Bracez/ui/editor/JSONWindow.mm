@@ -46,7 +46,7 @@ extern "C" {
 +(void)initialize
 {
     [super initialize];
-    [NSValueTransformer setValueTransformer:[[NodeTypeToColorTransformer alloc] init] forName:@"treeViewNodeColors"];
+    [NSValueTransformer setValueTransformer:[NodeTypeToColorTransformer sharedInstance] forName:@"treeViewNodeColors"];
 }
 
 -(void)dealloc {

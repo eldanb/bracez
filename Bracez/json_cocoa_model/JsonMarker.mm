@@ -53,9 +53,9 @@
 }
 
 +(JsonMarker*)markerForNode:(JsonCocoaNode*)node withParentDoc:(JsonDocument*)parentDoc {
-    return [[JsonMarker alloc] initWithDescription:node.nodeValue
-                                        markerType:JsonMarkerTypeBookmark
-                                              code:0
+    return [[JsonMarker alloc] initWithDescription:node.longNodeValue
+                                        markerType:JsonMarkerTypeNode
+                                              code:node.nodeType
                                         coordinate:node.textRange.start
                                          parentDoc:parentDoc];
 }
@@ -103,4 +103,7 @@
    return where;
 }
 
+-(int)code {
+    return whatCode;
+}
 @end

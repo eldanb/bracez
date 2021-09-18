@@ -11,11 +11,8 @@
 
 @interface NodeTypeToColorTransformer: NSValueTransformer 
 {
-   
-   
 }
 
--(id)init;
 
 -(BOOL)enabled;
 -(NSColor*)colorForNodeType:(int)aNodeType;
@@ -23,6 +20,7 @@
 
 -(void) _loadColors;
 
++(NodeTypeToColorTransformer*)sharedInstance;
 
 @end
 

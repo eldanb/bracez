@@ -12,7 +12,8 @@
 
 enum JsonMarkerType {
     JsonMarkerTypeError,
-    JsonMarkerTypeBookmark
+    JsonMarkerTypeBookmark,
+    JsonMarkerTypeNode
 };
 
 @interface JsonMarker : NSObject {
@@ -25,8 +26,7 @@ enum JsonMarkerType {
    int line;
    JsonMarkerType markerType;
     
-    
-    NSString *cachedLocationText;
+   NSString *cachedLocationText;
 }
 
 -(id)initWithDescription:(NSString*)aDesc
@@ -45,6 +45,7 @@ enum JsonMarkerType {
 -(NSString*)message;
 -(NSString*)locationAsText;
 -(int)line;
+-(int)code;
 -(TextCoordinate)coordinate;
 -(JsonMarkerType)markerType;
 

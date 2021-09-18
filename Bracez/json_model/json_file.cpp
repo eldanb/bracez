@@ -417,9 +417,29 @@ NodeTypeId ArrayNode::GetNodeTypeId() const
     return ntArray;
 }
 
-void ArrayNode::CalculateJsonTextRepresentation(std::wstring &aDest) const
+void ArrayNode::CalculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint) const
 {
-    // TODO
+    aDest = L"[ ";
+    for(auto iter = elements.begin(); iter != elements.end(); ) {
+        std::wstring fragment;
+        iter->get()->CalculateJsonTextRepresentation(fragment, maxLenHint);
+        
+        aDest += fragment;
+        
+        iter ++;
+        
+        if(iter != elements.end()) {
+            aDest += L", ";
+        } else {
+            aDest += L" ";
+        }
+        
+        if(aDest.length() > maxLenHint) {
+            return;
+        }
+    }
+    
+    aDest += L"]";
 }
 
 void ArrayNode::accept(NodeVisitor *aVisitor) const
@@ -724,9 +744,30 @@ bool ObjectNode::ValueEquals(Node *other) const {
     return true;
 }
 
-void ObjectNode::CalculateJsonTextRepresentation(std::wstring &aDest) const
+void ObjectNode::CalculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint) const
 {
-    // TODO
+    aDest = L"{ ";
+    for(auto iter = members.begin(); iter != members.end(); ) {
+        aDest += L"\"" + iter->name + L"\": ";
+        
+        std::wstring fragment;
+        iter->node->CalculateJsonTextRepresentation(fragment, maxLenHint);
+        aDest += fragment;
+        
+        iter ++;
+        
+        if(iter != members.end()) {
+            aDest += L", ";
+        } else {
+            aDest += L" ";
+        }
+        
+        if(aDest.length() > maxLenHint) {
+            return;
+        }
+    }
+    
+    aDest += L"}";
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -783,7 +824,7 @@ void DocumentNode::accept(NodeVisitor *aVisitor)
     }
 }
 
-void DocumentNode::CalculateJsonTextRepresentation(std::wstring &aDest) const
+void DocumentNode::CalculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint) const
 {
     // TODO
 }
@@ -812,7 +853,7 @@ NodeTypeId NullNode::GetNodeTypeId() const
     return ntNull;
 }
 
-void NullNode::CalculateJsonTextRepresentation(std::wstring &aDest) const
+void NullNode::CalculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint) const
 {
     aDest = L"null";
 }
@@ -831,7 +872,7 @@ bool NullNode::ValueLt(Node *other) const {
 
 
 template<> 
-void ValueNode<std::wstring, ntString>::CalculateJsonTextRepresentation(std::wstring &aDest) const
+void ValueNode<std::wstring, ntString>::CalculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint) const
 {
     wstringstream lStream;
     
@@ -867,7 +908,7 @@ void ValueNode<std::wstring, ntString>::CalculateJsonTextRepresentation(std::wst
 
 
 template<> 
-void ValueNode<double, ntNumber>::CalculateJsonTextRepresentation(std::wstring &aDest) const
+void ValueNode<double, ntNumber>::CalculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint) const
 {
     wstringstream lStream;
     
@@ -877,7 +918,7 @@ void ValueNode<double, ntNumber>::CalculateJsonTextRepresentation(std::wstring &
 }
 
 template<> 
-void ValueNode<bool, ntBoolean>::CalculateJsonTextRepresentation(std::wstring &aDest) const
+void ValueNode<bool, ntBoolean>::CalculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint) const
 {
     aDest = value ? L"true" : L"false";
 }

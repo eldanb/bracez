@@ -23,7 +23,17 @@ using namespace json;
 
 @end
 
+NodeTypeToColorTransformer* __sharedInstance;
+
 @implementation NodeTypeToColorTransformer
+
++ (NodeTypeToColorTransformer*)sharedInstance {
+    if(!__sharedInstance) {
+        __sharedInstance = [[NodeTypeToColorTransformer alloc] init];
+    }
+    
+    return __sharedInstance;
+}
 
 + (Class)transformedValueClass { return [NSColor class]; }
 

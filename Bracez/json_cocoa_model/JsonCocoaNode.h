@@ -23,7 +23,7 @@
 
 -(int)nodeType;
 -(id) nodeValue;
-
+-(NSString*) longNodeValue;
 -(NSString*) nodeName;
 
 -(void) setName:(NSString*)nodeName;

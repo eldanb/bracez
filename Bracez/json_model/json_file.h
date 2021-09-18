@@ -83,7 +83,7 @@ namespace json
       
       virtual NodeTypeId GetNodeTypeId() const = 0;
    
-      virtual void CalculateJsonTextRepresentation(std::wstring &aDest) const = 0;
+      virtual void CalculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint = -1) const = 0;
        
       virtual bool ValueEquals(Node *other) const = 0;
       virtual bool ValueLt(Node *other) const = 0;
@@ -166,7 +166,7 @@ namespace json
          
       NodeTypeId GetNodeTypeId() const;
 
-      void CalculateJsonTextRepresentation(std::wstring &aDest) const;
+      void CalculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint = -1) const;
       
       // DOM-only modifiers
       void DomAddElementNode(Node *aElement);
@@ -227,7 +227,7 @@ namespace json
 
       NodeTypeId GetNodeTypeId() const;
 
-      void CalculateJsonTextRepresentation(std::wstring &aDest) const;
+      void CalculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint = -1) const;
 
       // DOM-only modifiers
       Member &DomAddMemberNode(const wstring &aName, Node *aElement);
@@ -268,7 +268,7 @@ namespace json
       
       JsonFile *GetOwner() const { return owner; }
       
-      void CalculateJsonTextRepresentation(std::wstring &aDest) const;
+      void CalculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint = -1) const;
 
        virtual std::wstring ToString() const {
            return L"[Document]";
@@ -295,7 +295,7 @@ namespace json
    public:
       NodeTypeId GetNodeTypeId() const;
 
-      void CalculateJsonTextRepresentation(std::wstring &aDest) const;
+      void CalculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint = -1) const;
 
       bool ValueEquals(Node *other) const;
       bool ValueLt(Node *other) const;
@@ -321,7 +321,7 @@ namespace json
             
       operator ValueType() const { return value; }
 
-      void CalculateJsonTextRepresentation(std::wstring &aDest) const;
+      void CalculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint = -1) const;
       
       bool ValueEquals(Node *other) const {
           ValueNode<ValueType, NodeTypeConst> *otherTyped = dynamic_cast< ValueNode<ValueType, NodeTypeConst> *>(other);
