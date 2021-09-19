@@ -428,16 +428,18 @@ namespace json
                                    int maxParsedRegionLength);
 
    private:
-      void spliceJsonTextByDomChange(TextCoordinate aOffsetStart, TextLength aLen, const std::wstring &aNewText, Node *updatedNode);
+      void spliceJsonTextByDomChange(TextCoordinate aOffsetStart, TextLength aLen, const std::wstring &aNewText);
       
       void updateTreeOffsetsAfterSplice(TextCoordinate aOffsetStart, TextLength aLen, TextLength aNewLen);
       void updateErrorsAfterSplice(TextCoordinate aOffsetStart, TextLength aLen, TextLength aNewLen);
 
+      void notifyUpdatedNode(Node *updatedNode);
+       
    private:
       void notify(const priv::Notification &aNotification);
       void beginDeferNotifications();
       void endDeferNotifications();
-      
+       
    private:
       void deliverNotification(const priv::Notification &aNotification);
       

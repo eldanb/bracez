@@ -281,7 +281,6 @@
 
 - (void)pathView:(PathView *)aPathView extendByString:(NSString*)string {
     [self pathView:aPathView previewPathExtensionString:string];
-    [self refreshSelectionFromTextView];
 }
 
 
@@ -333,6 +332,8 @@
 
 -(void)refreshSelectionFromTextView;
 {
+    syncingNodeAndTextSel = true;
+
     int lRow, lCol;
     [document translateCoordinate:TextCoordinate([textView selectedRange].location) toRow:&lRow col:&lCol];
     [coordView setCoordinateRow:lRow col:lCol];
@@ -341,6 +342,8 @@
         NSIndexPath *lNewSelIndexPath = [document findPathContaining:TextCoordinate([textView selectedRange].location)];
         [treeController setSelectionIndexPath:lNewSelIndexPath];
     }
+
+    syncingNodeAndTextSel = false;
 }
 
 -(NSString*)currentPathAsJsonQuery {
@@ -391,10 +394,7 @@
        )
     {
         [self recordNavigationPointBeforeNavGroup:NAVGROUP_CURSOR_MOVEMENT];
-        
-        syncingNodeAndTextSel = true;
         [self refreshSelectionFromTextView];
-        syncingNodeAndTextSel = false;
     }
 }
 

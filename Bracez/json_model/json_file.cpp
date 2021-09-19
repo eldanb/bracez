@@ -171,7 +171,8 @@ void ContainerNode::SetChildAt(int aIdx, Node *aNode, bool fromReparse)
 
         // Splice text in document
         TextRange lAbsTextRange = lOldNode->GetAbsTextRange();
-        GetDocument()->GetOwner()->spliceJsonTextByDomChange(lAbsTextRange.start, lAbsTextRange.length(), lNewNodeText, this);
+        GetDocument()->GetOwner()->spliceJsonTextByDomChange(lAbsTextRange.start, lAbsTextRange.length(), lNewNodeText);
+        GetDocument()->GetOwner()->notifyUpdatedNode(this);
     }
     
     // Update in child list and import to document
@@ -311,7 +312,8 @@ void ArrayNode::DetachChildAt(int aIdx, Node **aNode)
     
     elements.erase(lIter);
     
-    GetDocument()->GetOwner()->spliceJsonTextByDomChange(lSpliceRange.start, lSpliceRange.length(), wstring(L""), this);
+    GetDocument()->GetOwner()->spliceJsonTextByDomChange(lSpliceRange.start, lSpliceRange.length(), wstring(L""));
+    GetDocument()->GetOwner()->notifyUpdatedNode(this);
 }
 
 void ArrayNode::InsertMemberAt(int aIdx, Node *aElement, const wstring *aElementText)
@@ -371,7 +373,8 @@ void ArrayNode::InsertMemberAt(int aIdx, Node *aElement, const wstring *aElement
     }
     
     // Update document text
-    GetDocument()->GetOwner()->spliceJsonTextByDomChange(GetAbsTextRange().start+lChangeAddr, 0, lCalculatedText, this);
+    GetDocument()->GetOwner()->spliceJsonTextByDomChange(GetAbsTextRange().start+lChangeAddr, 0, lCalculatedText);
+    GetDocument()->GetOwner()->notifyUpdatedNode(this);
     
     // Add element to sequence and setup address
     elements.insert(lIter, std::unique_ptr<Node>(aElement));
@@ -568,7 +571,8 @@ void ObjectNode::RenameMemberAt(int aIdx, const wstring &aName) {
     TextRange myAbs = GetAbsTextRange();
     members[aIdx].name = aName;
     GetDocument()->GetOwner()->spliceJsonTextByDomChange(orgRange.start + myAbs.start, orgRange.length(),
-                                                         jsonizedName, this);
+                                                         jsonizedName);
+    GetDocument()->GetOwner()->notifyUpdatedNode(this);
 
     
     // A bit of a hack:
@@ -646,7 +650,8 @@ ObjectNode::Member &ObjectNode::InsertMemberAt(int aIdx, const wstring &aName, N
     }
     
     // Update document text
-    GetDocument()->GetOwner()->spliceJsonTextByDomChange(GetAbsTextRange().start+lChangeAddr, 0, lCalculatedText, this);
+    GetDocument()->GetOwner()->spliceJsonTextByDomChange(GetAbsTextRange().start+lChangeAddr, 0, lCalculatedText);
+    GetDocument()->GetOwner()->notifyUpdatedNode(this);
     
     // Add element and fixup addresses after splicing
     aElement->textRange.start = TextCoordinate(lElemAddr);
@@ -698,7 +703,8 @@ void ObjectNode::DetachChildAt(int aIdx, Node **aNode)
     
     members.erase(lIter);
     
-    GetDocument()->GetOwner()->spliceJsonTextByDomChange(lSpliceRange.start, lSpliceRange.length(), L"", this);
+    GetDocument()->GetOwner()->spliceJsonTextByDomChange(lSpliceRange.start, lSpliceRange.length(), L"");
+    GetDocument()->GetOwner()->notifyUpdatedNode(this);
 }
 
 NodeTypeId ObjectNode::GetNodeTypeId() const
@@ -1161,7 +1167,7 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
     return true;
 }
 
-void JsonFile::spliceJsonTextByDomChange(TextCoordinate aOffsetStart, TextLength aLen, const std::wstring &aNewText, Node *updatedNode)
+void JsonFile::spliceJsonTextByDomChange(TextCoordinate aOffsetStart, TextLength aLen, const std::wstring &aNewText)
 {
     // Don't send notifications till we're thru
     DeferNotificationsInBlock lDnib(this);
@@ -1182,20 +1188,20 @@ void JsonFile::spliceJsonTextByDomChange(TextCoordinate aOffsetStart, TextLength
     
     // Update errors
     updateErrorsAfterSplice(aOffsetStart, aLen, lNewLen);
-    
+}
+
+void JsonFile::notifyUpdatedNode(Node *updatedNode) {
     // Notify that the semantic model was updated
-    if(updatedNode) {
-        JsonPath nodePath;
-        Node *lastSought = updatedNode;
-        ContainerNode *currentContainer = updatedNode->GetParent();
-        while(currentContainer && currentContainer != jsonDom.get()) {
-            nodePath.push_front(currentContainer->GetIndexOfChild(lastSought));
-            lastSought = currentContainer;
-            currentContainer = lastSought -> GetParent();
-        }
-        
-        notify(NodeRefreshNotification(std::move(nodePath)));
+    JsonPath nodePath;
+    Node *lastSought = updatedNode;
+    ContainerNode *currentContainer = updatedNode->GetParent();
+    while(currentContainer && currentContainer != jsonDom.get()) {
+        nodePath.push_front(currentContainer->GetIndexOfChild(lastSought));
+        lastSought = currentContainer;
+        currentContainer = lastSought -> GetParent();
     }
+    
+    notify(NodeRefreshNotification(std::move(nodePath)));
 }
 
 void JsonFile::updateTreeOffsetsAfterSplice(TextCoordinate aOffsetStart, TextLength aLen, TextLength aNewLen)

@@ -23,6 +23,16 @@ NSString *JsonDocumentBookmarkChangeNotification =
 NSString *JsonDocumentSemanticModelUpdatedNotification =
 @"com.zigsterz.braces.jsondocument.semanticmodelchange";
 
+NSString *JsonDocumentSemanticModelUpdatedNotificationKeyReason =
+@"reason";
+
+NSString *JsonDocumentSemanticModelUpdatedNotificationReasonNodeInvalidation =
+@"nodeInvalidation";
+
+NSString *JsonDocumentSemanticModelUpdatedNotificationReasonReparse =
+@"reparse";
+
+
 @interface JsonDocument () {
     BOOL _isSemanticModelTextChangeInProgress;
     BOOL _isSemanticModelDirty;
@@ -284,8 +294,9 @@ private:
 
     [self updateSyntaxInRange:NSMakeRange(0, self.textStorage.string.length)];
     
-    [self notifySemanticModelUpdated];
+    [self notifySemanticModelUpdatedWithReason:JsonDocumentSemanticModelUpdatedNotificationReasonReparse];
 }
+
 
 -(void)notifyJsonTextSpliced:(JsonFile*)aSender from:(TextCoordinate)aOldOffset length:(TextLength)aOldLength newLength:(TextLength)aNewLength
 {
@@ -478,12 +489,14 @@ private:
     
     [node reloadFromElement: ((json::ContainerNode*)node.proxiedElement->GetParent())->GetChildAt(nodePath.back())];
     
-    [self notifySemanticModelUpdated];
+    [self notifySemanticModelUpdatedWithReason:JsonDocumentSemanticModelUpdatedNotificationReasonNodeInvalidation];
 }
 
--(void)notifySemanticModelUpdated {
+-(void)notifySemanticModelUpdatedWithReason:(NSString*)reason {
     [[NSNotificationCenter defaultCenter] postNotificationName:JsonDocumentSemanticModelUpdatedNotification
                                                         object:self
-                                                      userInfo:nil];
+                                                      userInfo:@{ JsonDocumentSemanticModelUpdatedNotificationKeyReason: reason }];
 }
 @end
+
+

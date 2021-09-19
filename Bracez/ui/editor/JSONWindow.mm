@@ -464,9 +464,14 @@ static void onJqCompileError(void *ctxt, jv err) {
     [self updateProjectionData];
 }
 
--(void)semanticModelChanged:(id)sender {
+-(void)semanticModelChanged:(NSNotification *)notification {
     NSLog(@"Editor window handling semantic model changed");
     [self updateProjectionData];
+
+    if([notification.userInfo[JsonDocumentSemanticModelUpdatedNotificationKeyReason] isEqualToString:JsonDocumentSemanticModelUpdatedNotificationReasonReparse]) {
+        [selectionController refreshSelectionFromTextView];
+    }
+    
 }
 
 -(void)editProjection {
