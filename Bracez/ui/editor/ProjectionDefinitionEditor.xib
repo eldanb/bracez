@@ -310,19 +310,49 @@ Gw
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                     </scrollView>
+                                    <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="JMl-fx-f6u">
+                                        <rect key="frame" x="243" y="61" width="326" height="25"/>
+                                        <popUpButtonCell key="cell" type="push" title="JSON" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="YGl-gW-hY8" id="FNp-oZ-sUH">
+                                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                            <font key="font" metaFont="menu"/>
+                                            <menu key="menu" id="WGB-A1-CXG">
+                                                <items>
+                                                    <menuItem title="JSON" state="on" id="YGl-gW-hY8"/>
+                                                    <menuItem title="Text" id="4q9-Jm-65Z"/>
+                                                    <menuItem title="Number" id="A7t-cD-Hb1"/>
+                                                    <menuItem title="Date" id="BYU-f8-WRs"/>
+                                                </items>
+                                            </menu>
+                                        </popUpButtonCell>
+                                        <connections>
+                                            <binding destination="Rw9-2c-O8Y" name="selectedIndex" keyPath="selection.formatterType" id="rtq-uG-2bB"/>
+                                        </connections>
+                                    </popUpButton>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7c9-5d-cLM">
+                                        <rect key="frame" x="166" y="68" width="51" height="16"/>
+                                        <textFieldCell key="cell" lineBreakMode="clipping" title="Format:" id="NnI-4P-ZzP">
+                                            <font key="font" metaFont="system"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="rXQ-gn-wIP" firstAttribute="leading" secondItem="UmV-eG-zHx" secondAttribute="leading" constant="20" symbolic="YES" id="119-9p-HZI"/>
                                     <constraint firstItem="Ae7-kP-k0J" firstAttribute="firstBaseline" secondItem="7FB-6T-toI" secondAttribute="firstBaseline" id="54T-6O-jKy"/>
+                                    <constraint firstItem="JMl-fx-f6u" firstAttribute="firstBaseline" secondItem="7c9-5d-cLM" secondAttribute="firstBaseline" id="Bgv-oR-3z0"/>
                                     <constraint firstItem="cZv-Bj-Mic" firstAttribute="leading" secondItem="0YE-34-KFF" secondAttribute="leading" id="EP8-RA-Qg3"/>
                                     <constraint firstItem="nh9-LK-Sgj" firstAttribute="centerY" secondItem="cwx-SC-qj2" secondAttribute="centerY" id="IxS-WP-FsS"/>
                                     <constraint firstItem="cZv-Bj-Mic" firstAttribute="leading" secondItem="UmV-eG-zHx" secondAttribute="leading" constant="20" symbolic="YES" id="Mdd-1g-Rzk"/>
                                     <constraint firstItem="nh9-LK-Sgj" firstAttribute="top" secondItem="Ae7-kP-k0J" secondAttribute="bottom" constant="8" symbolic="YES" id="Nww-EN-28o"/>
                                     <constraint firstItem="9oR-VG-iX4" firstAttribute="centerY" secondItem="rXQ-gn-wIP" secondAttribute="centerY" id="Oic-Ie-rzm"/>
+                                    <constraint firstItem="JMl-fx-f6u" firstAttribute="top" secondItem="nh9-LK-Sgj" secondAttribute="bottom" constant="10" id="Oum-fc-kxy"/>
+                                    <constraint firstItem="JMl-fx-f6u" firstAttribute="trailing" secondItem="nh9-LK-Sgj" secondAttribute="trailing" id="PlY-XE-kJi"/>
                                     <constraint firstItem="Voj-IW-G1c" firstAttribute="top" secondItem="cZv-Bj-Mic" secondAttribute="bottom" constant="-1" id="Pv8-2v-SaQ"/>
                                     <constraint firstItem="9oR-VG-iX4" firstAttribute="leading" secondItem="rXQ-gn-wIP" secondAttribute="trailing" constant="8" symbolic="YES" id="R99-7s-A6d"/>
                                     <constraint firstItem="Voj-IW-G1c" firstAttribute="leading" secondItem="cZv-Bj-Mic" secondAttribute="leading" id="Rs1-B0-KAm"/>
                                     <constraint firstAttribute="trailing" secondItem="9oR-VG-iX4" secondAttribute="trailing" constant="20" symbolic="YES" id="Yeb-9Y-UW5"/>
+                                    <constraint firstItem="JMl-fx-f6u" firstAttribute="leading" secondItem="nh9-LK-Sgj" secondAttribute="leading" id="ZVb-Sc-upI"/>
                                     <constraint firstAttribute="bottom" secondItem="Voj-IW-G1c" secondAttribute="bottom" constant="20" symbolic="YES" id="aqL-p4-c9a"/>
                                     <constraint firstItem="7FB-6T-toI" firstAttribute="leading" secondItem="cZv-Bj-Mic" secondAttribute="trailing" constant="8" symbolic="YES" id="bU3-uK-Y5O"/>
                                     <constraint firstItem="7FB-6T-toI" firstAttribute="top" secondItem="cZv-Bj-Mic" secondAttribute="top" id="e8c-Ha-gxB"/>

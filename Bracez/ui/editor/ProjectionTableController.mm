@@ -23,13 +23,25 @@
 @end
 
 
-@implementation ProjectionTableColumn
+@interface ProjectionColumnSortDescriptor : NSSortDescriptor {
+    __weak ProjectionTableColumn *_byColumn;
+}
 
+-(NSComparisonResult)compareNode:(Node*)left toNode:(Node*)right;
++(ProjectionColumnSortDescriptor*)forColumn:(ProjectionTableColumn*)column
+                                  ascending:(BOOL)ascending;
+
+@end
+
+@implementation ProjectionTableColumn
 
 -(instancetype)initWithProjectionFieldDefinition:(ProjectionFieldDefinition*)projectionField {
     self = [super initWithIdentifier:projectionField.fieldTitle];
+    
     if(self) {
         self.title = projectionField.fieldTitle;
+        self.sortDescriptorPrototype = [ProjectionColumnSortDescriptor forColumn:self ascending:NO];
+
         try {
             columnExpression = JsonPathExpression::compile(projectionField.expression.cStringWstring);
             _validDef = YES;
@@ -54,9 +66,29 @@
     }
 }
 
+-(NSString*)displayTextForColumnInRow:(Node*)row {
+    Node *valueForCol = [self resolveColumnInRow:row];
+    return [self formatNodeToText:valueForCol];
+}
+
+-(NSString*)formatNodeToText:(Node*)node {
+    NSString *nodeValue = [JsonCocoaNode nodeForElement:node withName:@""].nodeValue;
+
+    if(!nodeValue) {
+        nodeValue = @"";
+    }
+    
+    return  nodeValue;;
+}
+
 -(BOOL)doesMatchFilter:(NSString*)filterText forRow:(Node*)node {
-    NSString *text = [JsonCocoaNode nodeForElement:[self resolveColumnInRow:node] withName:@""].nodeValue;
+    NSString *text = [self formatNodeToText:[self resolveColumnInRow:node]];
     return [text localizedStandardContainsString:filterText];
+}
+
+-(NSComparisonResult)compareForSort:(Node*)left to:(Node*)right {
+    return [[self formatNodeToText:[self resolveColumnInRow:left]]
+                compare:[self formatNodeToText:[self resolveColumnInRow:right]]];
 }
 
 -(NSString *)prototypeViewIdentifier {
@@ -64,13 +96,6 @@
 }
 @end
 
-@interface ProjectionColumnSortDescriptor : NSSortDescriptor {
-    ProjectionTableColumn *_byColumn;
-}
-
--(NSComparisonResult)compareNode:(Node*)left toNode:(Node*)right;
-
-@end
 
 @implementation ProjectionColumnSortDescriptor
 
@@ -96,14 +121,117 @@
 }
 
 -(NSComparisonResult)compareNode:(Node*)left toNode:(Node*)right {
-    NSString *leftNodeValue = [JsonCocoaNode nodeForElement:[_byColumn resolveColumnInRow:left] withName:@""].nodeValue;
-    NSString *rightNodeValue = [JsonCocoaNode nodeForElement:[_byColumn resolveColumnInRow:right] withName:@""].nodeValue;
-
     return self.ascending ?
-           [leftNodeValue compare:rightNodeValue] :
-           [rightNodeValue compare:leftNodeValue];
+            [_byColumn compareForSort:left to:right] :
+            [_byColumn compareForSort:right to:left];
+}
+@end
+
+
+@interface ProjectionTableColumnText : ProjectionTableColumn
+@end
+
+@implementation ProjectionTableColumnText
+
+-(NSString*)formatNodeToText:(Node*)node {
+    if(dynamic_cast<StringNode*>(node)) {
+        return [NSString stringWithWstring:((StringNode*)node)->GetValue()];
+    } else
+    if(!dynamic_cast<ContainerNode*>(node)) {
+        return [super formatNodeToText:node];
+    } else
+    {
+        return @"";
+    }
 }
 
+@end
+
+@interface ProjectionTableColumnNumber : ProjectionTableColumn {
+    NSNumberFormatter *numberFormatter;
+}
+
+@end
+
+@implementation ProjectionTableColumnNumber
+
+-(instancetype)initWithProjectionFieldDefinition:(ProjectionFieldDefinition*)projectionField {
+    self = [super initWithProjectionFieldDefinition:projectionField];
+    numberFormatter = [[NSNumberFormatter alloc] init];
+    return self;
+}
+
+-(NSNumber*)numberValueForNode:(Node*)node {
+    if(dynamic_cast<StringNode*>(node)) {
+        return [numberFormatter numberFromString:[NSString stringWithWstring:((StringNode*)node)->GetValue()]];
+    } else
+    if(dynamic_cast<NumberNode*>(node)) {
+        return [NSNumber numberWithDouble:((NumberNode*)node)->GetValue()];
+    } else {
+        return nil;
+    }
+}
+
+-(NSString*)formatNodeToText:(Node*)node {
+    NSNumber *num = [self numberValueForNode:node];
+    return num ? [num description] : @"";
+}
+
+-(NSComparisonResult)compareForSort:(Node*)left to:(Node*)right {
+    return [[self numberValueForNode:[self resolveColumnInRow:left]]
+                compare:[self numberValueForNode:[self resolveColumnInRow:right]]];
+}
+
+@end
+
+@interface ProjectionTableColumnDate : ProjectionTableColumn {
+    NSDateFormatter *dateFormatter;
+    NSDateFormatter *isoDateFormatter;
+    
+}
+@end
+
+@implementation ProjectionTableColumnDate
+
+-(instancetype)initWithProjectionFieldDefinition:(ProjectionFieldDefinition*)projectionField {
+    self = [super initWithProjectionFieldDefinition:projectionField];
+    dateFormatter = [NSDateFormatter new];
+    
+    isoDateFormatter = [NSDateFormatter new];
+    isoDateFormatter.dateFormat = @"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    isoDateFormatter.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+
+    return self;
+}
+
+-(NSDate*)dateValueForNode:(Node*)node {
+    if(dynamic_cast<StringNode*>(node)) {
+        NSString *stringValue = [NSString stringWithWstring:((StringNode*)node)->GetValue()];
+        
+        NSDate *dateRet = [dateFormatter dateFromString:stringValue];
+        
+        if(!dateRet) {
+            dateRet = [isoDateFormatter dateFromString:stringValue];
+        }
+        
+        return dateRet;
+    } else
+    if(dynamic_cast<NumberNode*>(node)) {
+        return [NSDate dateWithTimeIntervalSince1970:((NumberNode*)node)->GetValue()];
+    } else {
+        return nil;
+    }
+}
+
+-(NSString*)formatNodeToText:(Node*)node {
+    NSDate *date = [self dateValueForNode:node];
+    return date ? [date description] : @"";
+}
+
+-(NSComparisonResult)compareForSort:(Node*)left to:(Node*)right {
+    return [[self dateValueForNode:[self resolveColumnInRow:left]]
+                compare:[self dateValueForNode:[self resolveColumnInRow:right]]];
+}
 
 @end
 
@@ -192,13 +320,7 @@
     ProjectionTableColumn* projectionCol = (ProjectionTableColumn*)tableColumn;
     NSTableCellView *viewForCol = [tableView makeViewWithIdentifier:@"projectionCell" owner:tableView];
 
-    Node *valueForCol = [projectionCol resolveColumnInRow:displayedRowNodes[row]];
-    NSString *nodeValue = [JsonCocoaNode nodeForElement:valueForCol withName:@""].nodeValue;
-    
-    if(!nodeValue) {
-        nodeValue = @"";
-    }
-    viewForCol.textField.stringValue = nodeValue;
+    viewForCol.textField.stringValue = [projectionCol displayTextForColumnInRow:displayedRowNodes[row]];
     
     return viewForCol;
 }
@@ -239,10 +361,25 @@
     
     if(definition) {
         for(ProjectionFieldDefinition *def in definition.fieldDefinitions) {
-            ProjectionTableColumn *projTableColumn = [[ProjectionTableColumn alloc] initWithProjectionFieldDefinition:def];
-            projTableColumn.sortDescriptorPrototype =
-                [ProjectionColumnSortDescriptor forColumn:projTableColumn
-                                                ascending:NO];
+            ProjectionTableColumn *projTableColumn;
+            switch(def.formatterType) {
+                case ProjectionFieldFormatterText:
+                    projTableColumn = [[ProjectionTableColumnText alloc] initWithProjectionFieldDefinition:def];
+                    break;
+
+                case ProjectionFieldFormatterNumber:
+                    projTableColumn = [[ProjectionTableColumnNumber alloc] initWithProjectionFieldDefinition:def];
+                    break;
+
+                case ProjectionFieldFormatterDate:
+                    projTableColumn = [[ProjectionTableColumnDate alloc] initWithProjectionFieldDefinition:def];
+                    break;
+
+                default:
+                    projTableColumn = [[ProjectionTableColumn alloc] initWithProjectionFieldDefinition:def];
+                    break;
+                    
+            }
             [_tableView addTableColumn:projTableColumn];
         }
     }

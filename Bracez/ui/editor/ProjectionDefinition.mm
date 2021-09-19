@@ -47,7 +47,7 @@ std::vector<pair<std::wstring, size_t>> suggestRowSelectors(Node *parent, const 
 - (void)encodeWithCoder:(nonnull NSCoder *)coder {
     [coder encodeObject:self.fieldTitle forKey:@"fieldTitle"];
     [coder encodeObject:self.expression forKey:@"expression"];
-    [coder encodeObject:self.formatterType forKey:@"formatterType"];
+    [coder encodeInteger:self.formatterType forKey:@"formatterTypeI"];
 }
 
 - (nullable instancetype)initWithCoder:(nonnull NSCoder *)coder {
@@ -55,7 +55,7 @@ std::vector<pair<std::wstring, size_t>> suggestRowSelectors(Node *parent, const 
     if(self) {
         self.fieldTitle = [coder decodeObjectOfClass:[NSString class] forKey:@"fieldTitle"];
         self.expression = [coder decodeObjectOfClass:[NSString class] forKey:@"expression"];
-        self.formatterType = [coder decodeObjectOfClass:[NSString class] forKey:@"formatterType"];
+        self.formatterType = (ProjectionFieldFormatterType)[coder decodeIntegerForKey:@"formatterTypeI"];
     }
     return self;
 }
@@ -68,8 +68,7 @@ std::vector<pair<std::wstring, size_t>> suggestRowSelectors(Node *parent, const 
     ProjectionFieldDefinition *otherDef = other;
     return [self.fieldTitle isEqualTo:otherDef.fieldTitle] &&
            [self.expression isEqualTo:otherDef.expression] &&
-           ([self.formatterType isEqualTo:otherDef.formatterType] ||
-                (self.formatterType == nil && otherDef.formatterType == nil)); 
+            self.formatterType == otherDef.formatterType;
 }
 
 @end

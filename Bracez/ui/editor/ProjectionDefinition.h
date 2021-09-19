@@ -10,6 +10,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSInteger, ProjectionFieldFormatterType) {
+    ProjectionFieldFormatterGeneral,
+    ProjectionFieldFormatterText,
+    ProjectionFieldFormatterNumber,
+    ProjectionFieldFormatterDate
+};
 
 @class JsonDocument;
 
@@ -20,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property NSString *fieldTitle;
 @property NSString *expression;
-@property NSString *formatterType;
+@property ProjectionFieldFormatterType formatterType;
 
 @end
 
