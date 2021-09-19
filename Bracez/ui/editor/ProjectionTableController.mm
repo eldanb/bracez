@@ -153,7 +153,7 @@
     _validDef = NO;
     if(definition) {
         try {
-            dataSourceExpression = JsonPathExpression::compile(self->definition.rowSelector.cStringWstring);
+            dataSourceExpression = [self->definition compiledRowSelector];
             _validDef = YES;
         } catch(const std::exception &e) {
             dataSourceExpression = JsonPathExpression();
@@ -172,7 +172,7 @@
     rowNodes.clear();
 
     if(_validDef && definition) {
-        auto dataSourceList = self->dataSourceExpression.execute(jsonDocument.rootNode.proxiedElement);
+        JsonPathResultNodeList dataSourceList = self->dataSourceExpression.execute(jsonDocument.rootNode.proxiedElement);
         rowNodes.reserve(dataSourceList.size());
         std::copy(std::begin(dataSourceList), std::end(dataSourceList), std::back_inserter(rowNodes));
     }

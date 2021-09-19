@@ -17,7 +17,7 @@
 #include <iomanip>
 
 std::vector<std::wstring> suggestFields(const JsonPathResultNodeList &nodeList);
-
+std::vector<pair<std::wstring, size_t>> suggestRowSelectors(Node *parent, const std::wstring &basePath);
 
 @implementation ProjectionFieldDefinition
 
@@ -117,9 +117,38 @@ std::vector<std::wstring> suggestFields(const JsonPathResultNodeList &nodeList);
     [_fieldDefinitions removeObjectAtIndex:index];
 }
 
++(NSArray<ProjectionDefinition*> *)suggestPojectionsForDocument:(JsonDocument*)document {
+    std::vector<pair<std::wstring, size_t>> rowSelectors =
+        suggestRowSelectors(document.jsonFile->getDom()->GetChildAt(0), L"$");
+
+    if(rowSelectors.size()) {
+        NSMutableArray<ProjectionDefinition*> *defs = [NSMutableArray arrayWithCapacity:rowSelectors.size()];
+        for(auto iter = rowSelectors.begin(); iter != rowSelectors.end(); iter++) {
+            
+            ProjectionDefinition *suggestedDef = [[ProjectionDefinition alloc] init];
+            suggestedDef.rowSelector = [NSString stringWithWstring:iter->first];
+            
+            NSArray<ProjectionFieldDefinition*> *suggestedFields = [suggestedDef suggestFieldsBasedOnDocument:document];
+            for(ProjectionFieldDefinition *def in suggestedFields) {
+                [suggestedDef addProjection:def];
+                if(suggestedDef.fieldDefinitions.count >= 5) {
+                    break;
+                }
+            }
+                        
+            [defs addObject:suggestedDef];
+        }
+        
+        return defs;
+    } else {
+        return nil;
+    }
+}
+
+
 -(NSArray<ProjectionFieldDefinition*> *)suggestFieldsBasedOnDocument:(JsonDocument*)document {
     if(self.rowSelector) {
-        JsonPathExpression rowSelector = JsonPathExpression::compile(self.rowSelector.UTF8String);
+        JsonPathExpression rowSelector = [self compiledRowSelector];
         auto nodes = rowSelector.execute(document.jsonFile->getDom()->GetChildAt(0));
         std::vector<std::wstring> suggestions = suggestFields(nodes);
         
@@ -136,6 +165,10 @@ std::vector<std::wstring> suggestFields(const JsonPathResultNodeList &nodeList);
     } else {
         return nil;
     }
+}
+
+-(JsonPathExpression)compiledRowSelector {
+    return JsonPathExpression::compile(self.rowSelector.UTF8String);
 }
 
 -(NSArray<ProjectionFieldDefinition*> *)fieldDefinitions {
@@ -270,7 +303,7 @@ std::vector<std::wstring> suggestFields(const JsonPathResultNodeList &nodeList) 
     long maxVals = 0;
     
     std::for_each(sampledNodes.begin(), sampledNodes.end(), [&valuesForFields, &maxVals](json::Node* sampledNode) {
-        walkPathsForNode(sampledNode, L"$", 3, [&valuesForFields, &maxVals](const std::wstring &path, const json::Node *node) {
+        walkPathsForNode(sampledNode, L"@", 3, [&valuesForFields, &maxVals](const std::wstring &path, const json::Node *node) {
             std::wstring nodeStr;
             node->CalculateJsonTextRepresentation(nodeStr);
             std::vector<std::wstring> &valsForField = valuesForFields[path];
@@ -326,4 +359,22 @@ std::vector<std::wstring> suggestFields(const JsonPathResultNodeList &nodeList) 
     });
     
     return results;
+}
+
+
+std::vector<pair<std::wstring, size_t>> suggestRowSelectors(Node *parent, const std::wstring &basePath) {
+    std::vector<pair<std::wstring, size_t>> scoredArrays;
+    
+    walkPathsForNode(parent, L"$", 5, [&scoredArrays] (const std::wstring &path, const json::Node *node) {
+        const json::ArrayNode *array = dynamic_cast<const json::ArrayNode*>(node);
+        if(array) {
+            scoredArrays.push_back(make_pair(path + L"[*]", array->GetChildCount()));
+        }
+    });
+    
+    std::sort(scoredArrays.begin(), scoredArrays.end(), [](const pair<std::wstring, size_t>&left, const pair<std::wstring, size_t>&right) {
+        return left.second > right.second;
+    });
+    
+    return scoredArrays;
 }

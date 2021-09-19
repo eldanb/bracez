@@ -88,10 +88,7 @@ extern "C" {
                      forKeyPath:@"showProjectionView"
                         options:0
                         context:nil];
-    
-    [self setProjectionDefinition:[ProjectionDefinition newDefinition]];
-    
-    
+        
     [self loadPreferences];
 }
 
@@ -389,7 +386,7 @@ static void onJqCompileError(void *ctxt, jv err) {
 
 -(IBAction)handleProjectionViewItem:(id)sender {
     guiModeControl.showProjectionView = YES;
-    [self editProjection];
+    [self autoSuggestProjection];
 }
 
 - (void)findByJsonPathWithQuery:(NSString*)query {
@@ -461,7 +458,13 @@ static void onJqCompileError(void *ctxt, jv err) {
 
 
 -(void)onGuiModeControlProjectVisibleChanged {
-    [self updateProjectionData];
+    if(guiModeControl.showProjectionView) {
+        if(!projectionTableController.projectionDefinition) {
+            [self autoSuggestProjection];
+        }
+
+        [self updateProjectionData];
+    }
 }
 
 -(void)semanticModelChanged:(NSNotification *)notification {
@@ -472,6 +475,30 @@ static void onJqCompileError(void *ctxt, jv err) {
         [selectionController refreshSelectionFromTextView];
     }
     
+}
+
+-(void)autoSuggestProjection {
+    // First try to use one of the favorite projections
+    Node *node = self.document.jsonFile->getDom()->GetChildAt(0);
+    size_t maxNumRows = 0;
+    ProjectionDefinition *selectedDef = nil;
+    for(ProjectionDefinition *def in projectionDefinitionsHistory.favoritesList) {
+        JsonPathResultNodeList ret = [def compiledRowSelector].execute(node);
+        size_t retSize = ret.size();
+        if(retSize > maxNumRows) {
+            maxNumRows = retSize;
+            selectedDef = def;
+        }
+    }
+    
+    // If no favorite projection matches the doc, try to come up with one on your own
+    if(!selectedDef) {
+        selectedDef = [[ProjectionDefinition suggestPojectionsForDocument:self.document] firstObject];
+    }
+    
+    if(selectedDef) {
+        projectionTableController.projectionDefinition = selectedDef;
+    }
 }
 
 -(void)editProjection {

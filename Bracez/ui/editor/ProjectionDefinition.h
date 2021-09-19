@@ -6,6 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#include "JsonPathExpressionCompiler.hpp"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,11 +28,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ProjectionDefinition : NSObject <NSCopying, NSSecureCoding>
 
 +(instancetype)newDefinition;
-
++(NSArray<ProjectionDefinition*> *)suggestPojectionsForDocument:(JsonDocument*)document;
+    
 -(void)addProjection:(ProjectionFieldDefinition*)definition;
 -(void)removeProjectionAtIndex:(NSUInteger)index;
 -(void)insertProjection:(ProjectionFieldDefinition*)definition atIndex:(NSUInteger)index;
 -(NSArray<ProjectionFieldDefinition*> *)suggestFieldsBasedOnDocument:(JsonDocument*)document;
+
+-(JsonPathExpression)compiledRowSelector;
 
 -(BOOL)isEqual:(id __nullable)other;
 

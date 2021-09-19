@@ -328,6 +328,10 @@
 }
 
 -(NSArray *)favoritesList {
+    if(!favItems) {
+        [self loadLists];
+    }
+    
     return favItems;
 }
 

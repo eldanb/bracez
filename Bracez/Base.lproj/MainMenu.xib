@@ -235,7 +235,7 @@
                 <menuItem title="View" id="295">
                     <menu key="submenu" title="View" id="296">
                         <items>
-                            <menuItem title="Projection..." keyEquivalent="R" id="u46-FT-b6G">
+                            <menuItem title="Auto-project" keyEquivalent="R" id="u46-FT-b6G">
                                 <connections>
                                     <action selector="handleProjectionViewItem:" target="-1" id="c1R-gy-UXn"/>
                                 </connections>
