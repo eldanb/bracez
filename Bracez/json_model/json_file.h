@@ -88,6 +88,8 @@ namespace json
       virtual bool ValueEquals(Node *other) const = 0;
       virtual bool ValueLt(Node *other) const = 0;
        
+      virtual Node *clone() const = 0;
+       
     virtual std::wstring ToString() const = 0;
 
    private:
@@ -174,6 +176,9 @@ namespace json
        virtual std::wstring ToString() const {
            return L"[Array]";
        }
+       
+       virtual ArrayNode *clone() const;
+       
    protected:
        virtual void StoreChildAt(int aIdx, Node *aNode);
 
@@ -238,6 +243,7 @@ namespace json
            return L"[Object]";
        }
 
+       virtual Node *clone() const;
    protected:
       void AdjustChildRangeAt(int aIdx, long aDiff);
       virtual void StoreChildAt(int aIdx, Node *aNode);
@@ -263,11 +269,12 @@ namespace json
       virtual const Node *GetChildAt(int aIdx) const;
       void DetachChildAt(int aIdx, Node **aNode);
 
-
       int FindChildEndingAfter(const TextCoordinate &aDocOffset) const;
       
       JsonFile *GetOwner() const { return owner; }
       
+      virtual Node *clone() const { return new DocumentNode(owner, rootNode->clone()); }
+       
       void CalculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint = -1) const;
 
        virtual std::wstring ToString() const {
@@ -300,6 +307,7 @@ namespace json
       bool ValueEquals(Node *other) const;
       bool ValueLt(Node *other) const;
 
+       virtual Node *clone() const { return new NullNode(); }
        
        virtual std::wstring ToString() const {
            return L"null";
@@ -335,6 +343,10 @@ namespace json
        
        std::wstring ToString() const {
            return computeString(value);
+       }
+       
+       virtual Node *clone() const {
+           return new ValueNode(value);
        }
 
    protected:

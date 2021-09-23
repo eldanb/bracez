@@ -463,6 +463,16 @@ void ArrayNode::accept(NodeVisitor *aVisitor)
     }
 }
 
+ArrayNode *ArrayNode::clone() const {
+    ArrayNode *ret = new ArrayNode();
+    for(Elements::const_iterator lIter = elements.begin(); lIter!=elements.end(); lIter++)
+    {
+        ret->DomAddElementNode((*lIter)->clone());
+    }
+    
+    return ret;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ObjectNode::iterator ObjectNode::Begin()
@@ -674,6 +684,16 @@ ObjectNode::Member &ObjectNode::DomAddMemberNode(const wstring &aName, Node *aEl
     members.push_back(std::move(lMemberInfo));
     
     return *(members.end()-1);
+}
+
+Node *ObjectNode::clone() const {
+    ObjectNode *ret = new ObjectNode();
+    for(Members::const_iterator lIter = members.begin(); lIter!=members.end(); lIter++)
+    {
+        ret->DomAddMemberNode(lIter->name, lIter->node->clone());
+    }
+    
+    return ret;
 }
 
 void ObjectNode::DetachChildAt(int aIdx, Node **aNode)

@@ -34,6 +34,15 @@ public:
     
     inline operator double () const { return getNumericValue(); }
     inline operator bool () const { return getTruthValue(); }
+    
+    template<class T>
+    inline operator T* () const {
+        if(nodeList.size()!=1) {
+            return NULL;
+        }
+        
+        return dynamic_cast<T*>(nodeList.front());
+    }
 
 public:
     std::list<std::shared_ptr<json::Node>> localOwners;
@@ -43,6 +52,8 @@ public:
     static JsonPathExpressionNodeEvalResult nullResult();
     static JsonPathExpressionNodeEvalResult doubleResult(double result);
     static JsonPathExpressionNodeEvalResult stringResult(const std::wstring &result);
+    static JsonPathExpressionNodeEvalResult nonOwnedNodeResult(json::Node *node);
+    static JsonPathExpressionNodeEvalResult ownedNodeResult(json::Node *node);
 } ;
 
 
@@ -215,16 +226,21 @@ namespace JsonPathExpressionNodeBinaryOperators {
     expr_operand_value relEq(expr_operand_value opLeft,  expr_operand_value opRight);
     expr_operand_value relNeq(expr_operand_value opLeft,  expr_operand_value opRight);
 
-    expr_operand_value relGte(expr_operand_value opLeft,  expr_operand_value opRight);
-    expr_operand_value relLte(expr_operand_value opLeft,  expr_operand_value opRight);
-    expr_operand_value relGt(expr_operand_value opLeft,  expr_operand_value opRight);
-    expr_operand_value relLt(expr_operand_value opLeft,  expr_operand_value opRight);
+    expr_operand_value relGte(json::Node *opLeft, json::Node *opRight);
+    expr_operand_value relLte(json::Node *opLeft, json::Node *opRight);
+    expr_operand_value relGt(json::Node *opLeft, json::Node *opRight);
+    expr_operand_value relLt(json::Node *opLeft, json::Node *opRight);
+    expr_operand_value relIn(json::Node *opLeft, json::ArrayNode *right);
+    expr_operand_value relNotIn(json::Node *opLeft, json::ArrayNode *right);
+    expr_operand_value relSubsetOf(json::ArrayNode *left, json::ArrayNode *right);
+    expr_operand_value relAnyOf(json::ArrayNode *left, json::ArrayNode *right);
+    expr_operand_value relNoneOf(json::ArrayNode *left, json::ArrayNode *right);
 
-    expr_operand_value div(expr_operand_value opLeft,  expr_operand_value opRight);
-    expr_operand_value mul(expr_operand_value opLeft,  expr_operand_value opRight);
-    expr_operand_value mod(expr_operand_value opLeft,  expr_operand_value opRight);
     expr_operand_value add(expr_operand_value opLeft,  expr_operand_value opRight);
-    expr_operand_value subtract(expr_operand_value opLeft,  expr_operand_value opRight);
+    expr_operand_value div(json::NumberNode *opLeft,  json::NumberNode *opRight);
+    expr_operand_value mul(json::NumberNode *opLeft,  json::NumberNode *opRight);
+    expr_operand_value mod(json::NumberNode *opLeft,  json::NumberNode *opRight);
+    expr_operand_value subtract(json::NumberNode *opLeft,  json::NumberNode *opRight);
 }
 
 

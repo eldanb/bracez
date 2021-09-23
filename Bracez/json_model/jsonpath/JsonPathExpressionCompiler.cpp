@@ -380,11 +380,28 @@ constexpr auto binary_operator(P1 const &opand, P2 const &opor) {
                       opor, strict("operand", opand))));
 }
 
-constexpr auto operator_parser(const char *operatorSyntax,
-                               expr_operand_value(*operatorFn)(expr_operand_value, expr_operand_value)) {
-    return all([operatorFn](binary_operator_fn *result, std::string opname) {
+auto operator_parser(const char *operatorSyntax,
+                               std::function<expr_operand_value (expr_operand_value, expr_operand_value)> operatorFn) {
+    return all([operatorFn](std::function<expr_operand_value (expr_operand_value, expr_operand_value)> *result, std::string opname) {
         *result = operatorFn;
     }, tokenise(accept_str(operatorSyntax)));
+}
+
+template<class LT, class RT>
+auto scalar_operator_parser(const char *operatorSyntax,
+                                      expr_operand_value(*operatorFn)(LT *, RT *)) {
+    return operator_parser(operatorSyntax, [operatorFn](expr_operand_value l, expr_operand_value r) {
+        if(l.nodeList.size() == 1 && r.nodeList.size() == 1) {
+            LT *lt = dynamic_cast<LT*>(l.nodeList.front());
+            RT *rt = dynamic_cast<RT*>(r.nodeList.front());
+            
+            if(lt && rt) {
+                return operatorFn(lt, rt);
+            }
+        }
+        
+        return expr_operand_value::nullResult();
+    });
 }
 
 auto exprlist =        sep_by(all([](std::list<std::unique_ptr<JsonPathExpressionNode>> *result,
@@ -427,14 +444,14 @@ auto expression_terminal =  attempt(context_member_name) ||
                             
 
 auto muldiv_expression = binary_operator(expression_terminal,
-                                        attempt(operator_parser("*", JsonPathExpressionNodeBinaryOperators::mul)) ||
-                                        attempt(operator_parser("/", JsonPathExpressionNodeBinaryOperators::div)) ||
-                                        operator_parser("%", JsonPathExpressionNodeBinaryOperators::mod)
+                                        scalar_operator_parser("*", JsonPathExpressionNodeBinaryOperators::mul) ||
+                                        scalar_operator_parser("/", JsonPathExpressionNodeBinaryOperators::div) ||
+                                        scalar_operator_parser("%", JsonPathExpressionNodeBinaryOperators::mod)
                                         );
 
 auto addsub_expression = binary_operator(muldiv_expression,
-                                        attempt(operator_parser("+", JsonPathExpressionNodeBinaryOperators::add)) ||
-                                        operator_parser("-", JsonPathExpressionNodeBinaryOperators::subtract)
+                                         operator_parser("+", JsonPathExpressionNodeBinaryOperators::add) ||
+                                         scalar_operator_parser("-", JsonPathExpressionNodeBinaryOperators::subtract)
                                         );
 
 auto negate_expression = attempt(addsub_expression) ||
@@ -443,11 +460,15 @@ auto negate_expression = attempt(addsub_expression) ||
                             }, discard(logical_negate_token) && addsub_expression);
 
 auto rel_expression = binary_operator(negate_expression,
-                                        attempt(operator_parser(">=", JsonPathExpressionNodeBinaryOperators::relGte)) ||
-                                        attempt(operator_parser("<=", JsonPathExpressionNodeBinaryOperators::relLte)) ||
-                                        attempt(operator_parser(">", JsonPathExpressionNodeBinaryOperators::relGt)) ||
-                                        operator_parser("<", JsonPathExpressionNodeBinaryOperators::relLt)
-                                        );
+                                        scalar_operator_parser(">=", JsonPathExpressionNodeBinaryOperators::relGte) ||
+                                        scalar_operator_parser("<=", JsonPathExpressionNodeBinaryOperators::relLte) ||
+                                        scalar_operator_parser(">", JsonPathExpressionNodeBinaryOperators::relGt) ||
+                                        scalar_operator_parser("<", JsonPathExpressionNodeBinaryOperators::relLt) ||
+                                        scalar_operator_parser("in", JsonPathExpressionNodeBinaryOperators::relIn) ||
+                                        scalar_operator_parser("nin", JsonPathExpressionNodeBinaryOperators::relNotIn) ||
+                                        scalar_operator_parser("subsetof", JsonPathExpressionNodeBinaryOperators::relSubsetOf) ||
+                                        scalar_operator_parser("anyof", JsonPathExpressionNodeBinaryOperators::relAnyOf) ||
+                                        scalar_operator_parser("noneof", JsonPathExpressionNodeBinaryOperators::relNoneOf));
 
 auto eqneq_expression = binary_operator(rel_expression,
                                         attempt(operator_parser("==", JsonPathExpressionNodeBinaryOperators::relEq)) ||
@@ -551,6 +572,7 @@ void testjsonpathexpressionparser() {
     JsonPathResultNodeList result16 = JsonPathExpression::compile(L"$..book[?(@.price < 10)]").execute(doc);
     JsonPathResultNodeList result17 = JsonPathExpression::compile(L"$..book[?(@.price > $.expensive)]").execute(doc);
     JsonPathResultNodeList result18 = JsonPathExpression::compile(L"$..book[(pow(2, $.expensive))]").execute(doc);
+    JsonPathResultNodeList result19 = JsonPathExpression::compile(L"$..book[?(@.price in [22.99, 8.99, 22])]").execute(doc);
     // TODO
     //JsonPathResultNodeList result18 = JsonPathExpression::compile(L"$..book[?(@.author =~ /.*Tolkien/i)]").execute(doc);
     
