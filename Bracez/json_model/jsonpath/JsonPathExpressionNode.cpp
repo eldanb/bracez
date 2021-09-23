@@ -303,6 +303,27 @@ void JsonPathExpressionNodeNavAllChildren::stepFromNode(JsonPathExpressionNodeEv
 }
 
 
+JsonPathExpressionNodeContextMemberName::JsonPathExpressionNodeContextMemberName() {
+    
+}
+    
+void JsonPathExpressionNodeContextMemberName::inspect(std::ostream &out) const {
+    out << "Fetch current node name";
+}
+
+JsonPathExpressionNodeEvalResult JsonPathExpressionNodeContextMemberName::evaluate(JsonPathExpressionNodeEvalContext &context) {
+    if(context.contextNode) {
+        int childIndex = context.contextNode->GetParent()->GetIndexOfChild(context.contextNode);
+        if(json::ObjectNode *onode = dynamic_cast<json::ObjectNode*>(context.contextNode->GetParent())) {
+            return JsonPathExpressionNodeEvalResult::stringResult(onode->GetMemberNameAt(childIndex));
+        } else
+        {
+            return JsonPathExpressionNodeEvalResult::doubleResult(childIndex);
+        }
+    }
+    
+    return JsonPathExpressionNodeEvalResult::nullResult();
+}
 
 
 JsonPathExpressionNodeNavIndexArray::JsonPathExpressionNodeNavIndexArray(int index)
@@ -394,40 +415,53 @@ void JsonPathExpressionNodeNavIndexArrayByList::stepFromNode(JsonPathExpressionN
 }
 
 
-JsonPathExpressionNodeFilterChildren::JsonPathExpressionNodeFilterChildren(std::unique_ptr<JsonPathExpressionNode> &&filter)
-    : _filter(std::move(filter))
+JsonPathExpressionNodeFilter::JsonPathExpressionNodeFilter(std::unique_ptr<JsonPathExpressionNode> &&filter, bool filterChildren)
+    : _filter(std::move(filter)), _filterChildren(filterChildren)
 {
    
 }
 
 
-void JsonPathExpressionNodeFilterChildren::stepFromNode(JsonPathExpressionNodeEvalContext &context,
+void JsonPathExpressionNodeFilter::stepFromNode(JsonPathExpressionNodeEvalContext &context,
                                                         JsonPathExpressionNodeEvalResult &nodes) {
     JsonPathResultNodeList resultList;
     std::for_each(nodes.nodeList.begin(),
                   nodes.nodeList.end(),
                   [this, &context, &resultList](json::Node* node) {
-                        json::ContainerNode *contNode = dynamic_cast<json::ContainerNode*>(node);
-                        if(contNode) {
-                            int ccount = contNode->GetChildCount();
-                            for(int idx=0; idx<ccount; idx++) {
+                            if(_filterChildren) {
+                                json::ContainerNode *contNode = dynamic_cast<json::ContainerNode*>(node);
+                                if(contNode) {
+                                    int ccount = contNode->GetChildCount();
+                                    for(int idx=0; idx<ccount; idx++) {
+                                        json::Node *oldContext = context.contextNode;
+                                        context.contextNode = contNode->GetChildAt(idx);
+                                        JsonPathExpressionNodeEvalResult filterRes = _filter->evaluate(context);
+                                        
+                                        if(filterRes.getTruthValue()) {
+                                            resultList.push_back(context.contextNode);
+                                        }
+                                        
+                                        context.contextNode = oldContext;
+                                    }
+                                }
+                            } else {
                                 json::Node *oldContext = context.contextNode;
-                                context.contextNode = contNode->GetChildAt(idx);
+                                context.contextNode = node;
                                 JsonPathExpressionNodeEvalResult filterRes = _filter->evaluate(context);
-                                
+                                    
                                 if(filterRes.getTruthValue()) {
                                     resultList.push_back(context.contextNode);
                                 }
-                                
+                                    
                                 context.contextNode = oldContext;
                             }
                         }
-                  });
+                  );
     nodes.nodeList = std::move(resultList);
 }
 
-void JsonPathExpressionNodeFilterChildren::inspect(std::ostream &out) const {
-    out << "Filter by [ ";
+void JsonPathExpressionNodeFilter::inspect(std::ostream &out) const {
+    out << "Filter " << (_filterChildren ? "children " : "") << "by [ ";
     _filter->inspect(out);
     out << " ]";
 }

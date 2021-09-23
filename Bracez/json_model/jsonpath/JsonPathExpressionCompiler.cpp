@@ -81,13 +81,15 @@ auto const navigate_to_ancestor_token = tokenise(accept_str("^^"));
 
 auto const root_token = tokenise(accept(is_char('$')));
 auto const context_token = tokenise(accept(is_char('@')));
+auto const context_name_token = tokenise(accept_str("@@"));
 
 auto const comma_token = tokenise(accept(is_char(',')));
 auto const invert_slice_index_token = tokenise(accept(is_char('-')));
 auto const slice_index_sep_token = tokenise(accept(is_char(':')));
 auto const logical_negate_token = tokenise(accept(is_char('!')));
 
-auto const open_filter_paren_token = tokenise(accept_str("?("));
+auto const open_children_filter_paren_token = tokenise(accept_str("?("));
+auto const open_filter_paren_token = tokenise(accept_str("??("));
 auto const close_filter_paren_token = tokenise(accept(is_char(')')));
 
 auto const open_paren_token = tokenise(accept_str("("));
@@ -207,7 +209,11 @@ struct construct_navigate_to_parent {
 } constexpr construct_navigate_to_parent;
 auto navigate_to_parent = all(construct_navigate_to_parent, navigate_to_parent_token);
 
-
+static void construct_node_context_member_name(JsonPathExpressionNode **result, std::string dummy) {
+    *result = new JsonPathExpressionNodeContextMemberName();
+}
+auto context_member_name = define("member_name",
+                                all(&construct_node_context_member_name, context_name_token));
 
 struct construct_navigate_non_recurse {
     void operator()(JsonPathExpressionNodeNavPipelineStep **result, std::string name) const {
@@ -325,16 +331,15 @@ auto subscript_qualify =
 
 auto filter_by_expression =
     define("filter_expression",
-        (attempt(discard(start_subscript_token) &&
-         discard(open_filter_paren_token)) &&
-         strict("filter_expression",
-            all([](JsonPathExpressionNodeNavPipelineStep **result, JsonPathExpressionNode *expression) {
-                    *result = new JsonPathExpressionNodeFilterChildren(
-                                std::unique_ptr<JsonPathExpressionNode>(expression));
+         attempt(discard(start_subscript_token) &&
+            all([](JsonPathExpressionNodeNavPipelineStep **result, std::string type, JsonPathExpressionNode *expression) {
+                    *result = new JsonPathExpressionNodeFilter(
+                                std::unique_ptr<JsonPathExpressionNode>(expression), type == "?(");
                 },
-                reference("expression", &expression) &&
+                (open_filter_paren_token || open_children_filter_paren_token),
+                strict("filter_expression", reference("expression", &expression)) &&
                 discard(close_filter_paren_token) &&
-                discard(end_subscript_token)))));
+                discard(end_subscript_token))));
 
 
 
@@ -414,7 +419,8 @@ auto json_literal = all([](JsonPathExpressionNode** result, json::Node* node) {
                             *result = new JsonPathExpressionNodeJsonLiteral(std::unique_ptr<json::Node>(node));
                         }, parse_json());
 
-auto expression_terminal = attempt(navigation_pipe) ||
+auto expression_terminal =  attempt(context_member_name) ||
+                            attempt(navigation_pipe) ||
                             function_call ||
                             attempt(discard(open_paren_token) && reference("expression", &expression) && discard(close_paren_token)) ||
                             json_literal;

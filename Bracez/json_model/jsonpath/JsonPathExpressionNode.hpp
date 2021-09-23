@@ -70,6 +70,16 @@ public:
     virtual void stepFromNode(JsonPathExpressionNodeEvalContext &context, JsonPathExpressionNodeEvalResult &node) {} // TODO PURE
 };
 
+class JsonPathExpressionNodeContextMemberName: public JsonPathExpressionNode  {
+    
+public:
+    JsonPathExpressionNodeContextMemberName();
+    
+    virtual void inspect(std::ostream &out) const;
+    virtual JsonPathExpressionNodeEvalResult evaluate(JsonPathExpressionNodeEvalContext &context);
+
+};
+
 class JsonPathExpressionNodeNavPipeline: public JsonPathExpressionNode  {
     
 public:
@@ -169,14 +179,15 @@ private:
 
 
 
-class JsonPathExpressionNodeFilterChildren: public JsonPathExpressionNodeNavPipelineStep {
+class JsonPathExpressionNodeFilter: public JsonPathExpressionNodeNavPipelineStep {
 public:
-    JsonPathExpressionNodeFilterChildren(std::unique_ptr<JsonPathExpressionNode> &&filter);
+    JsonPathExpressionNodeFilter(std::unique_ptr<JsonPathExpressionNode> &&filter, bool filterChildren);
     
     virtual void inspect(std::ostream &out) const;
     virtual void stepFromNode(JsonPathExpressionNodeEvalContext &context, JsonPathExpressionNodeEvalResult &node);
 
 private:
+    bool _filterChildren;
     std::unique_ptr<JsonPathExpressionNode> _filter;
 };
 
