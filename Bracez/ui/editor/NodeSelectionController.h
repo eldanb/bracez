@@ -57,8 +57,6 @@
 - (void)pathMenuItemSelected:(NSMenuItem*)aItem;
 - (IBAction) markerListSelectionChanged:(id)aSender;
 
--(void)notifyJsonTextSpliced:(json::JsonFile*)aSender from:(TextCoordinate)aOldOffset length:(TextLength)aOldLength newLength:(TextLength)aNewLength;
-
 - (void)refreshSelectionFromTextView;
 
 -(BOOL)canNavigateBack;

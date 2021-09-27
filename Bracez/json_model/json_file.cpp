@@ -1225,10 +1225,15 @@ void JsonFileSemanticModelReconciliationTask::executeInBackground() {
 }
 
 
-shared_ptr<JsonFileSemanticModelReconciliationTask> JsonFile::spliceTextWithDirtySemanticModel(TextCoordinate aOffsetStart,
-                                                                                   TextLength aLen,
-                                                                                   const std::wstring &aNewText) {
+size_t JsonFile::spliceJsonTextContent(TextCoordinate aOffsetStart,
+                                    TextLength aLen,
+                                    const std::wstring &aNewText) {
+    stopwatch lSpliceTime("spliceJsonTextContent");
+
     size_t lNewLen = aNewText.length();
+    
+    // Create new string if there's a pending reconciliation task since that
+    // may actually look at the current string.
     if(pendingReconciliationTask) {
         jsonText = make_shared<std::wstring>(jsonText->substr(0, aOffsetStart) + aNewText + jsonText->substr(aOffsetStart+aLen));
     } else {
@@ -1236,16 +1241,30 @@ shared_ptr<JsonFileSemanticModelReconciliationTask> JsonFile::spliceTextWithDirt
         jsonText->insert(aOffsetStart, aNewText);
         jsonText->erase(aOffsetStart+lNewLen, aLen);
     }
-
+    
+    lSpliceTime.lap("Text update");
+    
     TextCoordinate lLineDelStart;
     TextLength lLineDelLen, lNumNewLines;
     updateLineOffsetsAfterSplice(aOffsetStart, aLen, lNewLen, aNewText.c_str(), &
                                  lLineDelStart, &lLineDelLen, &lNumNewLines);
     
-    // Update errors
     updateErrorsAfterSplice(aOffsetStart, aLen, lNewLen);
+
+    lSpliceTime.lap("Markers update");
     
     notify(SpliceNotification(aOffsetStart, aLen, lNewLen, lLineDelStart, lLineDelLen, lNumNewLines));
+
+    return lNewLen;
+}
+
+shared_ptr<JsonFileSemanticModelReconciliationTask> JsonFile::spliceTextWithDirtySemanticModel(TextCoordinate aOffsetStart,
+                                                                                   TextLength aLen,
+                                                                                   const std::wstring &aNewText) {
+    // Don't send notifications till we're thru
+    DeferNotificationsInBlock lDnib(this);
+
+    spliceJsonTextContent(aOffsetStart, aLen, aNewText);
 
     pendingReconciliationTask = make_shared<JsonFileSemanticModelReconciliationTask>(jsonText);
     return pendingReconciliationTask;
@@ -1256,29 +1275,10 @@ void JsonFile::spliceJsonTextByDomChange(TextCoordinate aOffsetStart, TextLength
     // Don't send notifications till we're thru
     DeferNotificationsInBlock lDnib(this);
     
-    stopwatch lSpliceTime("spliceJsonTextByDomChange");
-    
-    size_t lNewLen = aNewText.length();
-    if(pendingReconciliationTask) {
-        jsonText = make_shared<std::wstring>(jsonText->substr(0, aOffsetStart) + aNewText + jsonText->substr(aOffsetStart+aLen));
-    } else {
-        // Update text and line lengths
-        jsonText->insert(aOffsetStart, aNewText);
-        jsonText->erase(aOffsetStart+lNewLen, aLen);
-    }
-    lSpliceTime.lap("Text update");
-    
+    size_t lNewLen = spliceJsonTextContent(aOffsetStart, aLen, aNewText);
+
     // Update tree offsets
     updateTreeOffsetsAfterSplice(aOffsetStart, aLen, lNewLen);
-    
-    TextCoordinate lLineDelStart;
-    TextLength lLineDelLen, lNumNewLines;
-    updateLineOffsetsAfterSplice(aOffsetStart, aLen, lNewLen, aNewText.c_str(), &lLineDelStart, &lLineDelLen, &lNumNewLines);
-    
-    // Update errors
-    updateErrorsAfterSplice(aOffsetStart, aLen, lNewLen);
-    
-    notify(SpliceNotification(aOffsetStart, aLen, lNewLen, lLineDelStart, lLineDelLen, lNumNewLines));
 }
 
 

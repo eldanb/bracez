@@ -475,6 +475,10 @@ namespace json
 
        
    private:
+      size_t spliceJsonTextContent(TextCoordinate aOffsetStart,
+                                   TextLength aLen,
+                                   const std::wstring &aNewText);
+
       void spliceJsonTextByDomChange(TextCoordinate aOffsetStart, TextLength aLen, const std::wstring &aNewText);
       void updateLineOffsetsAfterSplice(TextCoordinate aOffsetStart,
                                         TextLength aLen,
