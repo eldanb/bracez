@@ -28,12 +28,14 @@ namespace priv
 class SpliceNotification : public Notification
 {
 public:
-    SpliceNotification(TextCoordinate aOffsetStart, TextLength aLen, TextLength aNewLen) :
-    offsetStart(aOffsetStart), len(aLen), newLen(aNewLen) {}
-    
-    SpliceNotification(const SpliceNotification &aOther) :
-    offsetStart(aOther.offsetStart), len(aOther.len), newLen(aOther.newLen) {}
-    
+    SpliceNotification(TextCoordinate aOffsetStart, TextLength aLen, TextLength aNewLen,
+                       TextCoordinate aLineDelStart, TextLength aLineDelLen, TextLength aNumNewLines) :
+        offsetStart(aOffsetStart), len(aLen), newLen(aNewLen),
+        lineOffsetStart(aLineDelStart), lineLen(aLineDelLen), lineNewLen(aNumNewLines)
+    {
+        
+    }
+        
     SpliceNotification *clone() const
     {
         return new SpliceNotification(*this);
@@ -41,13 +43,17 @@ public:
     
     void deliverToListener(JsonFile *aSender, JsonFileChangeListener *aListener) const
     {
-        aListener->notifyTextSpliced(aSender, offsetStart, len, newLen);
+        aListener->notifyTextSpliced(aSender, offsetStart, len, newLen, lineOffsetStart, lineLen, lineNewLen);
     }
     
 private:
     TextCoordinate offsetStart;
     TextLength len;
     TextLength newLen;
+    
+    TextCoordinate lineOffsetStart;
+    TextLength lineLen;
+    TextLength lineNewLen;
 }  ;
 
 class ErrorsChangedNotification : public Notification
@@ -972,8 +978,9 @@ private:
 
 
 JsonFile::JsonFile()
-: notificationsDeferred(0), jsonDom(new DocumentNode(this, new NullNode()))
+: notificationsDeferred(0), jsonDom(new DocumentNode(this, new NullNode())), jsonText(new std::wstring())
 {
+    lineStarts.appendMarker(BaseMarker(TextCoordinate(0)));
 }
 
 
@@ -981,7 +988,10 @@ void JsonFile::setText(const wstring &aText)
 {
     JsonParseErrorCollectionListenerListener listener(errors);
     
-    jsonText = aText;
+    lineStarts.clear();
+    lineStarts.appendMarker(BaseMarker(TextCoordinate(0)));
+
+    jsonText = make_shared<std::wstring>(aText);
     wstringstream lStream(aText);
     
     errors.clear();
@@ -995,12 +1005,16 @@ void JsonFile::setText(const wstring &aText)
     jsonDom->textRange.start = TextCoordinate(0);
     jsonDom->textRange.end = TextCoordinate(aText.length());
     
+    TextCoordinate lineChangeStart;
+    TextLength lineChangeOldLen, lineChangeNewLen;
+    updateLineOffsetsAfterSplice((TextCoordinate)0, 0, aText.length(), aText.c_str(), &lineChangeStart, &lineChangeOldLen, &lineChangeNewLen);
+    
     notify(ErrorsChangedNotification());
 }
 
 const wstring &JsonFile::getText() const
 {
-    return jsonText;
+    return *jsonText;
 }
 
 DocumentNode *JsonFile::getDom()
@@ -1095,14 +1109,14 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
     unsigned long trimLeft = 0;
     while(trimLeft < aLen &&
           trimLeft < newTextLen &&
-          aNewText[trimLeft] == jsonText[aOffsetStart + trimLeft]) {
+          aNewText[trimLeft] == (*jsonText)[aOffsetStart + trimLeft]) {
         trimLeft++;
     }
     
     unsigned long trimRight = 0;
     while(trimRight < (aLen-trimLeft) &&
           trimRight < newTextLen &&
-          aNewText[newTextLen - 1 - trimRight] == jsonText[aOffsetStart + aLen - 1 - trimRight]) {
+          aNewText[newTextLen - 1 - trimRight] == (*jsonText)[aOffsetStart + aLen - 1 - trimRight]) {
         trimRight++;
     }
     aOffsetStart += trimLeft;
@@ -1150,7 +1164,7 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
     
     // Construct updated JSON for node
     size_t updatedTextLen = newTextLen-trimRight-trimLeft;
-    std::wstring updatedJsonRegion = this->jsonText.substr(absRange.start, absRange.length());
+    std::wstring updatedJsonRegion = this->jsonText->substr(absRange.start, absRange.length());
     updatedJsonRegion.insert(aOffsetStart - absRange.start, aNewText, trimLeft, updatedTextLen);
     updatedJsonRegion.erase(aOffsetStart - absRange.start + updatedTextLen, aLen);
     
@@ -1169,10 +1183,15 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
         return false;
     }
     
-    jsonText.insert(aOffsetStart, aNewText, trimLeft, updatedTextLen);
-    jsonText.erase(aOffsetStart.getAddress() + updatedTextLen, aLen);
+    TextCoordinate lLineChangeStart;
+    TextLength lLineChangeLen, lLineChangeNewLen;
+    
+    jsonText->insert(aOffsetStart, aNewText, trimLeft, updatedTextLen);
+    jsonText->erase(aOffsetStart.getAddress() + updatedTextLen, aLen);
     updateTreeOffsetsAfterSplice(aOffsetStart, aLen, updatedTextLen);
     updateErrorsAfterSplice(aOffsetStart, aLen, updatedTextLen);
+    updateLineOffsetsAfterSplice(aOffsetStart, aLen, updatedTextLen, aNewText.c_str() + trimLeft,
+                                 &lLineChangeStart, &lLineChangeLen, &lLineChangeNewLen);
 
     ContainerNode *spliceContainerContainer = spliceContainer->GetParent();
     
@@ -1183,8 +1202,53 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
     
     spliceContainerContainer->SetChildAt(spliceContainerIndexInParent, reparsedNode, true);
     notify(NodeRefreshNotification(std::move(integralNodeJsonPath)));
-    
+    notify(SpliceNotification(aOffsetStart, aLen, updatedTextLen, lLineChangeStart, lLineChangeLen, lLineChangeNewLen));
+
     return true;
+}
+
+JsonFileSemanticModelReconciliationTask::JsonFileSemanticModelReconciliationTask(std::shared_ptr<std::wstring> text)
+: newText(text),
+  prepared(false), parsedNode(NULL)
+{
+}
+    
+
+void JsonFileSemanticModelReconciliationTask::executeInBackground() {
+    JsonParseErrorCollectionListenerListener listener(errors);
+    errors.clear();
+    
+    wstringstream lStream(*newText);
+    stopwatch lStopWatch("Read Json");
+    Reader::Read(parsedNode, lStream, &listener);
+    lStopWatch.stop();
+}
+
+
+shared_ptr<JsonFileSemanticModelReconciliationTask> JsonFile::spliceTextWithDirtySemanticModel(TextCoordinate aOffsetStart,
+                                                                                   TextLength aLen,
+                                                                                   const std::wstring &aNewText) {
+    size_t lNewLen = aNewText.length();
+    if(pendingReconciliationTask) {
+        jsonText = make_shared<std::wstring>(jsonText->substr(0, aOffsetStart) + aNewText + jsonText->substr(aOffsetStart+aLen));
+    } else {
+        // Update text and line lengths
+        jsonText->insert(aOffsetStart, aNewText);
+        jsonText->erase(aOffsetStart+lNewLen, aLen);
+    }
+
+    TextCoordinate lLineDelStart;
+    TextLength lLineDelLen, lNumNewLines;
+    updateLineOffsetsAfterSplice(aOffsetStart, aLen, lNewLen, aNewText.c_str(), &
+                                 lLineDelStart, &lLineDelLen, &lNumNewLines);
+    
+    // Update errors
+    updateErrorsAfterSplice(aOffsetStart, aLen, lNewLen);
+    
+    notify(SpliceNotification(aOffsetStart, aLen, lNewLen, lLineDelStart, lLineDelLen, lNumNewLines));
+
+    pendingReconciliationTask = make_shared<JsonFileSemanticModelReconciliationTask>(jsonText);
+    return pendingReconciliationTask;
 }
 
 void JsonFile::spliceJsonTextByDomChange(TextCoordinate aOffsetStart, TextLength aLen, const std::wstring &aNewText)
@@ -1194,20 +1258,77 @@ void JsonFile::spliceJsonTextByDomChange(TextCoordinate aOffsetStart, TextLength
     
     stopwatch lSpliceTime("spliceJsonTextByDomChange");
     
-    unsigned long lNewLen = aNewText.length();
-    
-    // Update text and line lengths
-    jsonText.insert(aOffsetStart, aNewText);
-    jsonText.erase(aOffsetStart+lNewLen, aLen);
+    size_t lNewLen = aNewText.length();
+    if(pendingReconciliationTask) {
+        jsonText = make_shared<std::wstring>(jsonText->substr(0, aOffsetStart) + aNewText + jsonText->substr(aOffsetStart+aLen));
+    } else {
+        // Update text and line lengths
+        jsonText->insert(aOffsetStart, aNewText);
+        jsonText->erase(aOffsetStart+lNewLen, aLen);
+    }
     lSpliceTime.lap("Text update");
-    
-    notify(SpliceNotification(aOffsetStart, aLen, lNewLen));
     
     // Update tree offsets
     updateTreeOffsetsAfterSplice(aOffsetStart, aLen, lNewLen);
     
+    TextCoordinate lLineDelStart;
+    TextLength lLineDelLen, lNumNewLines;
+    updateLineOffsetsAfterSplice(aOffsetStart, aLen, lNewLen, aNewText.c_str(), &lLineDelStart, &lLineDelLen, &lNumNewLines);
+    
     // Update errors
     updateErrorsAfterSplice(aOffsetStart, aLen, lNewLen);
+    
+    notify(SpliceNotification(aOffsetStart, aLen, lNewLen, lLineDelStart, lLineDelLen, lNumNewLines));
+}
+
+
+void JsonFile::applyReconciliationTask(shared_ptr<JsonFileSemanticModelReconciliationTask> task) {
+    if(pendingReconciliationTask == task) {
+        errors = task->errors;
+
+        jsonDom.reset(new DocumentNode(this, task->parsedNode));
+        jsonDom->textRange.start = TextCoordinate(0);
+        jsonDom->textRange.end = TextCoordinate(jsonText->length());
+
+        notify(ErrorsChangedNotification());
+
+        pendingReconciliationTask.reset();
+    }
+}
+
+
+void JsonFile::updateLineOffsetsAfterSplice(TextCoordinate aOffsetStart,
+                                            TextLength aLen,
+                                            TextLength aNewLen,
+                                            const wchar_t *aUpdatedText,
+                                            TextCoordinate *aOutLineDelStart,
+                                            TextLength *aOutLineDelLen,
+                                            TextLength *aOutNumNewLines)
+{
+    SimpleMarkerList newLines;
+    
+    const wchar_t *updateEnd = aUpdatedText + aNewLen;
+    
+    for(const wchar_t *cur = aUpdatedText; cur != updateEnd; cur++) {
+        if(*cur == L'\n') {
+            newLines.appendMarker(aOffsetStart + (unsigned long)(cur - aUpdatedText) );
+        }
+    }
+
+    int lLineDelStart, lLineDelLen;
+    if(lineStarts.spliceCoordinatesList(aOffsetStart, aLen, aNewLen,
+                                        &newLines, // TODO
+                                        &lLineDelStart,
+                                        &lLineDelLen))
+    {
+        *aOutLineDelStart = (TextCoordinate)lLineDelStart;
+        *aOutLineDelLen = (TextLength)lLineDelLen;
+        *aOutNumNewLines = (TextLength)newLines.size();
+    } else {
+        *aOutLineDelStart = (TextCoordinate)0;
+        *aOutLineDelLen = 0;
+        *aOutNumNewLines = 0;
+    }
 }
 
 void JsonFile::notifyUpdatedNode(Node *updatedNode) {
@@ -1277,6 +1398,7 @@ void JsonFile::updateTreeOffsetsAfterSplice(TextCoordinate aOffsetStart, TextLen
         lCurContainer = lNextContainer;
     } while(lCurContainer);
 }
+
 
 
 void JsonFile::updateErrorsAfterSplice(TextCoordinate aOffsetStart, TextLength aLen, TextLength aNewLen)
@@ -1362,6 +1484,53 @@ TextCoordinate getContainerStartColumnAddr(const json::ContainerNode *containerN
                 containerContainerObj->GetChildMemberAt(idx)->nameRange.start.getAddress());
     } else {
         return containerNode->GetAbsTextRange().start;
+    }
+}
+
+void JsonFile::getCoordinateRowCol(TextCoordinate aCoord, int &aRow, int &aCol) const
+{
+    unsigned long coordAddress = aCoord.getAddress();
+    if(coordAddress)
+   {
+      SimpleMarkerList::const_iterator iter = lower_bound(lineStarts.begin(), lineStarts.end(), aCoord);
+
+       if(iter == lineStarts.begin())
+      {
+         aRow = 1;
+         aCol = (int)(coordAddress + 1);
+         return;
+      }
+
+      aRow = (int)(iter - lineStarts.begin() + 1);
+      iter--;
+      aCol = (int)(aCoord - *iter);
+   } else
+   {
+      aRow = 1;
+      aCol = 1;
+   }
+}
+
+TextCoordinate JsonFile::getLineStart(unsigned long aRow) const {
+    if(aRow <= 1) {
+        return TextCoordinate(0);
+    } else
+    if(aRow-2 > lineStarts.size()) {
+        return TextCoordinate::infinity;
+    } else {
+        return (TextCoordinate)lineStarts[(int)(aRow-2)];
+    }
+}
+
+TextCoordinate JsonFile::getLineFirstCharacter(unsigned long aRow) const {
+    return getLineStart(aRow) + (aRow>1 ? 1 : 0);
+}
+
+TextCoordinate JsonFile::getLineEnd(unsigned long aRow) const {
+    if(aRow-1 < lineStarts.size()) {
+        return TextCoordinate(lineStarts[(int)(aRow-1)].getCoordinate()-1);
+    } else {
+        return (TextCoordinate)jsonText->length();
     }
 }
 

@@ -9,13 +9,13 @@
 #include "reader.h"
 
 static TokenStreamAndUnderlying tokenStreamAtBeginningOfLine(const std::wstring &text,
-                                                             LinesAndBookmarks &linesAndBookmarks,
+                                                             const json::JsonFile &file,
                                                              TextCoordinate aOffset) {
     
     int row, col;
-    linesAndBookmarks.getCoordinateRowCol(aOffset, row, col);
+    file.getCoordinateRowCol(aOffset, row, col);
     
-    TextCoordinate inputOffset = linesAndBookmarks.getLineStart(row) + (row > 1 ? 1 : 0);
+    TextCoordinate inputOffset = file.getLineStart(row) + (row > 1 ? 1 : 0);
     
     return TokenStreamAndUnderlying(text, inputOffset.getAddress(), row-1, 0);
 }
@@ -26,12 +26,11 @@ static TokenStreamAndUnderlying tokenStreamAtBeginningOfLine(const std::wstring 
 
 JsonIndentFormatter::JsonIndentFormatter(const std::wstring &text,
                                          const json::JsonFile &jsonFile,
-                                         LinesAndBookmarks &linesAndBookmarks,
                                          TextCoordinate aOffsetStart,
                                          TextLength aLen,
                                          int indentSize)
-    : tokStreamAndCo(tokenStreamAtBeginningOfLine(text, linesAndBookmarks, aOffsetStart)),
-      indentationContext(JsonIndentationContext::approximateWithDocument(jsonFile, linesAndBookmarks, aOffsetStart, indentSize))
+    : tokStreamAndCo(tokenStreamAtBeginningOfLine(text, jsonFile, aOffsetStart)),
+      indentationContext(JsonIndentationContext::approximateWithDocument(jsonFile, aOffsetStart, indentSize))
 {
     TextLength textLen = (TextLength)text.length();
     startOffset = aOffsetStart;
@@ -167,13 +166,6 @@ void JsonIndentFormatter::outputString(const std::wstring &string) {
  */
 
 
-JsonIndentationContext JsonIndentationContext::approximateBySingleLine(const std::wstring &text,
-                                                                              LinesAndBookmarks &linesAndBookmarks,
-                                                                              TextCoordinate aOffset, int aIndentSize) {
-    TokenStreamAndUnderlying tokStream = tokenStreamAtBeginningOfLine(text, linesAndBookmarks, aOffset);
-    return JsonIndentationContext::approximateWithTokenStream(tokStream.tokenStream, aOffset, aIndentSize);
-}
-
 JsonIndentationContext JsonIndentationContext::approximateWithTokenStream(json::TokenStream &aTokStream, TextCoordinate aOffset, int aIndentSize) {
     JsonIndentationContext ret(0, aIndentSize);
     
@@ -209,9 +201,10 @@ JsonIndentationContext JsonIndentationContext::approximateWithTokenStream(json::
     return ret;
 }
 
-JsonIndentationContext JsonIndentationContext::approximateWithDocument(const json::JsonFile &file, const LinesAndBookmarks &linesAndBookmarks, TextCoordinate aOffset, int aIndentSize) {
+JsonIndentationContext JsonIndentationContext::approximateWithDocument(const json::JsonFile &file,
+                                                                       TextCoordinate aOffset, int aIndentSize) {
     int row, col;
-    linesAndBookmarks.getCoordinateRowCol(aOffset, row, col);
+    file.getCoordinateRowCol(aOffset, row, col);
     
     TextCoordinate lineStartCoord = aOffset - (col-1);
     const json::Node *startNode = file.FindNodeContaining(lineStartCoord, nullptr, true);
@@ -224,13 +217,13 @@ JsonIndentationContext JsonIndentationContext::approximateWithDocument(const jso
     }
     
     TextCoordinate colStartCoord = json::getContainerStartColumnAddr(currentContainer);
-    linesAndBookmarks.getCoordinateRowCol(colStartCoord, row, col);
+    file.getCoordinateRowCol(colStartCoord, row, col);
     indentLevels.insert(indentLevels.begin(), col-1);
     currentContainer = currentContainer->GetParent();
     
     while(currentContainer) {
         TextCoordinate currentContainerColStartCoord = json::getContainerStartColumnAddr(currentContainer);
-        linesAndBookmarks.getCoordinateRowCol(currentContainerColStartCoord, row, col);
+        file.getCoordinateRowCol(currentContainerColStartCoord, row, col);
         indentLevels.insert(indentLevels.begin(), col-1);
         currentContainer = currentContainer->GetParent();
     }

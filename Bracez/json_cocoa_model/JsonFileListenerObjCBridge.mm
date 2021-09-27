@@ -15,9 +15,18 @@ JsonFileListenerObjCBridge::JsonFileListenerObjCBridge(id<ObjCJsonFileChangeList
 {
 }
    
-void JsonFileListenerObjCBridge::notifyTextSpliced(JsonFile *aSender, TextCoordinate aOldOffset, TextLength aOldLength, TextLength aNewLength)
+void JsonFileListenerObjCBridge::notifyTextSpliced(JsonFile *aSender,
+                                                   TextCoordinate aOldOffset, TextLength aOldLength, TextLength aNewLength,
+                                                   TextCoordinate aOldLineStart, TextLength aOldLineLength,
+                                                   TextLength aNewLineLength)
 {
-   [targetListener notifyJsonTextSpliced:aSender from:aOldOffset length:aOldLength newLength:aNewLength];
+   [targetListener notifyJsonTextSpliced:aSender
+                                    from:aOldOffset
+                                  length:aOldLength
+                               newLength:aNewLength
+                       affectedLineStart:aOldLineStart
+                       numDeletedLines:aOldLineLength
+                           numAddedLines:aNewLineLength];
 }
 
 void JsonFileListenerObjCBridge::notifyNodeChanged(JsonFile *aSender, const JsonPath &nodePath) {

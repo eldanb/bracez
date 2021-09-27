@@ -14,7 +14,7 @@
 #import "JsonFileListenerObjCBridge.h"
 #import "ProjectionTableController.h"
 
-#include "LinesAndBookmarks.h"
+#include "BookmarksList.h"
 
 #define NAVGROUP_NONE   -1
 #define NAVGROUP_CURSOR_MOVEMENT   0

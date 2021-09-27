@@ -573,7 +573,7 @@
     int lLine = [self lineNumberForCharacterIndex:[textView selectedRange].location];
     if(document.bookmarks.findNextBookmark(lLine))
     {
-        TextCoordinate lLineStart = [document bookmarks].getLineFirstCharacter(lLine);
+        TextCoordinate lLineStart = document.jsonFile->getLineFirstCharacter(lLine);
         
         [self selectTextRange:NSMakeRange(lLineStart.getAddress(), 0)];
         [[textView window] makeFirstResponder:textView];
@@ -585,7 +585,7 @@
     int lLine = [self lineNumberForCharacterIndex:[textView selectedRange].location];
     if(document.bookmarks.findPrevBookmark(lLine))
     {
-        TextCoordinate lLineStart = document.bookmarks.getLineFirstCharacter(lLine);
+        TextCoordinate lLineStart = document.jsonFile->getLineFirstCharacter(lLine);
         [self selectTextRange:NSMakeRange(lLineStart.getAddress(), 0)];
         [[textView window] makeFirstResponder:textView];
     }
@@ -639,8 +639,8 @@
         lRet |= 1;
     }
     
-    TextCoordinate lLineStart = document.bookmarks.getLineStart(aLine);
-    TextCoordinate lLineEnd = document.bookmarks.getLineEnd(aLine);
+    TextCoordinate lLineStart = document.jsonFile->getLineStart(aLine);
+    TextCoordinate lLineEnd = document.jsonFile->getLineEnd(aLine);
     
     
     TextCoordinate lNextError = lLineStart;
@@ -710,7 +710,7 @@ static void adjustNavEntries(vector<TextCoordinate> &aNavEntries, TextCoordinate
     return YES;
 }
 
--(void)notifyJsonTextSpliced:(json::JsonFile*)aSender from:(TextCoordinate)aOldOffset length:(TextLength)aOldLength newLength:(TextLength)aNewLength
+-(void)notifyJsonTextSpliced:(json::JsonFile *)aSender from:(TextCoordinate)aOldOffset length:(TextLength)aOldLength newLength:(TextLength)aNewLength affectedLineStart:(TextCoordinate)aOldLineStart numDeletedLines:(TextLength)aOldLineLength numAddedLines:(TextLength)aNewLineLength
 {
     // TODO use markerlist?
     adjustNavEntries(backNavs, aOldOffset, aOldLength, aNewLength);

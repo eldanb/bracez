@@ -41,7 +41,7 @@
     self = [self initWithDescription:description
                          markerType:markerType
                                code:0
-                         coordinate:aDoc.bookmarks.getLineFirstCharacter(aLine)
+                         coordinate:aDoc.jsonFile->getLineFirstCharacter(aLine)
                           parentDoc:aDoc];
 
     if(self)

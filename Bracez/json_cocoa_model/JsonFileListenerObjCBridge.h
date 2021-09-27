@@ -13,7 +13,14 @@
 
 @protocol ObjCJsonFileChangeListener
 
--(void)notifyJsonTextSpliced:(json::JsonFile*)aSender from:(TextCoordinate)aOldOffset length:(TextLength)aOldLength newLength:(TextLength)aNewLength;
+-(void)notifyJsonTextSpliced:(json::JsonFile*)aSender
+                        from:(TextCoordinate)aOldOffset
+                      length:(TextLength)aOldLength
+                   newLength:(TextLength)aNewLength
+           affectedLineStart:(TextCoordinate)aOldLineStart
+             numDeletedLines:(TextLength)aOldLineLength
+               numAddedLines:(TextLength)aNewLineLength;
+
 -(void)notifyErrorsChanged:(json::JsonFile*)aSender;
 -(void)notifyNodeInvalidated:(json::JsonFile*)aSender nodePath:(const json::JsonPath&)nodePath;
 
@@ -23,7 +30,11 @@ class JsonFileListenerObjCBridge : public json::JsonFileChangeListener
 {
 public:
    JsonFileListenerObjCBridge(id<ObjCJsonFileChangeListener> aTarget);   
-   void notifyTextSpliced(json::JsonFile *aSender, TextCoordinate aOldOffset, TextLength aOldLength, TextLength aNewLength);
+   void notifyTextSpliced(json::JsonFile *aSender,
+                          TextCoordinate aOldOffset, TextLength aOldLength,
+                          TextLength aNewLength,
+                          TextCoordinate aOldLineStart, TextLength aOldLineLength,
+                          TextLength aNewLineLength);
    void notifyErrorsChanged(json::JsonFile *aSender);
    void notifyNodeChanged(json::JsonFile *aSender, const json::JsonPath &nodePath);
 

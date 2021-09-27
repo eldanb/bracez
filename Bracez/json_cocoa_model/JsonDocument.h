@@ -10,7 +10,7 @@
 
 #import "JsonCocoaNode.h"
 #include "json_file.h"
-#include "LinesAndBookmarks.h"
+#include "BookmarksList.h"
 #include "JsonFileListenerObjCBridge.h"
 
 using namespace json;
@@ -42,7 +42,7 @@ class BookmarksListenerBridge;
 -(NSUInteger)characterIndexForFirstCharOfLine:(UInt32)lineNumber;
 -(NSUInteger)lineCount;
 
--(LinesAndBookmarks&)bookmarks;
+-(BookmarksList&)bookmarks;
 -(const MarkerList<ParseErrorMarker>*)errors;
 
 -(NSArray*)problems; // This is errors + schema errors, cocoa'ed

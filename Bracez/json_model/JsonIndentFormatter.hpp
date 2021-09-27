@@ -10,7 +10,7 @@
 
 #include <string>
 #include "json_file.h"
-#include "LinesAndBookmarks.h"
+#include "BookmarksList.h"
 #include "reader.h"
 
 struct TokenStreamAndUnderlying {
@@ -37,12 +37,9 @@ public:
     void popIndentLevel();
 
 public:
-    static JsonIndentationContext approximateBySingleLine(const std::wstring &text, LinesAndBookmarks &linesAndBookmarks,
-                                                          TextCoordinate aOffset, int aIndentSize);
     static JsonIndentationContext approximateWithTokenStream(json::TokenStream &aTokStream, TextCoordinate aOffset, int aIndentSize);
     
     static JsonIndentationContext approximateWithDocument(const json::JsonFile &file,
-                                                          const LinesAndBookmarks &linesAndBookmarks,
                                                           TextCoordinate aOffset, int aIndentSize);
 
 private:
@@ -59,7 +56,6 @@ class JsonIndentFormatter {
 public:
     JsonIndentFormatter(const std::wstring &text,
                         const json::JsonFile &jsonFile,
-                        LinesAndBookmarks &linesAndBookmarks,
                         TextCoordinate aOffsetStart, TextLength aLen, int indentSize);
     
     const std::wstring &getIndented();

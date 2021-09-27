@@ -40,16 +40,14 @@ NSString *JsonDocumentSemanticModelUpdatedNotificationReasonReparse =
     
     JsonFile *file;
     
-    LinesAndBookmarks linesAndBookmarks;
+    BookmarksList bookmarks;
     
     JsonFileListenerObjCBridge *jsonSemanticListenerBridge;
     BookmarksListenerBridge *bookmarksListenerBridge;
     
     NSArray *problemWrappers;
     NSArray *bookmarkWrappers;
-    
-    NSObject *_lastRequestedSemanticModelRefresh;
-    
+        
     JsonCocoaNode *_cocoaNode;
 }
 
@@ -60,7 +58,7 @@ class BookmarksListenerBridge : public BookmarksChangeListener
 public:
     BookmarksListenerBridge(JsonDocument *aDoc) : document(aDoc)  { }
     
-    void bookmarksChanged(LinesAndBookmarks *aSender)
+    void bookmarksChanged(BookmarksList *aSender)
     {
         [document notifyBookmarksUpdated];
     }
@@ -86,15 +84,18 @@ private:
         _pendingSemanticDataRequests = [NSMutableArray array];
         
         _isSemanticModelUpdateInProgress = NO;
-        
+        _isSemanticModelDirty = NO;
+
         self.textStorage = [[NSTextStorage alloc] init];
         self.textStorage.delegate = self;
         
         jsonSemanticListenerBridge = new JsonFileListenerObjCBridge(self);
         bookmarksListenerBridge = new BookmarksListenerBridge(self);
-        linesAndBookmarks.addListener(bookmarksListenerBridge);
+        bookmarks.addListener(bookmarksListenerBridge);
         
-        [self updateSemanticModel:new JsonFile()];
+        file = new JsonFile();
+        file->addListener(jsonSemanticListenerBridge);
+        
     }
     
     return self;
@@ -139,12 +140,12 @@ private:
     {
         NSMutableArray *lMarkerArray = [[NSMutableArray alloc] init];
         
-        for(LineMarkerList::const_iterator lIter = linesAndBookmarks.begin();
-            lIter != linesAndBookmarks.end();
+        for(LineMarkerList::const_iterator lIter = bookmarks.begin();
+            lIter != bookmarks.end();
             lIter++)
         {
             unsigned long bookmarkLine = lIter->getCoordinate().getAddress();
-            TextCoordinate lineStart = linesAndBookmarks.getLineFirstCharacter( bookmarkLine );
+            TextCoordinate lineStart = file->getLineFirstCharacter( bookmarkLine );
             NSString *textStorageString = self.textStorage.string;
             
             NSString *lineContent = [textStorageString substringWithRange:NSIntersectionRange(NSMakeRange(0, textStorageString.length),
@@ -193,9 +194,9 @@ private:
     return file;
 }
 
--(LinesAndBookmarks&)bookmarks
+-(BookmarksList&)bookmarks
 {
-    return linesAndBookmarks;
+    return bookmarks;
 }
 
 -(const MarkerList<ParseErrorMarker>*)errors;
@@ -250,65 +251,41 @@ private:
 {
     int lRow;
     int lCol;
-    linesAndBookmarks.getCoordinateRowCol(aCoord, lRow, lCol);
+    file->getCoordinateRowCol(aCoord, lRow, lCol);
     
     *aRow = lRow;
     *aCol = lCol;
 }
 
 -(NSUInteger)characterIndexForFirstCharOfLine:(UInt32)lineNumber {
-    return (lineNumber-1)<linesAndBookmarks.numLines() ?
-    linesAndBookmarks.getLineFirstCharacter(lineNumber).getAddress() :
+    return (lineNumber-1)<file->numLines() ?
+            file->getLineFirstCharacter(lineNumber).getAddress() :
     -1;
 }
 
 -(NSUInteger)lineCount {
-    return linesAndBookmarks.numLines();
+    return file->numLines();
 }
 
--(void)updateSemanticModel:(JsonFile*)aFile
+-(void)notifyJsonTextSpliced:(JsonFile*)aSender
+                        from:(TextCoordinate)aOldOffset
+                      length:(TextLength)aOldLength
+                   newLength:(TextLength)aNewLength
+           affectedLineStart:(TextCoordinate)aOldLineStart
+             numDeletedLines:(TextLength)aOldLineLength
+               numAddedLines:(TextLength)aNewLineLength
 {
-    _isSemanticModelUpdateInProgress = true;
-    [self willChangeValueForKey:@"rootNode"];
-    [self willChangeValueForKey:@"problems"];
-    
-    if(file) {
-        delete file;
-        file = NULL;
+    if(!_isSemanticModelUpdateInProgress) {
+        _isSemanticModelTextChangeInProgress = YES;
+        
+        NSString *lNewText = [NSString stringWithWstring:aSender->getText().substr(aOldOffset.getAddress(), aNewLength)];
+        [self.textStorage replaceCharactersInRange:NSMakeRange(aOldOffset.getAddress(), aOldLength)
+                                        withString:lNewText];
+        
+        _isSemanticModelTextChangeInProgress = NO;
     }
     
-    file = aFile;
-    _cocoaNode = nil;
-    
-    if(file) {
-        file->addListener(jsonSemanticListenerBridge);
-    }
-    
-    problemWrappers = nil;
-    
-    [self didChangeValueForKey:@"problems"];
-    [self didChangeValueForKey:@"rootNode"];
-
-    _isSemanticModelUpdateInProgress = false;
-    _isSemanticModelDirty = NO;
-
-    [self updateSyntaxInRange:NSMakeRange(0, self.textStorage.string.length)];
-    
-    [self notifySemanticModelUpdatedWithReason:JsonDocumentSemanticModelUpdatedNotificationReasonReparse];
-}
-
-
--(void)notifyJsonTextSpliced:(JsonFile*)aSender from:(TextCoordinate)aOldOffset length:(TextLength)aOldLength newLength:(TextLength)aNewLength
-{
-    _isSemanticModelTextChangeInProgress = YES;
-    
-    
-    NSString *lNewText = [NSString stringWithWstring:aSender->getText().substr(aOldOffset.getAddress(), aNewLength)];
-    [self.textStorage replaceCharactersInRange:NSMakeRange(aOldOffset.getAddress(), aOldLength)
-                                    withString:lNewText];
-    
-    
-    _isSemanticModelTextChangeInProgress = NO;
+    self.bookmarks.updateBookmarksByLineSplice(aOldLineStart, aOldLineLength, aNewLineLength);
 }
 
 -(void)notifyErrorsChanged:(json::JsonFile*)aSender
@@ -346,21 +323,24 @@ private:
         
         if(!_isSemanticModelTextChangeInProgress) {
             _isSemanticModelUpdateInProgress = true;
-            if(!file->spliceTextWithWorkLimit(TextCoordinate(editedRange.location),
-                                              editedRange.length-delta,
-                                              updatedRegion.cStringWstring,
-                                              MAX_LOCAL_EDIT_LEN)) {
-                _isSemanticModelDirty = YES;
-                [self slowParseFileContent];
-            }
+            
+            bool spliceResult = !file->getErrors().size() &&
+                                 file->spliceTextWithWorkLimit(TextCoordinate(editedRange.location),
+                                                               editedRange.length-delta,
+                                                               updatedRegion.cStringWstring,
+                                                               MAX_LOCAL_EDIT_LEN);
+            
             _isSemanticModelUpdateInProgress = false;
+
+            if(!spliceResult) {
+                _isSemanticModelDirty = YES;
+                [self slowSpliceFileContentAt:TextCoordinate(editedRange.location)
+                                       length:editedRange.length-delta
+                                      newText:updatedRegion.cStringWstring];
+            }
         }
-        
-        linesAndBookmarks.updateLineOffsetsAfterSplice(TextCoordinate(editedRange.location),
-                                                       editedRange.length-delta,
-                                                       editedRange.length,
-                                                       updatedRegion.cStringWstring.c_str());
-        
+
+
         if(!_isSemanticModelDirty) {
             [self updateSyntaxInRange:editedRange];
         }
@@ -373,11 +353,11 @@ private:
     
     // Get line start
     int row, col;
-    linesAndBookmarks.getCoordinateRowCol(aOffsetStart, row, col);
+    file->getCoordinateRowCol(aOffsetStart, row, col);
     aOffsetStart = aOffsetStart - (col - 1);
     aLen += (col - 1);
     
-    JsonIndentFormatter fixer(jsonText, *file, linesAndBookmarks, aOffsetStart, aLen,
+    JsonIndentFormatter fixer(jsonText, *file, aOffsetStart, aLen,
                               [BracezPreferences sharedPreferences].indentSize);
     const std::wstring &indent = fixer.getIndented();
     aLen = fixer.getIndentedLength();
@@ -405,21 +385,21 @@ private:
     
     TextCoordinate containerStartColAddr = getContainerStartColumnAddr(container);
     int containerStartCol, containerStartRow;
-    linesAndBookmarks.getCoordinateRowCol(containerStartColAddr, containerStartRow, containerStartCol);
+    file->getCoordinateRowCol(containerStartColAddr, containerStartRow, containerStartCol);
     return containerStartCol-1 + [BracezPreferences sharedPreferences].indentSize;
 }
 
 -(int)suggestCloserIndentAt:(TextCoordinate)where getLineStart:(TextCoordinate*)lineStart {
     int row, col;
-    linesAndBookmarks.getCoordinateRowCol(where, row, col);
-    *lineStart = linesAndBookmarks.getLineStart(row);
+    file->getCoordinateRowCol(where, row, col);
+    *lineStart = file->getLineStart(row);
     
     const json::Node *n = file->FindNodeContaining(where, NULL);
     const json::ContainerNode *container = dynamic_cast<const json::ContainerNode*>(n);
     if(container) {
         TextCoordinate containerStartColAddr = getContainerStartColumnAddr(container);
         int containerStartCol, containerStartRow;
-        linesAndBookmarks.getCoordinateRowCol(containerStartColAddr, containerStartRow, containerStartCol);
+        file->getCoordinateRowCol(containerStartColAddr, containerStartRow, containerStartCol);
         return containerStartCol-1;
     } else {
         return col;
@@ -446,22 +426,33 @@ private:
     [self.textStorage endEditing];
 }
 
--(void)slowParseFileContent {
-    NSObject *modelRefreshTag = [[NSObject alloc] init];
-    _lastRequestedSemanticModelRefresh = modelRefreshTag;
-    
-    std::wstring lstr = self.textStorage.string.cStringWstring;
+-(void)slowSpliceFileContentAt:(TextCoordinate)aOffsetStart length:(TextLength)aLen newText:(const std::wstring &)aNewText {
+    _isSemanticModelUpdateInProgress = true;
+
+    std::shared_ptr<JsonFileSemanticModelReconciliationTask> reconcile = file->spliceTextWithDirtySemanticModel(aOffsetStart, aLen, aNewText);
+
+    _isSemanticModelUpdateInProgress = false;
+
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-        JsonFile *tfile = new JsonFile();
-        tfile->setText(lstr);
+        reconcile->executeInBackground();
         
-        //sleep(3);
         dispatch_async(dispatch_get_main_queue(), ^{
-            if(modelRefreshTag == self->_lastRequestedSemanticModelRefresh) {
-                [self updateSemanticModel:tfile];
-            } else {
-                delete tfile;
-            }
+            self->file->applyReconciliationTask(reconcile);
+            self->_isSemanticModelUpdateInProgress = true;
+            [self willChangeValueForKey:@"rootNode"];
+            [self willChangeValueForKey:@"problems"];
+
+            self->_cocoaNode = nil;
+            self->problemWrappers = nil;
+            
+            [self didChangeValueForKey:@"problems"];
+            [self didChangeValueForKey:@"rootNode"];
+            self->_isSemanticModelUpdateInProgress = false;
+            self->_isSemanticModelDirty = NO;
+
+            [self updateSyntaxInRange:NSMakeRange(0, self.textStorage.string.length)];
+            [self notifySemanticModelUpdatedWithReason:JsonDocumentSemanticModelUpdatedNotificationReasonReparse];
+
         });
     });
 }

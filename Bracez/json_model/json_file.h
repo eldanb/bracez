@@ -372,7 +372,9 @@ namespace json
    struct JsonFileChangeListener
    {
       virtual void notifyTextSpliced(JsonFile *aSender, TextCoordinate aOldOffset, 
-                                     TextLength aOldLength, TextLength aNewLength) {}
+                                     TextLength aOldLength, TextLength aNewLength,
+                                     TextCoordinate aOldLineStart, TextLength aOldLineLength,
+                                     TextLength aNewLineLength) = 0;
       virtual void notifyErrorsChanged(JsonFile *aSender) {}
       virtual void notifyNodeChanged(JsonFile *aSender, const JsonPath &nodePath) {}
    };
@@ -411,7 +413,24 @@ namespace json
       
       class DeferNotificationsInBlock;
    }
-   
+
+    class JsonFileSemanticModelReconciliationTask {
+    public:
+        JsonFileSemanticModelReconciliationTask(std::shared_ptr<std::wstring> text);
+        void executeInBackground();
+        
+    private:
+
+        shared_ptr<std::wstring> newText;
+        bool prepared;
+
+        MarkerList<ParseErrorMarker> errors;
+        Node *parsedNode;
+
+        friend class JsonFile;
+//        friend std::shared_ptr<JsonFileSemanticModelReconciliationTask> std::make_shared<JsonFileSemanticModelReconciliationTask>(std::shared_ptr<std::wstring> text);
+    };
+
    class JsonFile
    {
    public:
@@ -438,10 +457,33 @@ namespace json
                                    TextLength aLen,
                                    const std::wstring &aNewText,
                                    int maxParsedRegionLength);
+       
+       
+       shared_ptr<JsonFileSemanticModelReconciliationTask>  spliceTextWithDirtySemanticModel(
+                                            TextCoordinate aOffsetStart,
+                                            TextLength aLen,
+                                            const std::wstring &newText);       
+      void applyReconciliationTask(shared_ptr<JsonFileSemanticModelReconciliationTask> task);
 
+
+      void getCoordinateRowCol(TextCoordinate aCoord, int &aRow, int &aCol) const;
+      TextCoordinate getLineStart(unsigned long aRow) const;
+      TextCoordinate getLineFirstCharacter(unsigned long aRow) const;
+      TextCoordinate getLineEnd(unsigned long aRow) const;
+       
+      inline unsigned long numLines() const { return lineStarts.size()+1; }
+
+       
    private:
       void spliceJsonTextByDomChange(TextCoordinate aOffsetStart, TextLength aLen, const std::wstring &aNewText);
-      
+      void updateLineOffsetsAfterSplice(TextCoordinate aOffsetStart,
+                                        TextLength aLen,
+                                        TextLength aNewLen,
+                                        const wchar_t *updatedText,
+                                        TextCoordinate *aOutLineDelStart,
+                                        TextLength *aOutLineDelLen,
+                                        TextLength *aOutNumNewLines);
+
       void updateTreeOffsetsAfterSplice(TextCoordinate aOffsetStart, TextLength aLen, TextLength aNewLen);
       void updateErrorsAfterSplice(TextCoordinate aOffsetStart, TextLength aLen, TextLength aNewLen);
 
@@ -463,17 +505,20 @@ namespace json
       friend class Notification;
       friend class priv::DeferNotificationsInBlock;
       
-      std::unique_ptr<DocumentNode> jsonDom;      
-
-      std::wstring jsonText;      
-
+      std::unique_ptr<DocumentNode> jsonDom;
+      std::shared_ptr<std::wstring> jsonText;
+       
+      SimpleMarkerList lineStarts;
       MarkerList<ParseErrorMarker> errors;
       
       typedef list<JsonFileChangeListener*> Listeners;
       Listeners listeners;
+       
       int notificationsDeferred;
       typedef list<priv::Notification*> DeferredNotifications;
       DeferredNotifications deferredNotifications;
+       
+       shared_ptr<JsonFileSemanticModelReconciliationTask> pendingReconciliationTask;
    };
    
    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

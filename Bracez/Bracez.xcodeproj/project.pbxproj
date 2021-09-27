@@ -26,7 +26,7 @@
 		B99B5A7311C6DF0000A33231 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B99B5A7211C6DF0000A33231 /* QuartzCore.framework */; };
 		B99D0DD725BC989C0006EA1F /* libjq.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B99D0DD625BC98810006EA1F /* libjq.a */; };
 		B9AADFFD253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9AADFFC253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm */; };
-		B9BBFDF0120D2CBE00E4E9AE /* LinesAndBookmarks.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9BBFDEE120D2CBE00E4E9AE /* LinesAndBookmarks.cpp */; };
+		B9BBFDF0120D2CBE00E4E9AE /* BookmarksList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9BBFDEE120D2CBE00E4E9AE /* BookmarksList.cpp */; };
 		B9C354D826A8A4FA007380E8 /* ProjectionDefinition.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9C354D726A8A4FA007380E8 /* ProjectionDefinition.mm */; };
 		B9C354DB26A8A6D2007380E8 /* ProjectionTableController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9C354DA26A8A6D2007380E8 /* ProjectionTableController.mm */; };
 		B9F8ACB226B3D57600602302 /* ProjectionDefinitionFavoritesAdapter.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9F8ACB126B3D57600602302 /* ProjectionDefinitionFavoritesAdapter.mm */; };
@@ -113,8 +113,8 @@
 		B99D0DD625BC98810006EA1F /* libjq.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjq.a; path = ../../../../../../usr/local/Cellar/jq/1.6/lib/libjq.a; sourceTree = "<group>"; };
 		B9AADFFB253A19AD00DE2559 /* SyntaxHilightJsonVisitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SyntaxHilightJsonVisitor.h; path = json_cocoa_model/SyntaxHilightJsonVisitor.h; sourceTree = "<group>"; };
 		B9AADFFC253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = SyntaxHilightJsonVisitor.mm; path = json_cocoa_model/SyntaxHilightJsonVisitor.mm; sourceTree = "<group>"; };
-		B9BBFDEE120D2CBE00E4E9AE /* LinesAndBookmarks.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LinesAndBookmarks.cpp; path = json_model/LinesAndBookmarks.cpp; sourceTree = "<group>"; };
-		B9BBFDEF120D2CBE00E4E9AE /* LinesAndBookmarks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LinesAndBookmarks.h; path = json_model/LinesAndBookmarks.h; sourceTree = "<group>"; };
+		B9BBFDEE120D2CBE00E4E9AE /* BookmarksList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BookmarksList.cpp; path = json_model/BookmarksList.cpp; sourceTree = "<group>"; };
+		B9BBFDEF120D2CBE00E4E9AE /* BookmarksList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BookmarksList.h; path = json_model/BookmarksList.h; sourceTree = "<group>"; };
 		B9C354D626A8A4FA007380E8 /* ProjectionDefinition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProjectionDefinition.h; sourceTree = "<group>"; };
 		B9C354D726A8A4FA007380E8 /* ProjectionDefinition.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ProjectionDefinition.mm; sourceTree = "<group>"; };
 		B9C354D926A8A6D2007380E8 /* ProjectionTableController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProjectionTableController.h; sourceTree = "<group>"; };
@@ -316,8 +316,8 @@
 			children = (
 				B9FC2B4825F90D8800484EA3 /* marker_list.h */,
 				B9FC2A9A25F908FC00484EA3 /* jsonpath */,
-				B9BBFDEE120D2CBE00E4E9AE /* LinesAndBookmarks.cpp */,
-				B9BBFDEF120D2CBE00E4E9AE /* LinesAndBookmarks.h */,
+				B9BBFDEE120D2CBE00E4E9AE /* BookmarksList.cpp */,
+				B9BBFDEF120D2CBE00E4E9AE /* BookmarksList.h */,
 				B945F8FA1192DAC800DCFAAE /* reader.h */,
 				B945F8FB1192DAC800DCFAAE /* reader.inl */,
 				B945F91A1192DDAC00DCFAAE /* json_file.h */,
@@ -618,7 +618,7 @@
 				B9FC2A9325F8C14F00484EA3 /* Exception.cpp in Sources */,
 				B9FC2AB225F908FC00484EA3 /* JsonPathExpressionCompiler.cpp in Sources */,
 				B9FC2B3625F90D6000484EA3 /* TextEditorGutterView.mm in Sources */,
-				B9BBFDF0120D2CBE00E4E9AE /* LinesAndBookmarks.cpp in Sources */,
+				B9BBFDF0120D2CBE00E4E9AE /* BookmarksList.cpp in Sources */,
 				B9F8ACB226B3D57600602302 /* ProjectionDefinitionFavoritesAdapter.mm in Sources */,
 				B934AD19121C7503005B06D6 /* NSIndexPathAdditions.m in Sources */,
 				B9496DF826D8A94100BF5B11 /* SyntaxEditingField.mm in Sources */,
