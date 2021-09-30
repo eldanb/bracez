@@ -12,6 +12,8 @@
 @class TextEditorGutterView;
 @class JsonPathSearchController;
 @class HistoryAndFavoritesControl;
+@class JsonDocument;
+@class NodeSelectionController;
 
 @interface JSONWindow : NSWindow <ProjectionDefinitionFavoritesAdapterDelegate> {
     IBOutlet NSTextView *textEditor;
@@ -33,7 +35,10 @@
 
 -(void)loadPreferences;
 -(void)removeJsonNode:(id)aSender;
-- (void)forwardInvocation:(NSInvocation *)anInvocation;
+-(void)forwardInvocation:(NSInvocation *)anInvocation;
+
+-(JsonDocument*)document;
+-(NodeSelectionController*)selectionController;
 
 -(id)_getActionForwardingTarget:(SEL)aSelector;
 

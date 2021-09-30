@@ -8,23 +8,25 @@
 
 #import "JsonTreeDataSource.h"
 #import "JsonCocoaNode.h"
+#import "JSONWindow.h"
 #import "JsonDocument.h"
 #import "json_file.h"
+#import "NodeSelectionController.h"
 
 NSString * const JsonNodePboardType=@"JsonNode";
 
 @interface JsonTreeDataSource () {
-    __weak JsonDocument *document;
+    __weak JSONWindow *window;
 }
 
 @end
 
 @implementation JsonTreeDataSource
 
--(instancetype)initWithDocument:(JsonDocument*)aDocument {
+-(instancetype)initWithWindow:(JSONWindow*)aWindow {
     self = [super init];
     if(self) {
-        document = aDocument;
+        window = aWindow;
     }
     return self;
 }
@@ -52,9 +54,10 @@ NSString * const JsonNodePboardType=@"JsonNode";
     {
         [*lNode moveToNode:[item representedObject] atIndex:(int)index fromParent:*lParentNode];
         json::TextRange updatedTextRange = (*lNode).proxiedElement->GetAbsTextRange();
-        [self->document reindentStartingAt:updatedTextRange.start
+        [window.document reindentStartingAt:updatedTextRange.start
                                        len:updatedTextRange.length()
                      suggestNewEndLocation:nil];
+        [window.selectionController selectTextRange:NSMakeRange(updatedTextRange.start, 0)];
     }
    
    return YES;
@@ -71,11 +74,17 @@ NSString * const JsonNodePboardType=@"JsonNode";
    NSTreeNode *lDraggedParentTreeNode = [lDraggedTreeNode parentNode];
    JsonCocoaNode *lDraggedParentJsonNode = [lDraggedParentTreeNode representedObject];
    
-   
-   [inPboard setPropertyList:[NSDictionary dictionaryWithObjectsAndKeys:[NSData dataWithBytes:&lDraggedJsonNode length:sizeof(lDraggedJsonNode)], @"draggedObject",
-                                                                        [NSData dataWithBytes:&lDraggedParentJsonNode length:sizeof(lDraggedJsonNode)], @"draggedParent",
-                                                                        nil, nil]
-              forType:JsonNodePboardType];
+   NSDictionary *pasteboardPlist = @{
+       @"draggedObject": [NSData dataWithBytes:&lDraggedJsonNode
+                                        length:sizeof(lDraggedJsonNode)],
+       @"draggedParent": [NSData dataWithBytes:&lDraggedParentJsonNode
+                                        length:sizeof(lDraggedJsonNode)]
+       
+   };
+    
+   [inPboard setPropertyList:pasteboardPlist
+                     forType:JsonNodePboardType];
+    
    return YES;
 }
 

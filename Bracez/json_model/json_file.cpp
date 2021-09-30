@@ -308,9 +308,11 @@ void ArrayNode::DetachChildAt(int aIdx, Node **aNode)
     if(lNextIter!=elements.end())
     {
         lSpliceRange.end = (*lNextIter)->GetAbsTextRange().start;
-    } else
-    {
-        lSpliceRange.end = GetAbsTextRange().end-1;
+    } else {
+        if(lIter!=elements.begin()) {
+            Elements::iterator lPrevIter = lIter-1;
+            lSpliceRange.start = (*lPrevIter)->GetAbsTextRange().end;
+        }
     }
     
     *aNode = lIter->release();
@@ -721,6 +723,10 @@ void ObjectNode::DetachChildAt(int aIdx, Node **aNode)
         lSpliceRange.end = lNextIter->nameRange.start + lMyAbsRange.start;
     } else
     {
+        if(lIter != members.begin()) {
+            Members::iterator lPrevIter = lIter-1;
+            lSpliceRange.start = lPrevIter->node->GetAbsTextRange().end;
+        }
         lSpliceRange.end = lSpliceRange.end - 1;
     }
     

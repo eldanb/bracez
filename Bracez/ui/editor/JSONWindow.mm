@@ -71,7 +71,7 @@ extern "C" {
     [gutterView setModel:(id<GutterViewModel>)selectionController];
     [textEditorScroll setVerticalRulerView:gutterView];
     
-    _treeDataSource = [[JsonTreeDataSource alloc] initWithDocument:self.document];
+    _treeDataSource = [[JsonTreeDataSource alloc] initWithWindow:self];
     [treeView setDataSource:_treeDataSource];
     [treeView registerForDraggedTypes:[NSArray arrayWithObject:@"JsonNode"]];
     [treeView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
@@ -535,6 +535,10 @@ static void onJqCompileError(void *ctxt, jv err) {
 
 - (void)recallProjectionDefinition:(nonnull ProjectionDefinition *)definition {
     [self setProjectionDefinition:definition];
+}
+
+-(NodeSelectionController*)selectionController {
+    return self->selectionController;
 }
 
 @end
