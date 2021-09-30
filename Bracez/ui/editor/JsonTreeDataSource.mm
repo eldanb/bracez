@@ -8,10 +8,27 @@
 
 #import "JsonTreeDataSource.h"
 #import "JsonCocoaNode.h"
+#import "JsonDocument.h"
+#import "json_file.h"
 
 NSString * const JsonNodePboardType=@"JsonNode";
 
+@interface JsonTreeDataSource () {
+    __weak JsonDocument *document;
+}
+
+@end
+
 @implementation JsonTreeDataSource
+
+-(instancetype)initWithDocument:(JsonDocument*)aDocument {
+    self = [super init];
+    if(self) {
+        document = aDocument;
+    }
+    return self;
+}
+
 - (BOOL) outlineView: (NSOutlineView *)ov isItemExpandable: (id)item { return NO; }
 - (NSInteger) outlineView: (NSOutlineView *)ov numberOfChildrenOfItem:(id)item { return 0; }
 - (id) outlineView: (NSOutlineView *)ov child:(long)index ofItem:(id)item { return nil; }
@@ -30,9 +47,14 @@ NSString * const JsonNodePboardType=@"JsonNode";
     if(index == -1) {
         index = 0;
     }
+    
     if(lNode && *lNode && lParentNode && *lParentNode)
     {
         [*lNode moveToNode:[item representedObject] atIndex:(int)index fromParent:*lParentNode];
+        json::TextRange updatedTextRange = (*lNode).proxiedElement->GetAbsTextRange();
+        [self->document reindentStartingAt:updatedTextRange.start
+                                       len:updatedTextRange.length()
+                     suggestNewEndLocation:nil];
     }
    
    return YES;

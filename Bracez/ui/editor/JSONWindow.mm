@@ -71,7 +71,7 @@ extern "C" {
     [gutterView setModel:(id<GutterViewModel>)selectionController];
     [textEditorScroll setVerticalRulerView:gutterView];
     
-    _treeDataSource = [[JsonTreeDataSource alloc] init];
+    _treeDataSource = [[JsonTreeDataSource alloc] initWithDocument:self.document];
     [treeView setDataSource:_treeDataSource];
     [treeView registerForDraggedTypes:[NSArray arrayWithObject:@"JsonNode"]];
     [treeView setDraggingSourceOperationMask:NSDragOperationEvery forLocal:YES];
@@ -257,7 +257,9 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
     }
     
     TextCoordinate newEndLocation;
-    [self.document reindentStartingAt:TextCoordinate(selectionRange.location) len:selectionRange.length suggestNewEndLocation:&newEndLocation];
+    [self.document reindentStartingAt:TextCoordinate(selectionRange.location)
+                                  len:selectionRange.length
+                suggestNewEndLocation:&newEndLocation];
     dispatch_async(dispatch_get_main_queue(), ^{
         [self->selectionController selectTextRange:NSMakeRange(newEndLocation, 0)];
     });

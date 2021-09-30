@@ -348,7 +348,9 @@ private:
 }
 
 
--(void)reindentStartingAt:(TextCoordinate)aOffsetStart len:(TextLength)aLen suggestNewEndLocation:(TextCoordinate*)newEndLocation {
+-(void)reindentStartingAt:(TextCoordinate)aOffsetStart
+                      len:(TextLength)aLen
+    suggestNewEndLocation:(TextCoordinate*)newEndLocation {
     std::wstring jsonText = _textStorage.string.cStringWstring;
     
     // Get line start

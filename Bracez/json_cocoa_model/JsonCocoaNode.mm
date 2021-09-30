@@ -209,6 +209,7 @@ using namespace json;
       ArrayNode *lArrNode = dynamic_cast<ArrayNode*> (lNewParent);
       lArrNode->InsertMemberAt(aIndex, lThis, &lTxt);      
    }
+     
 }
 
 -(void)_internalInsertChild:(JsonCocoaNode*)aChild atIndex:(int)aIdx

@@ -51,7 +51,10 @@ class BookmarksListenerBridge;
 -(JsonFile*)jsonFile;
 -(NSIndexPath*)pathFromJsonPathString:(NSString*)jsonPathString;
 
--(void)reindentStartingAt:(TextCoordinate)aOffsetStart len:(TextLength)aLen suggestNewEndLocation:(TextCoordinate*)newEndLocation;
+-(void)reindentStartingAt:(TextCoordinate)aOffsetStart
+                      len:(TextLength)aLen
+    suggestNewEndLocation:(TextCoordinate*)newEndLocation;
+
 -(int)suggestIdentForNewLineAt:(TextCoordinate)where;
 -(int)suggestCloserIndentAt:(TextCoordinate)where getLineStart:(TextCoordinate*)lineStart;
 

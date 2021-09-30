@@ -11,8 +11,10 @@
 
 extern NSString * const JsonNodePboardType;
 
-@interface JsonTreeDataSource : NSObject <NSOutlineViewDataSource> {
+@class JsonDocument;
 
+@interface JsonTreeDataSource : NSObject <NSOutlineViewDataSource> {
 }
 
+-(instancetype)initWithDocument:(JsonDocument*)document;
 @end

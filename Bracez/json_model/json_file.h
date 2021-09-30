@@ -161,7 +161,7 @@ namespace json
       int FindChildEndingAfter(const TextCoordinate &aDocOffset) const;
 
       void InsertMemberAt(int aIdx, Node *aElement, 
-                          const wstring *aElementText=NULL);
+                          const wstring *aElementText);
       
       void accept(NodeVisitor *aVisitor) const;
       void accept(NodeVisitor *aVisitor);
@@ -219,7 +219,7 @@ namespace json
 
       void DetachChildAt(int aIdx, Node **aNode);
       ObjectNode::Member &InsertMemberAt(int aIdx, const wstring &aName,
-                           Node *aElement, const wstring *aElementText=NULL);
+                           Node *aElement, const wstring *aElementText);
       void RenameMemberAt(int aIdx, const wstring &aName);
 
       int FindChildEndingAfter(const TextCoordinate &aDocOffset) const;
