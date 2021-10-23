@@ -409,7 +409,6 @@ private:
 }
 
 -(void)updateSyntaxInRange:(NSRange)editedRange {
-    
     NSFont *lFont = [[BracezPreferences sharedPreferences] editorFont];
     stopwatch lStopWatch("Update syntax coloring");
     
@@ -419,13 +418,16 @@ private:
         [self.textStorage setAttributeRuns:[NSArray array]];
         [self.textStorage setFont:lFont];
     } else {
-        //[self.textStorage setAttributes:@{} range:editedRange];
+        //
     }
     
     SyntaxHighlightJsonVisitor visitor(self.textStorage, editedRange);
-    file->getDom()->accept(&visitor);
-    
-    [self.textStorage endEditing];
+    json::TextRange editedRangeTR(TextCoordinate(editedRange.location), TextCoordinate(editedRange.location+editedRange.length));
+    file->getDom()->GetChildAt(0)->acceptInRange(&visitor, editedRangeTR);
+
+    if(editedRange.length > 2048) {
+        [self.textStorage endEditing];
+    }
 }
 
 -(void)slowSpliceFileContentAt:(TextCoordinate)aOffsetStart length:(TextLength)aLen newText:(const std::wstring &)aNewText {

@@ -7,7 +7,7 @@
 
 #import "SyntaxHilightJsonVisitor.h"
 
-SyntaxHighlightJsonVisitor::SyntaxHighlightJsonVisitor(NSTextStorage *aTextStorage, const NSRange &aHighlightRange) : textStorage(aTextStorage), hilightRange(aHighlightRange)
+SyntaxHighlightJsonVisitor::SyntaxHighlightJsonVisitor(NSMutableAttributedString *aTextStorage, const NSRange &aHighlightRange) : textStorage(aTextStorage), hilightRange(aHighlightRange)
 {
   loadColors();
 }
@@ -43,16 +43,18 @@ bool SyntaxHighlightJsonVisitor::visitNode(const Node *aNode)
   } else {
      NSColor *lNodeColor = [colors colorForNodeType:aNode->GetNodeTypeId()];
      
-     json::TextRange lNodeRange = aNode->GetAbsTextRange();
-      if(lNodeRange.end.infinite()) {
-          lNodeRange.end = TextCoordinate((unsigned int)(hilightRange.location + hilightRange.length));
+      if(lNodeColor) {
+         json::TextRange lNodeRange = aNode->GetAbsTextRange();
+          if(lNodeRange.end.infinite()) {
+              lNodeRange.end = TextCoordinate((unsigned int)(hilightRange.location + hilightRange.length));
+          }
+         NSRange lRange = NSIntersectionRange(NSMakeRange(lNodeRange.start.getAddress(), lNodeRange.length()),
+                                                hilightRange);
+         if(lRange.length!=0)
+         {
+            [textStorage addAttribute:NSForegroundColorAttributeName value:lNodeColor range:lRange];
+         }
       }
-     NSRange lRange = NSIntersectionRange(NSMakeRange(lNodeRange.start.getAddress(), lNodeRange.length()),
-                                            hilightRange);
-     if(lRange.length!=0)
-     {
-        [textStorage addAttribute:NSForegroundColorAttributeName value:lNodeColor range:lRange];
-     }
   }
   return true;
 }

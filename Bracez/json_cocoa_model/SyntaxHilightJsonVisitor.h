@@ -16,7 +16,7 @@ using namespace json;
 class SyntaxHighlightJsonVisitor : public NodeVisitor
 {
 public:
-   SyntaxHighlightJsonVisitor(NSTextStorage *aTextStorage, const NSRange &aHighlightRange);
+   SyntaxHighlightJsonVisitor(NSMutableAttributedString *aTextStorage, const NSRange &aHighlightRange);
    
     virtual bool visitNode(Node *aNode);
     virtual bool visitObjectMemberNode(ObjectNode::Member *aMember);
@@ -30,7 +30,7 @@ private:
     void loadColors();
    
     NodeTypeToColorTransformer *colors;
-    NSTextStorage *textStorage;
+    NSMutableAttributedString *textStorage;
     NSRange hilightRange;
 } ;
 

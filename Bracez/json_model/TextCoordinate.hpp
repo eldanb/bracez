@@ -29,6 +29,14 @@ public:
         return *this;
     }
 
+    inline TextCoordinate &operator-=(long other) {
+        if(!infinite()) {
+            coord -= other;
+        }
+        
+        return *this;
+    }
+
     inline TextCoordinate operator+(int ofs) const {
         if(!infinite()) {
             return TextCoordinate(coord + ofs);

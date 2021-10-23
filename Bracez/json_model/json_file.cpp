@@ -188,11 +188,21 @@ void ContainerNode::SetChildAt(int aIdx, Node *aNode, bool fromReparse)
 
 int ContainerNode::FindChildContaining(const TextCoordinate &aDocOffset, bool strict) const
 {
+    // Fast path for cached child
+    if(cachedLastRangeFoundChild != -1) {
+        TextRange tr = GetChildAt(cachedLastRangeFoundChild)->GetTextRange();
+        if( (tr.start < aDocOffset || (!strict && tr.start == aDocOffset)) &&
+            (tr.end > aDocOffset || (!strict && tr.end == aDocOffset)) ) {
+            return cachedLastRangeFoundChild;
+        }
+    }
+    
     int lRet = FindChildEndingAfter(aDocOffset);
     if(lRet>=0)
     {
         TextRange tr = GetChildAt(lRet)->GetTextRange();
         if(tr.start < aDocOffset || (!strict && tr.start == aDocOffset)) {
+            cachedLastRangeFoundChild = lRet;
             return lRet;
         }
     }
@@ -470,6 +480,33 @@ void ArrayNode::accept(NodeVisitor *aVisitor)
         (*lIter)->accept(aVisitor);
     }
 }
+
+void ArrayNode::acceptInRange(NodeVisitor *aVisitor, TextRange &range) {
+    TextRange adjustedRange = range.intersectWithAndRelativeTo(GetTextRange());
+    
+    if(!adjustedRange.length()) {
+        return;
+    }
+    
+    if(adjustedRange.start == 0 && adjustedRange.end == GetTextRange().length()) {
+        return accept(aVisitor);
+    }
+    
+    aVisitor->visitNode(this);
+    
+    int firstChildToSearch = this->FindChildEndingAfter(adjustedRange.start);
+    if(firstChildToSearch < 0) {
+        firstChildToSearch = 0;
+    }
+    
+    for(Elements::iterator lIter = elements.begin() + firstChildToSearch;
+        lIter!=elements.end() && (*lIter)->GetTextRange().start < adjustedRange.end;
+        lIter++)
+    {
+        (*lIter)->acceptInRange(aVisitor, adjustedRange);
+    }
+}
+
 
 ArrayNode *ArrayNode::clone() const {
     ArrayNode *ret = new ArrayNode();
@@ -762,6 +799,35 @@ void ObjectNode::accept(NodeVisitor *aVisitor)
     }
 }
 
+void ObjectNode::acceptInRange(NodeVisitor *aVisitor, TextRange &range) {
+    TextRange adjustedRange = range.intersectWithAndRelativeTo(GetTextRange());
+    
+    if(!adjustedRange.length()) {
+        return;
+    }
+    
+    if(adjustedRange.start == 0 && adjustedRange.end == GetTextRange().length()) {
+        return accept(aVisitor);
+    }
+    
+    aVisitor->visitNode(this);
+    
+    // Since the search range may actually start in the child's key name, we
+    // err for the careful side and start the search in the previous child
+    int firstChildToSearch = this->FindChildContaining(adjustedRange.start, false) - 1;
+    if(firstChildToSearch < 0) {
+        firstChildToSearch = 0;
+    }
+    
+    for(Members::iterator lIter = members.begin() + firstChildToSearch;
+        lIter!=members.end() && lIter->node->GetTextRange().start < adjustedRange.end;
+        lIter++)
+    {
+        lIter->node->acceptInRange(aVisitor, adjustedRange);
+    }
+}
+
+
 bool ObjectNode::ValueEquals(Node *other) const {
     ObjectNode *objOtherNode = dynamic_cast<ObjectNode*>(other);
     if(!objOtherNode) {
@@ -862,6 +928,11 @@ void DocumentNode::accept(NodeVisitor *aVisitor)
     }
 }
 
+void DocumentNode::acceptInRange(NodeVisitor *aVisitor, TextRange &range)
+{
+    accept(aVisitor);
+}
+
 void DocumentNode::CalculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint) const
 {
     // TODO
@@ -880,6 +951,10 @@ void LeafNode::accept(NodeVisitor *aVisitor) const
 
 void LeafNode::accept(NodeVisitor *aVisitor)
 {
+    aVisitor->visitNode(this);
+}
+
+void LeafNode::acceptInRange(NodeVisitor *aVisitor, TextRange &range) {
     aVisitor->visitNode(this);
 }
 
@@ -1107,7 +1182,7 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
                                        const std::wstring &aNewText,
                                        int maxParsedRegionLength) {
     stopwatch spliceStopWatch("Fast spliceText");
-
+    
     // Adjust splice range to not include non-modified regions.
     // E.g on MacOS the text system my specific a longer range
     // than actually changed.
@@ -1128,19 +1203,33 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
     aOffsetStart += trimLeft;
     aLen -= (trimLeft + trimRight);
 
+    //fast
+    
+    
     // Locate integral node that contains the entire changed region
     JsonPath integralNodeJsonPath;
     Node *spliceContainer = jsonDom->GetChildAt(0);
     ContainerNode *spliceContainerAsContainerNode;
     int spliceContainerIndexInParent = 0;
     TextCoordinate soughtOffset = aOffsetStart;
+    
+    // slowparse
+    /*if(!dynamic_cast<ContainerNode*>(spliceContainer))
+    {
+        return false;
+    }
+    return true;*/
+
     while( (spliceContainerAsContainerNode = dynamic_cast<ContainerNode*>(spliceContainer)) != NULL )
     {
         soughtOffset = soughtOffset.relativeTo(spliceContainer->GetTextRange().start);
         
+        stopwatch fcc("FindChildContaining ");
         int lNextNav = spliceContainerAsContainerNode->FindChildContaining(soughtOffset, false);
+        fcc.stop();
         if(lNextNav<0)
             break;
+    
 
         Node *nextNavNode = spliceContainerAsContainerNode->GetChildAt(lNextNav);
         if(nextNavNode->GetTextRange().end < soughtOffset+aLen) {
@@ -1152,13 +1241,14 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
         integralNodeJsonPath.push_back(lNextNav);
         spliceContainerIndexInParent = lNextNav;
     }
-    
-    
+
+
     if(!spliceContainer || spliceContainer == jsonDom->GetChildAt(0)) {
         return false;
     }
-    
-    
+
+    //slow
+
     // Ensure integral node indeed contains the entire changed region and
     // that it's not too long
     TextRange absRange = spliceContainer->GetAbsTextRange().intersectWith(this->getDom()->textRange);
@@ -1185,6 +1275,7 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
     Reader::Read(reparsedNode, reparseStream, &listener); // TODO error listener
     repraseStopWatch.stop();
     
+    // slow
     if(errors.size()) {
         return false;
     }

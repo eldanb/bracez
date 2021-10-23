@@ -49,7 +49,7 @@
 -(instancetype)initWithDefinition:(ProjectionDefinition*)editedDefinition previewDocument:(JsonDocument* __nullable)previewDocument {
     self = [super initWithWindowNibName:@"ProjectionDefinitionEditor"];
     if(self) {
-        _editedProjection = [editedDefinition copy];
+        _editedProjection = editedDefinition ? [editedDefinition copy] : [ProjectionDefinition newDefinition];        
         _previewDocument = previewDocument;
     }
     return self;

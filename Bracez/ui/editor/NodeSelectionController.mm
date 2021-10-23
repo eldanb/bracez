@@ -333,14 +333,16 @@
 -(void)refreshSelectionFromTextView;
 {
     syncingNodeAndTextSel = true;
-
+    
     int lRow, lCol;
     [document translateCoordinate:TextCoordinate([textView selectedRange].location) toRow:&lRow col:&lCol];
     [coordView setCoordinateRow:lRow col:lCol];
     
     if(!document.isSemanticModelDirty) {
         NSIndexPath *lNewSelIndexPath = [document findPathContaining:TextCoordinate([textView selectedRange].location)];
-        [treeController setSelectionIndexPath:lNewSelIndexPath];
+        if(![treeController.selectionIndexPath isEqualTo:lNewSelIndexPath]) {
+            [treeController setSelectionIndexPath:lNewSelIndexPath];
+        }
     }
 
     syncingNodeAndTextSel = false;

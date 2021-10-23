@@ -345,7 +345,11 @@ using namespace json;
 }
 
 -(void)reloadFromElement:(json::Node*)aProxiedElement {
-    [self willChangeValueForKey:@"children"];
+    bool childrenChanging = children != nil;
+    if(childrenChanging) {
+        [self willChangeValueForKey:@"children"];
+    }
+    
     [self willChangeValueForKey:@"nodeName"];
     [self willChangeValueForKey:@"nodeType"];
     [self willChangeValueForKey:@"nodeValue"];
@@ -356,13 +360,18 @@ using namespace json;
     [self didChangeValueForKey:@"nodeValue"];
     [self didChangeValueForKey:@"nodeType"];
     [self didChangeValueForKey:@"nodeName"];
-    [self didChangeValueForKey:@"children"];
+    
+    if(childrenChanging) {
+        [self didChangeValueForKey:@"children"];
+    }
 }
 
 -(void)reloadChildren {
-    [self willChangeValueForKey:@"children"];
-    children = nil;
-    [self didChangeValueForKey:@"children"];
+    if(children != nil) {
+        [self willChangeValueForKey:@"children"];
+        children = nil;
+        [self didChangeValueForKey:@"children"];
+    }
 }
 
 @end

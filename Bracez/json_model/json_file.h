@@ -33,12 +33,25 @@ namespace json
       TextRange() {}
       TextRange(const TextCoordinate &aStart, const TextCoordinate &aEnd) : start(aStart), end(aEnd) {}
 
+       bool operator==(const TextRange &other) const {
+           return start == other.start && end == other.end;
+       }
+       
       TextLength length() const { return end-start; }
       
        TextRange intersectWith(TextRange other) const {
            TextRange ret;
            ret.start = start > other.start ? start : other.start;
            ret.end = end < other.end ? end : other.end;
+           ret.end = ret.end < ret.start ? ret.start : ret.end;
+           
+           return ret;
+       }
+       
+       TextRange intersectWithAndRelativeTo(TextRange other) const {
+           TextRange ret = intersectWith(other);
+           ret.start -= other.start;
+           ret.end -= other.start;
            
            return ret;
        }
@@ -80,7 +93,8 @@ namespace json
       
       virtual void accept(NodeVisitor *aVisitor) const = 0;
       virtual void accept(NodeVisitor *aVisitor) = 0;
-      
+      virtual void acceptInRange(NodeVisitor *aVisitor, TextRange &range) = 0;
+
       virtual NodeTypeId GetNodeTypeId() const = 0;
    
       virtual void CalculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint = -1) const = 0;
@@ -111,6 +125,8 @@ namespace json
    class ContainerNode : public Node
    {
    public:
+       ContainerNode() : cachedLastRangeFoundChild(-1) {};
+       
       void SetChildAt(int aIdx, Node *aNode, bool fromReparse = false);
        
       virtual int GetChildCount()  const = 0;
@@ -124,7 +140,6 @@ namespace json
       virtual int FindChildEndingAfter(const TextCoordinate &aDocOffset) const = 0;
       virtual int FindChildContaining(const TextCoordinate &aDocOffset, bool strict) const;
       
-      
       virtual void DetachChildAt(int aIdx, Node **aNode) = 0;
 
       virtual bool ValueEquals(Node *other) const;
@@ -135,6 +150,9 @@ namespace json
       virtual void StoreChildAt(int aIdx, Node *aNode) = 0;
 
       friend class JsonFile;
+       
+   private:
+       mutable int cachedLastRangeFoundChild;
 
    } ;
 
@@ -165,7 +183,8 @@ namespace json
       
       void accept(NodeVisitor *aVisitor) const;
       void accept(NodeVisitor *aVisitor);
-         
+      void acceptInRange(NodeVisitor *aVisitor, TextRange &range);
+       
       NodeTypeId GetNodeTypeId() const;
 
       void CalculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint = -1) const;
@@ -229,6 +248,7 @@ namespace json
 
       void accept(NodeVisitor *aVisitor) const;
       void accept(NodeVisitor *aVisitor);
+      void acceptInRange(NodeVisitor *aVisitor, TextRange &range);
 
       NodeTypeId GetNodeTypeId() const;
 
@@ -260,7 +280,8 @@ namespace json
       
       virtual void accept(NodeVisitor *aVisitor) const;
       virtual void accept(NodeVisitor *aVisitor);
-      
+      void acceptInRange(NodeVisitor *aVisitor, TextRange &range);
+
       NodeTypeId GetNodeTypeId() const ;
 
       virtual int GetChildCount() const;
@@ -294,6 +315,7 @@ namespace json
    public:
       void accept(NodeVisitor *aVisitor);
       void accept(NodeVisitor *aVisitor) const; 
+      void acceptInRange(NodeVisitor *aVisitor, TextRange &range);
 
    } ;
    
