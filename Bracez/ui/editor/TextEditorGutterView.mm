@@ -64,7 +64,7 @@
 }
 
 
-- (void)getFirstShownLineNumber:(int*)aNumber andRect:(NSRect*)aRect
+- (BOOL)getFirstShownLineNumber:(int*)aNumber andRect:(NSRect*)aRect
 {
     NSUInteger  index, lineNumber;
     NSRange		lineRange;
@@ -78,6 +78,9 @@
     
     // Find the glyph range for the visible glyphs
     NSRange glyphRange = [layoutManager glyphRangeForBoundingRect: documentVisibleRect inTextContainer: textContainer];
+    if(glyphRange.length == 0) {
+        return NO;
+    }
     
     if(model)
     {
@@ -103,7 +106,10 @@
         *aNumber = (int)lineNumber;
         *aRect = lineRect;
     }
+        
+    return YES;
 }
+
 
 - (void)drawHashMarksAndLabelsInRect:(NSRect)aRect
 {
@@ -121,10 +127,15 @@
     
     CGFloat lineRectWidth = [self requiredThickness];
     
-    int lCurLineNo;
-    NSRect lCurLineRect;
-    [self getFirstShownLineNumber:&lCurLineNo andRect:&lCurLineRect];
-    
+    int lFirstLineNo;
+    NSRect lFirstLineRect;
+    if(![self getFirstShownLineNumber:&lFirstLineNo andRect:&lFirstLineRect]) {
+        return;
+    }
+
+    int lCurLineNo = lFirstLineNo;
+    NSRect lCurLineRect = lFirstLineRect;
+
     // Only get the visible part of the scroller view
     NSRect documentVisibleRect = [[self scrollView] documentVisibleRect];
     
@@ -143,7 +154,7 @@
         if(gotGlyphIndex) {
             lCurLineRect = [layoutManager lineFragmentRectForGlyphAtIndex:glyphIndex effectiveRange:nil];
         } else {
-            lCurLineRect.origin.y = (lCurLineNo-1) * lDefaultLineHeight;
+            lCurLineRect.origin.y = (lCurLineNo-lFirstLineNo) * lDefaultLineHeight + lFirstLineRect.origin.y;
             lCurLineRect.size.height = lDefaultLineHeight;
         }
         

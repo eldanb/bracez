@@ -106,7 +106,7 @@ extern "C" {
     [gutterView setShowLineNumbers:prefs.gutterLineNumbers];
     treeView.needsDisplay = YES;
     
-    textEditor.font = prefs.editorFont;
+    //textEditor.font = prefs.editorFont;
     
     jqQueryInput.font = prefs.editorFont;
     jqQueryResult.font = prefs.editorFont;

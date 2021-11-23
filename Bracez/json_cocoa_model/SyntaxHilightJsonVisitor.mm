@@ -68,4 +68,3 @@ void SyntaxHighlightJsonVisitor::loadColors()
 {
   colors = (NodeTypeToColorTransformer*)[NSValueTransformer valueTransformerForName:@"NodeTypeToColorTransformer"];
 }
-

@@ -15,6 +15,9 @@
 #include "JsonIndentFormatter.hpp"
 #include "stopwatch.h"
 
+
+//#define USE_JSON_TEXT_STORAGE 1
+
 #define MAX_LOCAL_EDIT_LEN 1024
 
 NSString *JsonDocumentBookmarkChangeNotification =
@@ -31,6 +34,134 @@ NSString *JsonDocumentSemanticModelUpdatedNotificationReasonNodeInvalidation =
 
 NSString *JsonDocumentSemanticModelUpdatedNotificationReasonReparse =
 @"reparse";
+
+
+@interface JsonTextStorage : NSTextStorage {
+    JsonFile *_file;
+    NSFont *_font;
+    NSMutableString *_string;
+    NodeTypeToColorTransformer *_colors;
+}
+@end
+
+@implementation JsonTextStorage
+
+-(instancetype)init {
+    self = [super init];
+    if(self) {
+        _string = [NSMutableString string];
+        _font = [NSFont monospacedSystemFontOfSize:10 weight:NSFontWeightRegular];
+    }
+    return self;
+}
+
+-(void)setJsonFile:(JsonFile*)file {
+    [self beginEditing];
+    _file = file;
+    _colors = (NodeTypeToColorTransformer*)[NSValueTransformer valueTransformerForName:@"NodeTypeToColorTransformer"];
+    _string = [[NSMutableString stringWithWstring:file->getText()] mutableCopy];
+    [self replaceCharactersInRange:NSMakeRange(0, _string.length) withString:[NSString stringWithWstring:_file->getText()]];
+    [self endEditing];
+}
+
+-(NSString*)string {
+    return _string ? _string : [NSString string];
+}
+
+-(void)addAttribute:(NSAttributedStringKey)name value:(id)value range:(NSRange)range {
+}
+
+-(void)setAttributes:(NSDictionary<NSAttributedStringKey,id> *)attrs range:(NSRange)range {
+}
+
+-(void)replaceCharactersInRange:(NSRange)range withString:(NSString *)str {
+    [_string replaceCharactersInRange:range withString:str];
+    [self edited:NSTextStorageEditedAttributes | NSTextStorageEditedCharacters
+           range:range changeInLength:str.length - range.length];
+}
+
+-(NSDictionary<NSAttributedStringKey,id> *)attributesAtIndex:(NSUInteger)location effectiveRange:(NSRangePointer)range {
+    if(_file) {
+        const Node *n = _file->FindNodeContaining(TextCoordinate(location), NULL);
+        if(n) {
+            switch(n->GetNodeTypeId()) {
+                case json::ntNumber:
+                case json::ntString:
+                case json::ntBoolean:
+                case json::ntNull:
+                    {
+                        NSColor *color = [_colors colorForNodeType:n->GetNodeTypeId()];
+                        if(range) {
+                            json::TextRange textRange = n->GetAbsTextRange();
+                            range->location = textRange.start;
+                            range->length = textRange.length();
+                        }
+                        return @{ NSForegroundColorAttributeName: color,
+                                  NSFontAttributeName: _font
+                        };
+                    }
+                                        
+                case json::ntObject:
+                {
+                    const ContainerNode *obj = (const ContainerNode*)n;
+                    
+                    int childIdx = obj->FindChildEndingAfter(TextCoordinate(location).relativeTo(obj->GetAbsTextRange().start));
+                    const Node *nextChild = childIdx >= 0 ? obj->GetChildAt(childIdx) : NULL;
+                    const Node *prevChild = childIdx > 0 ? obj->GetChildAt(childIdx-1) : NULL;
+                    
+                    if(range) {
+                        if(prevChild) {
+                            range->location = prevChild->GetAbsTextRange().end;
+                        } else {
+                            range->location = n->GetAbsTextRange().start;
+                        }
+                                                
+                        if(nextChild) {
+                            range->length = nextChild->GetAbsTextRange().start - range->location;
+                        } else {
+                            range->length = n->GetAbsTextRange().end - range->location;
+                        }
+                    }
+                    return @{
+                              NSFontAttributeName: _font};
+                }
+                    
+                case json::ntArray:
+                {
+                    const ContainerNode *obj = (const ContainerNode*)n;
+                    int childIdx = obj->FindChildEndingAfter(TextCoordinate(location).relativeTo(obj->GetAbsTextRange().start));
+                    const Node *child = childIdx >= 0 ? obj->GetChildAt(childIdx) : NULL;
+
+                    if(range) {
+                        range->location = location;
+                        if(child && location < child->GetAbsTextRange().start) {
+                            range->length = child->GetAbsTextRange().start - location;
+                        } else
+                        {
+                            range->length = n->GetAbsTextRange().end - location;
+                        }
+                    }
+                    return @{
+                              NSFontAttributeName: _font};
+                }
+            }
+        }
+    }
+    
+    if(range) {
+        json::TextRange docTr = _file->getDom()->GetTextRange();
+        range->location = location;
+        if(location < docTr.start) {
+            range->length = docTr.start - location;
+        } else {
+            range->length = _string.length - location;
+        }
+    }
+    
+    return @{ NSFontAttributeName: _font };
+}
+
+@end
 
 
 @interface JsonDocument () {
@@ -86,7 +217,12 @@ private:
         _isSemanticModelUpdateInProgress = NO;
         _isSemanticModelDirty = NO;
 
+#ifdef USE_JSON_TEXT_STORAGE
+        self.textStorage = [[JsonTextStorage alloc] init];
+#else
         self.textStorage = [[NSTextStorage alloc] init];
+#endif
+        
         self.textStorage.delegate = self;
         
         jsonSemanticListenerBridge = new JsonFileListenerObjCBridge(self);
@@ -95,6 +231,10 @@ private:
         
         file = new JsonFile();
         file->addListener(jsonSemanticListenerBridge);
+
+#ifdef USE_JSON_TEXT_STORAGE
+        [(JsonTextStorage*)self.textStorage setJsonFile:file];
+#endif
         
     }
     
@@ -409,14 +549,16 @@ private:
 }
 
 -(void)updateSyntaxInRange:(NSRange)editedRange {
+#ifndef USE_JSON_TEXT_STORAGE
     NSFont *lFont = [[BracezPreferences sharedPreferences] editorFont];
     stopwatch lStopWatch("Update syntax coloring");
     
     [self.textStorage beginEditing];
     
     if(editedRange.location == 0 && editedRange.length == self.textStorage.length) {
-        [self.textStorage setAttributeRuns:[NSArray array]];
-        [self.textStorage setFont:lFont];
+        [self.textStorage setAttributes:@{ NSFontAttributeName: lFont } range:editedRange];
+        //[self.textStorage setAttributes:@{  } range:editedRange];
+        //self.textStorage.font = lFont;
     } else {
         //
     }
@@ -425,9 +567,8 @@ private:
     json::TextRange editedRangeTR(TextCoordinate(editedRange.location), TextCoordinate(editedRange.location+editedRange.length));
     file->getDom()->GetChildAt(0)->acceptInRange(&visitor, editedRangeTR);
 
-    if(editedRange.length > 2048) {
-        [self.textStorage endEditing];
-    }
+    [self.textStorage endEditing];
+#endif
 }
 
 -(void)slowSpliceFileContentAt:(TextCoordinate)aOffsetStart length:(TextLength)aLen newText:(const std::wstring &)aNewText {

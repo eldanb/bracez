@@ -189,11 +189,23 @@ void ContainerNode::SetChildAt(int aIdx, Node *aNode, bool fromReparse)
 int ContainerNode::FindChildContaining(const TextCoordinate &aDocOffset, bool strict) const
 {
     // Fast path for cached child
-    if(cachedLastRangeFoundChild != -1) {
+    if(cachedLastRangeFoundChild != -1 && cachedLastRangeFoundChild < GetChildCount()) {
         TextRange tr = GetChildAt(cachedLastRangeFoundChild)->GetTextRange();
         if( (tr.start < aDocOffset || (!strict && tr.start == aDocOffset)) &&
-            (tr.end > aDocOffset || (!strict && tr.end == aDocOffset)) ) {
+            (tr.end > aDocOffset) ) {
             return cachedLastRangeFoundChild;
+        }
+        
+        if(aDocOffset >= tr.end && cachedLastRangeFoundChild+1 < GetChildCount()) {
+            TextRange tr2 = GetChildAt(cachedLastRangeFoundChild+1)->GetTextRange();
+            if( (tr2.start < aDocOffset || (!strict && tr2.start == aDocOffset)) &&
+                (tr2.end > aDocOffset) ) {
+                cachedLastRangeFoundChild = cachedLastRangeFoundChild+1;
+                return cachedLastRangeFoundChild;
+            } else
+            if(tr2.start > aDocOffset) {
+                return -1;
+            }
         }
     }
     
