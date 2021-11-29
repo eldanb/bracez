@@ -27,6 +27,9 @@ namespace json
    class ContainerNode;
    class DocumentNode;
    class JsonFile;
+   class InputStream;
+   class TokenStream;
+   class ParseListener;
    
    struct TextRange
    {
@@ -439,18 +442,22 @@ namespace json
     class JsonFileSemanticModelReconciliationTask {
     public:
         JsonFileSemanticModelReconciliationTask(std::shared_ptr<std::wstring> text);
+        
         void executeInBackground();
+        void cancelExecution();
         
     private:
-
         shared_ptr<std::wstring> newText;
-        bool prepared;
-
         MarkerList<ParseErrorMarker> errors;
         Node *parsedNode;
 
+        unique_ptr<ParseListener> errorCollectionListener;
+        unique_ptr<InputStream> inputStream;
+        unique_ptr<TokenStream> tokenStream;
+        
+        std::atomic<bool> cancelled;
+        
         friend class JsonFile;
-//        friend std::shared_ptr<JsonFileSemanticModelReconciliationTask> std::make_shared<JsonFileSemanticModelReconciliationTask>(std::shared_ptr<std::wstring> text);
     };
 
    class JsonFile

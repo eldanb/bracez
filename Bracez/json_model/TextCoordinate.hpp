@@ -115,7 +115,11 @@ public:
         coord = other.coord;
         return *this;
     }
-    
+
+    void assign(unsigned long aCoord) {
+        coord = aCoord;
+    }
+
     inline bool infinite() const {
         return coord == TEXT_COORDINATE_INFINITY;
     }

@@ -27,6 +27,8 @@ namespace json
 //////////////////////
 struct ParseListener
 {
+    virtual ~ParseListener() {}
+    
     virtual void EndOfLine(TextCoordinate aWhere) = 0;
     virtual void Error(TextCoordinate aWhere, int aCode, const string &aText)=0;
 };
@@ -44,13 +46,16 @@ public:
     const wchar_t *CurrentPtr() const;
 
     bool EOS() const;
-
+    
     bool VerifyString(const std::wstring &sExpected);
-    const TextCoordinate& GetLocation() const { return m_Location; }
-
+    const TextCoordinate GetLocation() const { return TextCoordinate(m_Location); }
+    
+    void seek(const unsigned long where);
+    TextLength length() const { return m_Length; }
+    
 private:
     const wchar_t* m_Buffer;
-   TextCoordinate m_Location;
+   std::atomic<unsigned long> m_Location;
     TextLength m_Length;
    ParseListener *m_parseListener;
 };
@@ -193,7 +198,7 @@ private:
    bool skipWhitespace;
    bool tokenEaten;
    Token currentToken;
-    
+        
    int currentCol;
    int currentRow;
     bool prevNewLine;
@@ -247,8 +252,9 @@ public:
    // ...otherwise, if you don't know, call this & visit it
    static unsigned long Read(Node *& elementRoot, const std::wstring& istr, ParseListener *aParseListener=NULL, bool allowSuffix = false);
 
+    Reader(ParseListener *aParseListener);
+
 private:
-   Reader(ParseListener *aParseListener);
     
    template <typename ElementTypeT>   
    static unsigned long Read_i(ElementTypeT& element, const std::wstring& istr, ParseListener *aListener=NULL, bool allowSuffix = false);
@@ -262,7 +268,10 @@ public:
    void Parse(NumberNode *& number, TokenStream& tokenStream, TextCoordinate aBaseOfs=TextCoordinate(0));
    void Parse(BooleanNode *& boolean, TokenStream& tokenStream, TextCoordinate aBaseOfs=TextCoordinate(0));
    void Parse(NullNode *& null, TokenStream& tokenStream, TextCoordinate aBaseOfs=TextCoordinate(0));
-
+   
+   template<typename T>
+   void Parse(T &element, TokenStream &tokenStream, bool allowSuffix, TextCoordinate aBaseOfs=TextCoordinate(0));
+    
    const Token &MatchExpectedToken(Token::Type nExpected, TokenStream& tokenStream);
     
     

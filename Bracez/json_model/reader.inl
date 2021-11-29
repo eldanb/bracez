@@ -47,6 +47,10 @@ inline bool InputStream::EOS() const {
     return m_Location >= m_Length;
 }
 
+inline void InputStream::seek(unsigned long where) {
+    m_Location = where;
+}
+
 inline bool InputStream::VerifyString(const std::wstring &sExpected)
 {
     unsigned long expectedLen = sExpected.length();
@@ -61,13 +65,12 @@ inline bool InputStream::VerifyString(const std::wstring &sExpected)
  
 inline wchar_t InputStream::Get()
 {
-    assert(!EOS());
     wchar_t c = *CurrentPtr();
     m_Location = m_Location + 1;
    if (c == L'\n') {
       if(m_parseListener)
       {
-         m_parseListener->EndOfLine(m_Location-1);
+         m_parseListener->EndOfLine(TextCoordinate(m_Location-1));
       }
    }
 
@@ -411,18 +414,23 @@ unsigned long Reader::Read_i(ElementTypeT& element,
 
    InputStream inputStream(istr.c_str(), istr.size(), aParseListener);
    TokenStream tokenStream(inputStream, aParseListener);
-   reader.Parse(element, tokenStream);
+   reader.Parse(element, tokenStream, allowSuffix);
 
-   if (tokenStream.EOS() == false && !allowSuffix)
-   {
-      const Token& token = tokenStream.Peek();
-      std::string sMessage = "Expected End of token stream; found " + wstring_to_utf8(token.value());
-      aParseListener->Error(token.locBegin, PARSER_ERROR_EXPECTED_EOS, sMessage);
-   }
-    
-    return inputStream.GetLocation();
+   return inputStream.GetLocation();
 }
 
+template<typename T>
+inline void Reader::Parse(T &element, TokenStream &tokenStream, bool allowSuffix, TextCoordinate aBaseOfs) {
+     Parse(element, tokenStream, aBaseOfs);
+     
+     if (tokenStream.EOS() == false && !allowSuffix)
+     {
+        const Token& token = tokenStream.Peek();
+        std::string sMessage = "Expected End of token stream; found " + wstring_to_utf8(token.value());
+        listener->Error(token.locBegin, PARSER_ERROR_EXPECTED_EOS, sMessage);
+     }
+}
+ 
 inline void Reader::Parse(Node*& element, TokenStream& tokenStream, TextCoordinate aBaseOfs)
 {
    if (tokenStream.EOS()) {

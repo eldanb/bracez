@@ -168,7 +168,8 @@ NSString *JsonDocumentSemanticModelUpdatedNotificationReasonReparse =
     BOOL _isSemanticModelTextChangeInProgress;
     BOOL _isSemanticModelDirty;
     BOOL _isSemanticModelUpdateInProgress;
-    
+    std::shared_ptr<JsonFileSemanticModelReconciliationTask> currentReconciliationTask;
+
     JsonFile *file;
     
     BookmarksList bookmarks;
@@ -574,31 +575,42 @@ private:
 -(void)slowSpliceFileContentAt:(TextCoordinate)aOffsetStart length:(TextLength)aLen newText:(const std::wstring &)aNewText {
     _isSemanticModelUpdateInProgress = true;
 
+    if(currentReconciliationTask.get()) {
+        currentReconciliationTask->cancelExecution();
+        currentReconciliationTask.reset();
+    }
+    
+    // This keeps the reconciliation task alive for as long as it's running
     std::shared_ptr<JsonFileSemanticModelReconciliationTask> reconcile = file->spliceTextWithDirtySemanticModel(aOffsetStart, aLen, aNewText);
-
+    currentReconciliationTask = reconcile;
+    
     _isSemanticModelUpdateInProgress = false;
 
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-        reconcile->executeInBackground();
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self->file->applyReconciliationTask(reconcile);
-            self->_isSemanticModelUpdateInProgress = true;
-            [self willChangeValueForKey:@"rootNode"];
-            [self willChangeValueForKey:@"problems"];
-
-            self->_cocoaNode = nil;
-            self->problemWrappers = nil;
+        try {
+            reconcile->executeInBackground();
             
-            [self didChangeValueForKey:@"problems"];
-            [self didChangeValueForKey:@"rootNode"];
-            self->_isSemanticModelUpdateInProgress = false;
-            self->_isSemanticModelDirty = NO;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self->file->applyReconciliationTask(reconcile);
+                self->_isSemanticModelUpdateInProgress = true;
+                [self willChangeValueForKey:@"rootNode"];
+                [self willChangeValueForKey:@"problems"];
 
-            [self updateSyntaxInRange:NSMakeRange(0, self.textStorage.string.length)];
-            [self notifySemanticModelUpdatedWithReason:JsonDocumentSemanticModelUpdatedNotificationReasonReparse];
+                self->_cocoaNode = nil;
+                self->problemWrappers = nil;
+                
+                [self didChangeValueForKey:@"problems"];
+                [self didChangeValueForKey:@"rootNode"];
+                self->_isSemanticModelUpdateInProgress = false;
+                self->_isSemanticModelDirty = NO;
 
-        });
+                [self updateSyntaxInRange:NSMakeRange(0, self.textStorage.string.length)];
+                [self notifySemanticModelUpdatedWithReason:JsonDocumentSemanticModelUpdatedNotificationReasonReparse];
+
+            });
+        } catch(const ParseCancelledException &ex) {
+            NSLog(@"Parse cancelled caught");
+        }
     });
 }
 

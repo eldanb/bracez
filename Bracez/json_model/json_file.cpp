@@ -1310,18 +1310,41 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
 
 JsonFileSemanticModelReconciliationTask::JsonFileSemanticModelReconciliationTask(std::shared_ptr<std::wstring> text)
 : newText(text),
-  prepared(false), parsedNode(NULL)
+  parsedNode(NULL),
+  errorCollectionListener(new JsonParseErrorCollectionListenerListener(errors)),
+  inputStream(new InputStream(text->c_str(), text->size(), errorCollectionListener.get())),
+  tokenStream(new TokenStream(*inputStream, errorCollectionListener.get()))
 {
 }
     
 
+void JsonFileSemanticModelReconciliationTask::cancelExecution() {
+    cancelled = true;
+    TextLength len = inputStream->length();
+    if(len) {
+        // We don't seek to EOS because this could mess with races between
+        // time of EOS check and character access. This will abort soon enough.
+        inputStream->seek(len-1);
+    }
+}
+
 void JsonFileSemanticModelReconciliationTask::executeInBackground() {
-    JsonParseErrorCollectionListenerListener listener(errors);
     errors.clear();
+
+    try {
+        stopwatch lStopWatch("Read Json");
+        Reader reader(errorCollectionListener.get());
+        reader.Parse(parsedNode, *tokenStream, false);
+        lStopWatch.stop();
+    } catch(...) {
+        if(!cancelled) {
+            throw;
+        }
+    }
     
-    stopwatch lStopWatch("Read Json");
-    Reader::Read(parsedNode, *newText, &listener);
-    lStopWatch.stop();
+    if(cancelled) {
+        throw ParseCancelledException();
+    }
 }
 
 

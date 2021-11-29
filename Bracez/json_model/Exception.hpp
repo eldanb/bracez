@@ -20,4 +20,8 @@ public:
    Exception(const std::string& sMessage);
 };
 
+class ParseCancelledException : public Exception {
+public:
+    ParseCancelledException() : Exception("Parse cancelled") {}
+} ;
 #endif /* Exception_hpp */
