@@ -1080,13 +1080,12 @@ void JsonFile::setText(const wstring &aText)
     lineStarts.appendMarker(BaseMarker(TextCoordinate(0)));
 
     jsonText = make_shared<std::wstring>(aText);
-    wstringstream lStream(aText);
     
     errors.clear();
     
     stopwatch lStopWatch("Read Json");
     Node *lNode = NULL;
-    Reader::Read(lNode, lStream, &listener);
+    Reader::Read(lNode, aText, &listener);
     lStopWatch.stop();
     
     jsonDom.reset(new DocumentNode(this, lNode));
@@ -1274,12 +1273,10 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
     // Re-parse updated JSON
     MarkerList<ParseErrorMarker> errors;
     JsonParseErrorCollectionListenerListener listener(errors);
-    
-    wstringstream reparseStream(updatedJsonRegion);
-    
+        
     stopwatch repraseStopWatch("Reparse Json");
     Node *reparsedNode = NULL;
-    Reader::Read(reparsedNode, reparseStream, &listener); // TODO error listener
+    Reader::Read(reparsedNode, updatedJsonRegion, &listener); // TODO error listener
     repraseStopWatch.stop();
     
     // slow
@@ -1322,9 +1319,8 @@ void JsonFileSemanticModelReconciliationTask::executeInBackground() {
     JsonParseErrorCollectionListenerListener listener(errors);
     errors.clear();
     
-    wstringstream lStream(*newText);
     stopwatch lStopWatch("Read Json");
-    Reader::Read(parsedNode, lStream, &listener);
+    Reader::Read(parsedNode, *newText, &listener);
     lStopWatch.stop();
 }
 

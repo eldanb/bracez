@@ -73,15 +73,15 @@ void JsonIndentFormatter::reindent() {
         
         switch(tok.nType) {
             case json::Token::TOKEN_WHITESPACE:
-                outputString(tok.sOrgText);
-                if(tok.sOrgText == L"\n") {
+                outputString(tok.orgText());
+                if(tok.isValueEquals(L"\n")) {
                     skipInputWhitespace();
                 }
                 break;
             
             case json::Token::TOKEN_ARRAY_BEGIN:
             case json::Token::TOKEN_OBJECT_BEGIN:
-                outputString(tok.sOrgText);
+                outputString(tok.orgText());
                 indentationContext.pushIndentLevel();
                 copyAndEnsureNewLine();
                 break;
@@ -92,16 +92,16 @@ void JsonIndentFormatter::reindent() {
                 if(outputCol != 0) {
                     outputString(L"\n");
                 }
-                outputString(tok.sOrgText);
+                outputString(tok.orgText());
                 break;
                 
             case json::Token::TOKEN_NEXT_ELEMENT:
-                outputString(tok.sOrgText);
+                outputString(tok.orgText());
                 copyAndEnsureNewLine();
                 break;
                 
             default:
-                outputString(tok.sOrgText);
+                outputString(tok.orgText());
                 break;
             
         }
@@ -132,8 +132,8 @@ void JsonIndentFormatter::copyAndEnsureNewLine() {
 
         if(tok.nType == json::Token::TOKEN_WHITESPACE) {
             tokStreamAndCo.tokenStream.Get();
-            if(tok.sOrgText == L"\n") {
-                outputString(tok.sOrgText);
+            if(tok.isValueEquals(L"\n")) {
+                outputString(tok.orgText());
                 skipInputWhitespace();
                 return;
             }

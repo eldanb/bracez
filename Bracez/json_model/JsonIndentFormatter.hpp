@@ -17,14 +17,11 @@ struct TokenStreamAndUnderlying {
     TokenStreamAndUnderlying(const std::wstring &text,
                              unsigned long startOffset,
                              int startRow, int startCol)
-        : stringStream(text),
-          inputStream(stringStream, NULL, TextCoordinate(startOffset)),
+        : inputStream(text.c_str(), text.size(), NULL, TextCoordinate(startOffset)),
           tokenStream(inputStream, NULL, false, startRow, startCol)
     { 
-        stringStream.seekg(startOffset);
     }
     
-    std::basic_stringstream<wchar_t> stringStream;
     json::InputStream inputStream;
     json::TokenStream tokenStream;
 };

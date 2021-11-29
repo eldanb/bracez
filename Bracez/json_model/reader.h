@@ -34,12 +34,14 @@ struct ParseListener
 class InputStream // would be cool if we could inherit from std::istream & override "get"
 {
 public:
-    InputStream(std::wistream& iStr, ParseListener *aListener = NULL, TextCoordinate aStartLocation = TextCoordinate()) :
-          m_iStr(iStr), m_Location(aStartLocation), m_parseListener(aListener) {}
+    InputStream(const wchar_t *aBuffer, TextLength aLength, ParseListener *aListener = NULL,
+                TextCoordinate aStartLocation = TextCoordinate());
 
-    // protect access to the input stream, so we can keeep track of document/line offsets
-    wchar_t Get();
-    wchar_t Peek();
+    // protect access to the input stream, so we can keep track of document/line offsets
+    inline wchar_t Get();
+    inline wchar_t Peek();
+    
+    const wchar_t *CurrentPtr() const;
 
     bool EOS() const;
 
@@ -47,8 +49,9 @@ public:
     const TextCoordinate& GetLocation() const { return m_Location; }
 
 private:
-   std::wistream& m_iStr;
+    const wchar_t* m_Buffer;
    TextCoordinate m_Location;
+    TextLength m_Length;
    ParseListener *m_parseListener;
 };
 
@@ -76,11 +79,85 @@ struct Token
         CHAR_CLASS_NUMERIC = 1,
    };
  
-    Token() : nType(TOKEN_UNKNOWN) {}
+    Token() : nType(TOKEN_UNKNOWN), valueBuff(NULL) {}
+    
+    Token(const Token &other) {
+        assignFrom(other);
+    }
+    
+    ~Token() {
+        if(valueBuff != NULL) {
+            free(valueBuff);
+        }
+    }
+     
+    Token &operator=(const Token &other)  {
+        clearValue();
+        assignFrom(other);
+        
+        return *this;
+    }
 
+    inline void assignFrom(const Token &other) {
+        nType = other.nType;
+        
+        orgTextStart = other.orgTextStart;
+        orgTextEnd = other.orgTextEnd;
+        
+        locBegin = other.locBegin;
+        locEnd = other.locEnd;
+                
+        if(other.valueBuff) {
+            valueBuff = wcsdup(other.valueBuff);
+            valueStart = valueBuff;
+            valueEnd = valueStart + (other.valueEnd-other.valueStart);
+        } else {
+            valueEnd = other.valueEnd;
+            valueStart = other.valueStart;
+            valueBuff = NULL;
+        }
+    }
+    
+    inline void assumeValueFromOrgText() {
+        valueStart = orgTextStart;
+        valueEnd = orgTextEnd;
+    }
+        
+    inline void clearValue() {
+        if(valueBuff != NULL) {
+            free(valueBuff);
+            valueBuff = NULL;
+        }
+        
+        valueStart = NULL;
+    }
+    
+    inline bool isValueEquals(const wchar_t *operand) const {
+        const wchar_t *s1 = valueStart;
+        const wchar_t *s2 = operand;
+        while(*s2 && s1 < valueEnd) {
+            if(*s2 != *s1) {
+                return false;
+            }
+            
+            s1++; s2++;
+        }
+        
+        return !(*s2 || s1 < valueEnd);
+    }
+    
+    std::wstring value() const { assert(valueStart); return std::wstring(valueStart, valueEnd); }
+    std::wstring orgText() const { assert(orgTextStart); return std::wstring(orgTextStart, orgTextEnd); }
+    
    Type nType;
-   std::wstring sValue;
-   std::wstring sOrgText;
+
+    const wchar_t *orgTextStart;
+   const wchar_t *orgTextEnd;
+
+   const wchar_t *valueStart;
+    const wchar_t *valueEnd;
+
+   wchar_t *valueBuff;
 
    // for malformed file debugging
    TextCoordinate locBegin;
@@ -111,6 +188,7 @@ private:
    void MatchBareWordToken();
    void MatchNumber();
     void updateLineCol(wchar_t forChar);
+    bool ProcessStringEscape(std::wstring &tokValue);
 
    bool skipWhitespace;
    bool tokenEaten;
@@ -159,21 +237,21 @@ public:
 
 
    // if you know what the document looks like, call one of these...
-   static void Read(ObjectNode *& object, std::wistream& istr);
-   static void Read(ArrayNode *& array, std::wistream& istr);
-   static void Read(StringNode *& string, std::wistream& istr);
-   static void Read(NumberNode *& number, std::wistream& istr);
-   static void Read(BooleanNode *& boolean, std::wistream& istr);
-   static void Read(NullNode *& null, std::wistream& istr);
+   static unsigned long Read(ObjectNode *& object, const std::wstring& istr);
+   static unsigned long Read(ArrayNode *& array, const std::wstring& istr);
+   static unsigned long Read(StringNode *& string, const std::wstring& istr);
+   static unsigned long Read(NumberNode *& number, const std::wstring& istr);
+   static unsigned long Read(BooleanNode *& boolean, const std::wstring& istr);
+   static unsigned long Read(NullNode *& null, const std::wstring& istr);
 
    // ...otherwise, if you don't know, call this & visit it
-   static void Read(Node *& elementRoot, std::wistream& istr, ParseListener *aParseListener=NULL, bool allowSuffix = false);
+   static unsigned long Read(Node *& elementRoot, const std::wstring& istr, ParseListener *aParseListener=NULL, bool allowSuffix = false);
 
 private:
    Reader(ParseListener *aParseListener);
     
    template <typename ElementTypeT>   
-   static void Read_i(ElementTypeT& element, std::wistream& istr, ParseListener *aListener=NULL, bool allowSuffix = false);
+   static unsigned long Read_i(ElementTypeT& element, const std::wstring& istr, ParseListener *aListener=NULL, bool allowSuffix = false);
 
 public:
    // parsing token sequence into element structure
@@ -185,7 +263,7 @@ public:
    void Parse(BooleanNode *& boolean, TokenStream& tokenStream, TextCoordinate aBaseOfs=TextCoordinate(0));
    void Parse(NullNode *& null, TokenStream& tokenStream, TextCoordinate aBaseOfs=TextCoordinate(0));
 
-   Token MatchExpectedToken(Token::Type nExpected, TokenStream& tokenStream);
+   const Token &MatchExpectedToken(Token::Type nExpected, TokenStream& tokenStream);
     
     
 private:

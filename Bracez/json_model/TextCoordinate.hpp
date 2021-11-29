@@ -116,11 +116,11 @@ public:
         return *this;
     }
     
-    bool infinite() const {
+    inline bool infinite() const {
         return coord == TEXT_COORDINATE_INFINITY;
     }
 
-    TextCoordinate relativeTo(TextCoordinate other) const {
+    inline TextCoordinate relativeTo(TextCoordinate other) const {
         if(other.infinite()) {
             throw Exception("Can't devise coordinate relative to infinite");
         }

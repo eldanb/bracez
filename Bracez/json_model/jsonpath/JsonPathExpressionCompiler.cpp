@@ -131,9 +131,9 @@ public:
         }
         
         IsErrorParseListener pl;
-        wstringstream currentAsStream(std::wstring(i, r.last)); // TODO consider making a view here
-        json::Reader::Read(*result, currentAsStream, &pl, true);
-        i += currentAsStream.tellg();
+        wstring currentRegion = std::wstring(i, r.last); // TODO consider making a view here
+        unsigned long consumed = json::Reader::Read(*result, currentRegion, &pl, true);
+        i += consumed;
 
         if(pl.error) {
             i++;
@@ -150,8 +150,9 @@ public:
 
 
 
-// TODO better string parsing; use JSON parser here?
 auto const number_literal = tokenise(some(accept(is_digit)));
+
+// TODO better string parsing; use JSON parser here?
 auto string_literal = all([](std::string* result, json::Node* node) {
     json::StringNode *snode = dynamic_cast<json::StringNode*>(node);
     if(!snode) {
@@ -519,7 +520,7 @@ void assertResult(json::Node* doc, const std::wstring &expression, const JsonPat
 }
 
 void testjsonpathexpressionparser() {
-    wstringstream docText(L"{"
+    wstring docText(L"{"
                            "  \"store\": {"
                            "    \"book\": ["
                            "       {"

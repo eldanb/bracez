@@ -26,7 +26,7 @@
     BracezPreferences *prefs = [BracezPreferences sharedPreferences];
     JSONPathInput.font = prefs.editorFont;
     
-    testjsonpathexpressionparser();
+    //testjsonpathexpressionparser();
 
 }
 

@@ -66,9 +66,8 @@ using namespace json;
    if([lValString characterAtIndex:0]=='"')
    {
        
-      wstringstream str(lValString.cStringWstring);
       StringNode *lNode;
-      Reader::Read(lNode, str);
+      Reader::Read(lNode, lValString.cStringWstring);
       
       lNewNode = lNode;
    } else

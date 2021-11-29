@@ -23,6 +23,7 @@
 		B9625D2F26AC93AF00214407 /* ProjectionDefinitionEditor.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9625D2D26AC909400214407 /* ProjectionDefinitionEditor.mm */; };
 		B9625D3026AC93B600214407 /* ProjectionDefinitionEditor.xib in Resources */ = {isa = PBXBuildFile; fileRef = B9625D2E26AC909400214407 /* ProjectionDefinitionEditor.xib */; };
 		B984A95525ED8A6600452256 /* JsonIndentFormatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B984A95325ED8A6600452256 /* JsonIndentFormatter.cpp */; };
+		B9855F1A2754B3B300BB8D42 /* reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9855F192754B3B200BB8D42 /* reader.cpp */; };
 		B99B5A7311C6DF0000A33231 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B99B5A7211C6DF0000A33231 /* QuartzCore.framework */; };
 		B99D0DD725BC989C0006EA1F /* libjq.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B99D0DD625BC98810006EA1F /* libjq.a */; };
 		B9AADFFD253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9AADFFC253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm */; };
@@ -108,6 +109,7 @@
 		B980387026A151D4006BCC3E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B984A95325ED8A6600452256 /* JsonIndentFormatter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = JsonIndentFormatter.cpp; path = json_model/JsonIndentFormatter.cpp; sourceTree = "<group>"; };
 		B984A95425ED8A6600452256 /* JsonIndentFormatter.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = JsonIndentFormatter.hpp; path = json_model/JsonIndentFormatter.hpp; sourceTree = "<group>"; };
+		B9855F192754B3B200BB8D42 /* reader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = reader.cpp; path = json_model/reader.cpp; sourceTree = "<group>"; };
 		B99B5A7211C6DF0000A33231 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		B99D0DD125BC98600006EA1F /* libjq.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjq.1.dylib; path = ../../../../../../usr/local/Cellar/jq/1.6/lib/libjq.1.dylib; sourceTree = "<group>"; };
 		B99D0DD625BC98810006EA1F /* libjq.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjq.a; path = ../../../../../../usr/local/Cellar/jq/1.6/lib/libjq.a; sourceTree = "<group>"; };
@@ -328,6 +330,7 @@
 				B9FC2A8D25F8B0A400484EA3 /* Exception.hpp */,
 				B9FC2A9525F907E200484EA3 /* TextCoordinate.cpp */,
 				B9FC2A9625F907E200484EA3 /* TextCoordinate.hpp */,
+				B9855F192754B3B200BB8D42 /* reader.cpp */,
 			);
 			name = json_model;
 			sourceTree = "<group>";
@@ -595,6 +598,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B9855F1A2754B3B300BB8D42 /* reader.cpp in Sources */,
 				B9FC2B4025F90D6000484EA3 /* HistoryAndFavoritesControl.m in Sources */,
 				B9F8ACB626B41F9B00602302 /* FavoriteNameInputWindowConrtoller.m in Sources */,
 				B984A95525ED8A6600452256 /* JsonIndentFormatter.cpp in Sources */,
