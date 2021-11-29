@@ -499,11 +499,7 @@ void ArrayNode::acceptInRange(NodeVisitor *aVisitor, TextRange &range) {
     if(!adjustedRange.length()) {
         return;
     }
-    
-    if(adjustedRange.start == 0 && adjustedRange.end == GetTextRange().length()) {
-        return accept(aVisitor);
-    }
-    
+        
     aVisitor->visitNode(this);
     
     int firstChildToSearch = this->FindChildEndingAfter(adjustedRange.start);
@@ -817,11 +813,7 @@ void ObjectNode::acceptInRange(NodeVisitor *aVisitor, TextRange &range) {
     if(!adjustedRange.length()) {
         return;
     }
-    
-    if(adjustedRange.start == 0 && adjustedRange.end == GetTextRange().length()) {
-        return accept(aVisitor);
-    }
-    
+
     aVisitor->visitNode(this);
     
     // Since the search range may actually start in the child's key name, we
@@ -942,7 +934,10 @@ void DocumentNode::accept(NodeVisitor *aVisitor)
 
 void DocumentNode::acceptInRange(NodeVisitor *aVisitor, TextRange &range)
 {
-    accept(aVisitor);
+    aVisitor->visitNode(this);
+    if(rootNode) {
+        rootNode->acceptInRange(aVisitor, range);
+    }
 }
 
 void DocumentNode::CalculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint) const

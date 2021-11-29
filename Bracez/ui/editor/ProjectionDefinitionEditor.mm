@@ -62,10 +62,11 @@
 
     _projectionController.projectedDocument = _previewDocument;
     
+    ProjectionDefinitionEditor __weak *weakSelf = self;
     _refreshTimer = [NSTimer scheduledTimerWithTimeInterval:0.5
                                                     repeats:YES
                                                       block:^(NSTimer * _Nonnull timer) {
-        [self updatePreviewedProjection];
+        [weakSelf updatePreviewedProjection];
     }];
     
     [fieldListView registerForDraggedTypes: [NSArray arrayWithObject: @"public.text"]];
@@ -75,6 +76,9 @@
     fieldExpressionEditor.font = prefs.editorFont;
 }
 
+-(void)dealloc {
+    [_refreshTimer invalidate];
+}
 
 -(void)updatePreviewedProjection {
     if(![_previewedProjection isEqualTo:_editedProjection]) {

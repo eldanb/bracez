@@ -565,7 +565,7 @@ private:
     
     SyntaxHighlightJsonVisitor visitor(self.textStorage, editedRange);
     json::TextRange editedRangeTR(TextCoordinate(editedRange.location), TextCoordinate(editedRange.location+editedRange.length));
-    file->getDom()->GetChildAt(0)->acceptInRange(&visitor, editedRangeTR);
+    file->getDom()->acceptInRange(&visitor, editedRangeTR);
 
     [self.textStorage endEditing];
 #endif
