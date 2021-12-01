@@ -66,7 +66,7 @@ extern "C" {
     [textEditor setMaxSize:NSMakeSize(MAXFLOAT, MAXFLOAT)];
     
     [textEditor.layoutManager replaceTextStorage:self.document.textStorage];
-    
+
     gutterView = [[TextEditorGutterView alloc] initWithScrollView:textEditorScroll];
     [gutterView setModel:(id<GutterViewModel>)selectionController];
     [textEditorScroll setVerticalRulerView:gutterView];
@@ -105,8 +105,8 @@ extern "C" {
     [textEditorScroll setRulersVisible:prefs.gutterMasterSwitch];
     [gutterView setShowLineNumbers:prefs.gutterLineNumbers];
     treeView.needsDisplay = YES;
-    
-    //textEditor.font = prefs.editorFont;
+        
+    textEditor.font = prefs.editorFont;
     
     jqQueryInput.font = prefs.editorFont;
     jqQueryResult.font = prefs.editorFont;

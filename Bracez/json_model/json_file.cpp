@@ -727,14 +727,18 @@ ObjectNode::Member &ObjectNode::InsertMemberAt(int aIdx, const wstring &aName, N
     return *lIter;
 }
 
+ObjectNode::Member &ObjectNode::DomAddMemberNode(wstring &&aName, Node *aElement)
+{
+    aElement->parent = this;
+    members.emplace_back(std::move(aName), aElement);
+    
+    return *(members.end()-1);
+}
+
 ObjectNode::Member &ObjectNode::DomAddMemberNode(const wstring &aName, Node *aElement)
 {
-    Member lMemberInfo;
-    lMemberInfo.name = aName;
-    lMemberInfo.node.reset(aElement);
-    lMemberInfo.node->parent = this;
-    
-    members.push_back(std::move(lMemberInfo));
+    aElement->parent = this;
+    members.emplace_back(aName, aElement);
     
     return *(members.end()-1);
 }
@@ -743,7 +747,7 @@ Node *ObjectNode::clone() const {
     ObjectNode *ret = new ObjectNode();
     for(Members::const_iterator lIter = members.begin(); lIter!=members.end(); lIter++)
     {
-        ret->DomAddMemberNode(lIter->name, lIter->node->clone());
+        ret->DomAddMemberNode(std::wstring(lIter->name), lIter->node->clone());
     }
     
     return ret;
@@ -1202,7 +1206,7 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
     
     unsigned long trimRight = 0;
     while(trimRight < (aLen-trimLeft) &&
-          trimRight < newTextLen &&
+          trimRight < (newTextLen-trimLeft) &&
           aNewText[newTextLen - 1 - trimRight] == (*jsonText)[aOffsetStart + aLen - 1 - trimRight]) {
         trimRight++;
     }
@@ -1313,7 +1317,8 @@ JsonFileSemanticModelReconciliationTask::JsonFileSemanticModelReconciliationTask
   parsedNode(NULL),
   errorCollectionListener(new JsonParseErrorCollectionListenerListener(errors)),
   inputStream(new InputStream(text->c_str(), text->size(), errorCollectionListener.get())),
-  tokenStream(new TokenStream(*inputStream, errorCollectionListener.get()))
+  tokenStream(new TokenStream(*inputStream, errorCollectionListener.get())),
+  cancelled(false)
 {
 }
     

@@ -612,7 +612,6 @@ inline void Reader::Parse(ArrayNode*& array, TokenStream& tokenStream, TextCoord
     
 }
 
-
 inline void Reader::Parse(StringNode*& string, TokenStream& tokenStream, TextCoordinate aBaseOfs)
 {
    const Token &tok = MatchExpectedToken(Token::TOKEN_STRING, tokenStream);

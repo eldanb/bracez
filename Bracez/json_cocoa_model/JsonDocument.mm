@@ -553,16 +553,14 @@ private:
 #ifndef USE_JSON_TEXT_STORAGE
     NSFont *lFont = [[BracezPreferences sharedPreferences] editorFont];
     stopwatch lStopWatch("Update syntax coloring");
-    
+
     [self.textStorage beginEditing];
     
     if(editedRange.location == 0 && editedRange.length == self.textStorage.length) {
-        [self.textStorage setAttributes:@{ NSFontAttributeName: lFont } range:editedRange];
-        //[self.textStorage setAttributes:@{  } range:editedRange];
-        //self.textStorage.font = lFont;
-    } else {
-        //
+        self.textStorage.font = lFont;
     }
+    
+    [self.textStorage setAttributes:@{ NSFontAttributeName: lFont } range:editedRange];
     
     SyntaxHighlightJsonVisitor visitor(self.textStorage, editedRange);
     json::TextRange editedRangeTR(TextCoordinate(editedRange.location), TextCoordinate(editedRange.location+editedRange.length));

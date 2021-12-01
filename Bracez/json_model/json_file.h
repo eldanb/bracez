@@ -215,9 +215,10 @@ namespace json
       struct Member
       {
          Member(const wstring &aName, Node *aNode) : node(aNode), name(aName) {}
+         Member(wstring &&aName, Node *aNode) : node(aNode), name(std::move(aName)) {}
          Member() : node(nullptr) {}
 
-          wstring name;
+         wstring name;
          TextRange nameRange;
          
          std::unique_ptr<Node> node;
@@ -258,7 +259,8 @@ namespace json
       void CalculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint = -1) const;
 
       // DOM-only modifiers
-      Member &DomAddMemberNode(const wstring &aName, Node *aElement);
+       Member &DomAddMemberNode(const wstring &aName, Node *aElement);
+      Member &DomAddMemberNode(wstring &&aName, Node *aElement);
 
       bool ValueEquals(Node *other) const;
 
@@ -346,6 +348,7 @@ namespace json
    class ValueNode : public LeafNode
    {
    public:
+    ValueNode(ValueType &&aData) : value(std::move(aData)) {}
       ValueNode(const ValueType &aData) : value(aData) {}
       
       NodeTypeId GetNodeTypeId() const { return (NodeTypeId)NodeTypeConst; }

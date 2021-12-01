@@ -130,7 +130,12 @@
     int lFirstLineNo;
     NSRect lFirstLineRect;
     if(![self getFirstShownLineNumber:&lFirstLineNo andRect:&lFirstLineRect]) {
-        return;
+        if(!textView.textStorage.length) {
+            lFirstLineNo = 1;
+            lFirstLineRect = NSMakeRect(0, 0, lineRectWidth, lDefaultLineHeight);            
+        } else {
+            return;
+        }
     }
 
     int lCurLineNo = lFirstLineNo;
