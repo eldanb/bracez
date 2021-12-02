@@ -157,7 +157,7 @@ bool MarkerList<MARKER_TYPE>::spliceCoordinatesList(TextCoordinate aOffsetStart,
 {
    bool lChanged = false;
    
-   // Find first element to delete in lines list
+   // Find first element to delete in markers list
    iterator iter = lower_bound(markers.begin(), markers.end(), aOffsetStart);
    if(iter != markers.begin())
    {

@@ -596,7 +596,7 @@ inline void Reader::Parse(ArrayNode*& array, TokenStream& tokenStream, TextCoord
      }
 
       bContinue = (tokenStream.EOS() == false &&
-                   tokenStream.Peek().nType == Token::TOKEN_NEXT_ELEMENT);
+                   tokenStream.Peek().nType != Token::TOKEN_ARRAY_END);
       if (bContinue)
          MatchExpectedToken(Token::TOKEN_NEXT_ELEMENT, tokenStream);
    }

@@ -465,8 +465,8 @@ private:
         if(!_isSemanticModelTextChangeInProgress) {
             _isSemanticModelUpdateInProgress = true;
             
-            bool spliceResult = !file->getErrors().size() &&
-                                 file->spliceTextWithWorkLimit(TextCoordinate(editedRange.location),
+            bool spliceResult =
+                file->spliceTextWithWorkLimit(TextCoordinate(editedRange.location),
                                                                editedRange.length-delta,
                                                                updatedRegion.cStringWstring,
                                                                MAX_LOCAL_EDIT_LEN);

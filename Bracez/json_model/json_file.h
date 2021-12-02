@@ -423,6 +423,8 @@ namespace json
       {}
       
       const std::string &getErrorText() const { return errorText; }
+       int getErrorCode() const  { return errorCode; }
+       
    private:
       std::string errorText;
       int errorCode;
@@ -521,10 +523,15 @@ namespace json
                                         TextLength *aOutNumNewLines);
 
       void updateTreeOffsetsAfterSplice(TextCoordinate aOffsetStart, TextLength aLen, TextLength aNewLen);
-      void updateErrorsAfterSplice(TextCoordinate aOffsetStart, TextLength aLen, TextLength aNewLen);
+      void updateErrorsAfterSplice(TextCoordinate aOffsetStart, TextLength aLen, TextLength aNewLen, MarkerList<ParseErrorMarker> *aNewMarkers = NULL);
 
       void notifyUpdatedNode(Node *updatedNode);
-       
+      bool attemptReparseClosure(Node *spliceContainer,
+                                           TextCoordinate aOffsetStart,
+                                           TextLength aLen,
+                                           TextLength maxParsedRegionLength,
+                                           const std::wstring &aNewText);
+
    private:
       void notify(const priv::Notification &aNotification);
       void beginDeferNotifications();
