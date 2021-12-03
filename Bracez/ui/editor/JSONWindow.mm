@@ -107,6 +107,7 @@ extern "C" {
     treeView.needsDisplay = YES;
         
     textEditor.font = prefs.editorFont;
+    textEditor.textColor = [NSColor textColor];
     
     jqQueryInput.font = prefs.editorFont;
     jqQueryResult.font = prefs.editorFont;
