@@ -271,7 +271,7 @@ inline void TokenStream::MatchString()
     } else {
         std::string sMessage = "Unterminated string constant.";
         if(listener)
-            listener->Error(inputStream.GetLocation(), PARSER_ERROR_UNEXPECTED_CHARACTER, sMessage);
+            listener->Error(inputStream.GetLocation(), PARSER_ERROR_UNEXPECTED_EOS, sMessage);
     }
 
     // Store end of token
