@@ -1191,11 +1191,15 @@ bool JsonFile::attemptReparseClosure(Node *spliceContainer,
                               TextCoordinate aOffsetStart,
                               TextLength aLen,
                               TextLength maxParsedRegionLength,
-                              const std::wstring &aNewText) {
+                              const std::wstring &aNewText,
+                              TextRange *outAbsReparseRange,
+                              Node **outParsedNode,
+                              MarkerList<ParseErrorMarker> *outReparseErrors) {
     
     // Ensure integral node indeed contains the entire changed region and
     // that it's not too long
-    TextRange absReparseRange = spliceContainer->GetAbsTextRange().intersectWith(this->getDom()->textRange);
+    *outAbsReparseRange = spliceContainer->GetAbsTextRange().intersectWith(this->getDom()->textRange);
+    const TextRange &absReparseRange = *outAbsReparseRange;
     if(absReparseRange.start > aOffsetStart ||
        absReparseRange.end < aOffsetStart + aLen ||
        absReparseRange.length() > maxParsedRegionLength) {
@@ -1209,29 +1213,38 @@ bool JsonFile::attemptReparseClosure(Node *spliceContainer,
     updatedJsonRegion.erase(aOffsetStart - absReparseRange.start + aNewText.length(), aLen);
     
     // Re-parse updated JSON
-    MarkerList<ParseErrorMarker> errors;
-    JsonParseErrorCollectionListenerListener listener(errors);
+    MarkerList<ParseErrorMarker> reparseErrors;
+    JsonParseErrorCollectionListenerListener listener(reparseErrors);
         
     stopwatch repraseStopWatch("Reparse Json");
     Node *reparsedNode = NULL;
     Reader::Read(reparsedNode, updatedJsonRegion, &listener);
     repraseStopWatch.stop();
-    
+
+    if(!reparsedNode) {
+        return false;
+    }
+
     // Iterate through errors and fixup addresses to match real offset.
     // Fallback to slow parse if there are errors that indicate that the entire region
     // is incomplete or there's further content to process (which means that we need to parse
     // a bigger region than we expected, e.g because the change modifies node boundaries
     bool predictedChangeRegionWrong = false;
-    for_each(errors.begin(), errors.end(), [&predictedChangeRegionWrong, &absReparseRange](ParseErrorMarker &error) {
+    for_each(reparseErrors.begin(), reparseErrors.end(), [&predictedChangeRegionWrong, &absReparseRange](ParseErrorMarker &error) {
         error.adjustCoordinate(absReparseRange.start.getAddress());
         if(error.getErrorCode() == PARSER_ERROR_EXPECTED_EOS || error.getErrorCode() == PARSER_ERROR_UNEXPECTED_EOS) {
             predictedChangeRegionWrong = true;
         }
     });
     if(predictedChangeRegionWrong) {
+        if(reparsedNode) {
+            delete reparsedNode;
+        }
         return false;
     }
-    
+        
+    *outParsedNode = reparsedNode;
+    *outReparseErrors = std::move(reparseErrors);
     return true;
 }
 
@@ -1261,6 +1274,11 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
     aOffsetStart += trimLeft;
     aLen -= (trimLeft + trimRight);
 
+    TextCoordinate trimmedStart = aOffsetStart;
+    TextLength trimmedLen = aLen;
+    std::wstring trimmedUpdatedText = aNewText.substr(trimLeft, newTextLen-trimRight-trimLeft);
+    TextLength trimmedUpdatedTextLength = trimmedUpdatedText.length();
+
     //fast
     
     
@@ -1268,8 +1286,7 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
     JsonPath integralNodeJsonPath;
     Node *spliceContainer = jsonDom->GetChildAt(0);
     ContainerNode *spliceContainerAsContainerNode;
-    int spliceContainerIndexInParent = 0;
-    TextCoordinate soughtOffset = aOffsetStart;
+    TextCoordinate soughtOffset = trimmedStart;
     
     // slowparse
     /*if(!dynamic_cast<ContainerNode*>(spliceContainer))
@@ -1297,65 +1314,35 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
         spliceContainer = nextNavNode;
                 
         integralNodeJsonPath.push_back(lNextNav);
-        spliceContainerIndexInParent = lNextNav;
     }
 
 
-    //slow
-    if(!spliceContainer || spliceContainer == jsonDom->GetChildAt(0)) {
-        return false;
-    }
-
-
-    // Ensure integral node indeed contains the entire changed region and
-    // that it's not too long
-    TextRange absReparseRange = spliceContainer->GetAbsTextRange().intersectWith(this->getDom()->textRange);
-    if(absReparseRange.start > aOffsetStart ||
-       absReparseRange.end < aOffsetStart + aLen ||
-       absReparseRange.length() > maxParsedRegionLength) {
-        return false;
-    }
-    
-    
-    // Construct updated JSON for node
-    size_t updatedTextLen = newTextLen-trimRight-trimLeft;
-    std::wstring updatedJsonRegion = this->jsonText->substr(absReparseRange.start, absReparseRange.length());
-    updatedJsonRegion.insert(aOffsetStart - absReparseRange.start, aNewText, trimLeft, updatedTextLen);
-    updatedJsonRegion.erase(aOffsetStart - absReparseRange.start + updatedTextLen, aLen);
-    
-    // Re-parse updated JSON
-    MarkerList<ParseErrorMarker> errors;
-    JsonParseErrorCollectionListenerListener listener(errors);
-        
-    stopwatch repraseStopWatch("Reparse Json");
+    TextRange absReparseRange;
     Node *reparsedNode = NULL;
-    Reader::Read(reparsedNode, updatedJsonRegion, &listener);
-    repraseStopWatch.stop();
-    
-    // Iterate through errors and fixup addresses to match real offset.
-    // Fallback to slow parse if there are errors that indicate that the entire region
-    // is incomplete or there's further content to process (which means that we need to parse
-    // a bigger region than we expected, e.g because the change modifies node boundaries
-    bool predictedChangeRegionWrong = false;
-    for_each(errors.begin(), errors.end(), [&predictedChangeRegionWrong, &absReparseRange](ParseErrorMarker &error) {
-        error.adjustCoordinate(absReparseRange.start.getAddress());
-        if(error.getErrorCode() == PARSER_ERROR_EXPECTED_EOS || error.getErrorCode() == PARSER_ERROR_UNEXPECTED_EOS) {
-            predictedChangeRegionWrong = true;
+    MarkerList<ParseErrorMarker> reparseErrors;
+    while(!reparsedNode && spliceContainer && spliceContainer != jsonDom->GetChildAt(0) ) {
+        if(!attemptReparseClosure(spliceContainer, trimmedStart, trimmedLen, maxParsedRegionLength, trimmedUpdatedText, &absReparseRange, &reparsedNode, &reparseErrors)) {
+            reparsedNode = NULL;
+            spliceContainer=spliceContainer->GetParent();
+            integralNodeJsonPath.pop_back();
         }
-    });
-    if(predictedChangeRegionWrong) {
+    }
+    
+    if(!reparsedNode) {
         return false;
     }
+    
     
     TextCoordinate lLineChangeStart;
     TextLength lLineChangeLen, lLineChangeNewLen;
     
-    jsonText->insert(aOffsetStart, aNewText, trimLeft, updatedTextLen);
-    jsonText->erase(aOffsetStart.getAddress() + updatedTextLen, aLen);
-    updateTreeOffsetsAfterSplice(aOffsetStart, aLen, updatedTextLen);
-    updateLineOffsetsAfterSplice(aOffsetStart, aLen, updatedTextLen, aNewText.c_str() + trimLeft,
-                                 &lLineChangeStart, &lLineChangeLen, &lLineChangeNewLen);
-    updateErrorsAfterSplice(absReparseRange.start, absReparseRange.length(), updatedJsonRegion.size(), &errors);
+    jsonText->insert(trimmedStart, trimmedUpdatedText);
+    jsonText->erase(trimmedStart.getAddress() + trimmedUpdatedTextLength, trimmedLen);
+    updateTreeOffsetsAfterSplice(trimmedStart, trimmedLen, trimmedUpdatedTextLength);
+    updateLineOffsetsAfterSplice(trimmedStart, trimmedLen, trimmedUpdatedTextLength,
+                                 trimmedUpdatedText.c_str(), &lLineChangeStart,
+                                 &lLineChangeLen, &lLineChangeNewLen);
+    updateErrorsAfterSplice(absReparseRange.start, absReparseRange.length(), absReparseRange.length()+trimmedUpdatedTextLength-trimmedLen, &reparseErrors);
 
     ContainerNode *spliceContainerContainer = spliceContainer->GetParent();
     
@@ -1364,9 +1351,10 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
     reparsedNode->textRange.start += offsetAdjust;
     reparsedNode->textRange.end += offsetAdjust;
     
+    int spliceContainerIndexInParent = spliceContainer->GetParent()->GetIndexOfChild(spliceContainer);
     spliceContainerContainer->SetChildAt(spliceContainerIndexInParent, reparsedNode, true);
     notify(NodeRefreshNotification(std::move(integralNodeJsonPath)));
-    notify(SpliceNotification(aOffsetStart, aLen, updatedTextLen, lLineChangeStart, lLineChangeLen, lLineChangeNewLen));
+    notify(SpliceNotification(aOffsetStart, aLen, trimmedUpdatedTextLength, lLineChangeStart, lLineChangeLen, lLineChangeNewLen));
 
     return true;
 }

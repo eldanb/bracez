@@ -530,7 +530,10 @@ namespace json
                                            TextCoordinate aOffsetStart,
                                            TextLength aLen,
                                            TextLength maxParsedRegionLength,
-                                           const std::wstring &aNewText);
+                                           const std::wstring &aNewText,
+                                           TextRange *outAbsReparseRange,
+                                           Node **outParsedNode,
+                                           MarkerList<ParseErrorMarker> *outReparseErrors);
 
    private:
       void notify(const priv::Notification &aNotification);
