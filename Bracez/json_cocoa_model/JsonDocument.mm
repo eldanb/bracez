@@ -82,17 +82,17 @@ NSString *JsonDocumentSemanticModelUpdatedNotificationReasonReparse =
 
 -(NSDictionary<NSAttributedStringKey,id> *)attributesAtIndex:(NSUInteger)location effectiveRange:(NSRangePointer)range {
     if(_file) {
-        const Node *n = _file->FindNodeContaining(TextCoordinate(location), NULL);
+        const Node *n = _file->findNodeContaining(TextCoordinate(location), NULL);
         if(n) {
-            switch(n->GetNodeTypeId()) {
+            switch(n->getNodeTypeId()) {
                 case json::ntNumber:
                 case json::ntString:
                 case json::ntBoolean:
                 case json::ntNull:
                     {
-                        NSColor *color = [_colors colorForNodeType:n->GetNodeTypeId()];
+                        NSColor *color = [_colors colorForNodeType:n->getNodeTypeId()];
                         if(range) {
-                            json::TextRange textRange = n->GetAbsTextRange();
+                            json::TextRange textRange = n->getAbsTextRange();
                             range->location = textRange.start;
                             range->length = textRange.length();
                         }
@@ -105,21 +105,21 @@ NSString *JsonDocumentSemanticModelUpdatedNotificationReasonReparse =
                 {
                     const ContainerNode *obj = (const ContainerNode*)n;
                     
-                    int childIdx = obj->FindChildEndingAfter(TextCoordinate(location).relativeTo(obj->GetAbsTextRange().start));
-                    const Node *nextChild = childIdx >= 0 ? obj->GetChildAt(childIdx) : NULL;
-                    const Node *prevChild = childIdx > 0 ? obj->GetChildAt(childIdx-1) : NULL;
+                    int childIdx = obj->findChildEndingAfter(TextCoordinate(location).relativeTo(obj->getAbsTextRange().start));
+                    const Node *nextChild = childIdx >= 0 ? obj->getChildAt(childIdx) : NULL;
+                    const Node *prevChild = childIdx > 0 ? obj->getChildAt(childIdx-1) : NULL;
                     
                     if(range) {
                         if(prevChild) {
-                            range->location = prevChild->GetAbsTextRange().end;
+                            range->location = prevChild->getAbsTextRange().end;
                         } else {
-                            range->location = n->GetAbsTextRange().start;
+                            range->location = n->getAbsTextRange().start;
                         }
                                                 
                         if(nextChild) {
-                            range->length = nextChild->GetAbsTextRange().start - range->location;
+                            range->length = nextChild->getAbsTextRange().start - range->location;
                         } else {
-                            range->length = n->GetAbsTextRange().end - range->location;
+                            range->length = n->getAbsTextRange().end - range->location;
                         }
                     }
                     return @{
@@ -129,16 +129,16 @@ NSString *JsonDocumentSemanticModelUpdatedNotificationReasonReparse =
                 case json::ntArray:
                 {
                     const ContainerNode *obj = (const ContainerNode*)n;
-                    int childIdx = obj->FindChildEndingAfter(TextCoordinate(location).relativeTo(obj->GetAbsTextRange().start));
-                    const Node *child = childIdx >= 0 ? obj->GetChildAt(childIdx) : NULL;
+                    int childIdx = obj->findChildEndingAfter(TextCoordinate(location).relativeTo(obj->getAbsTextRange().start));
+                    const Node *child = childIdx >= 0 ? obj->getChildAt(childIdx) : NULL;
 
                     if(range) {
                         range->location = location;
-                        if(child && location < child->GetAbsTextRange().start) {
-                            range->length = child->GetAbsTextRange().start - location;
+                        if(child && location < child->getAbsTextRange().start) {
+                            range->length = child->getAbsTextRange().start - location;
                         } else
                         {
-                            range->length = n->GetAbsTextRange().end - location;
+                            range->length = n->getAbsTextRange().end - location;
                         }
                     }
                     return @{
@@ -149,7 +149,7 @@ NSString *JsonDocumentSemanticModelUpdatedNotificationReasonReparse =
     }
     
     if(range) {
-        json::TextRange docTr = _file->getDom()->GetTextRange();
+        json::TextRange docTr = _file->getDom()->getTextRange();
         range->location = location;
         if(location < docTr.start) {
             range->length = docTr.start - location;
@@ -348,7 +348,7 @@ private:
 -(JsonCocoaNode*)rootNode
 {
     if(!_cocoaNode) {
-        _cocoaNode = [JsonCocoaNode nodeForElement:file->getDom()->GetChildAt(0) withName:@"root"];
+        _cocoaNode = [JsonCocoaNode nodeForElement:file->getDom()->getChildAt(0) withName:@"root"];
     }
     return _cocoaNode;
 }
@@ -371,7 +371,7 @@ private:
 -(NSIndexPath*)findPathContaining:(TextCoordinate)aDocOffset
 {
     JsonPath lPath;
-    if(file->FindPathContaining(aDocOffset, lPath))
+    if(file->findPathContaining(aDocOffset, lPath))
     {
         return [self indexPathFromJsonPath:lPath];
     } else {
@@ -381,7 +381,7 @@ private:
 
 -(NSIndexPath*)pathFromJsonPathString:(NSString*)jsonPathString {
     JsonPath lPath;
-    if(file->FindPathForJsonPathString(jsonPathString.cStringWstring.c_str(), lPath)) {
+    if(file->findPathForJsonPathString(jsonPathString.cStringWstring.c_str(), lPath)) {
         return [self indexPathFromJsonPath:lPath];
     } else {
         return nil;
@@ -466,7 +466,7 @@ private:
             _isSemanticModelUpdateInProgress = true;
             
             bool spliceResult =
-                file->spliceTextWithWorkLimit(TextCoordinate(editedRange.location),
+                file->fastSpliceTextWithWorkLimit(TextCoordinate(editedRange.location),
                                                                editedRange.length-delta,
                                                                updatedRegion.cStringWstring,
                                                                MAX_LOCAL_EDIT_LEN);
@@ -516,21 +516,21 @@ private:
         return 0;
     }
     
-    const json::Node *n = file->FindNodeContaining(where, NULL, true);
+    const json::Node *n = file->findNodeContaining(where, NULL, true);
     if(!n) {
         return 0;
     }
     
     const json::ContainerNode *container = dynamic_cast<const json::ContainerNode*>(n);
     if(!container) {
-        container = n->GetParent();
+        container = n->getParent();
     }
     
     TextCoordinate containerStartColAddr = getContainerStartColumnAddr(container);
     int containerStartCol, containerStartRow;
     file->getCoordinateRowCol(containerStartColAddr, containerStartRow, containerStartCol);
 
-    TextCoordinate containerEnd = container->GetTextRange().end;
+    TextCoordinate containerEnd = container->getTextRange().end;
     int containerEndCol, containerEndRow;
     file->getCoordinateRowCol(containerEnd, containerEndRow, containerEndCol);
 
@@ -546,7 +546,7 @@ private:
     file->getCoordinateRowCol(where, row, col);
     *lineStart = file->getLineStart(row);
     
-    const json::Node *n = file->FindNodeContaining(where, NULL);
+    const json::Node *n = file->findNodeContaining(where, NULL);
     const json::ContainerNode *container = dynamic_cast<const json::ContainerNode*>(n);
     if(container) {
         TextCoordinate containerStartColAddr = getContainerStartColumnAddr(container);
@@ -642,7 +642,7 @@ private:
         node = [node objectInChildrenAtIndex:*iter];
     }
     
-    [node reloadFromElement: ((json::ContainerNode*)node.proxiedElement->GetParent())->GetChildAt(nodePath.back())];
+    [node reloadFromElement: ((json::ContainerNode*)node.proxiedElement->getParent())->getChildAt(nodePath.back())];
     
     [self notifySemanticModelUpdatedWithReason:JsonDocumentSemanticModelUpdatedNotificationReasonNodeInvalidation];
 }

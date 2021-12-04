@@ -53,7 +53,7 @@ NSString * const JsonNodePboardType=@"JsonNode";
     if(lNode && *lNode && lParentNode && *lParentNode)
     {
         [*lNode moveToNode:[item representedObject] atIndex:(int)index fromParent:*lParentNode];
-        json::TextRange updatedTextRange = (*lNode).proxiedElement->GetAbsTextRange();
+        json::TextRange updatedTextRange = (*lNode).proxiedElement->getAbsTextRange();
         [window.document reindentStartingAt:updatedTextRange.start
                                        len:updatedTextRange.length()
                      suggestNewEndLocation:nil];

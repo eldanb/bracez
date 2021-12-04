@@ -482,7 +482,7 @@ static void onJqCompileError(void *ctxt, jv err) {
 
 -(void)autoSuggestProjection {
     // First try to use one of the favorite projections
-    Node *node = self.document.jsonFile->getDom()->GetChildAt(0);
+    Node *node = self.document.jsonFile->getDom()->getChildAt(0);
     size_t maxNumRows = 0;
     ProjectionDefinition *selectedDef = nil;
     for(ProjectionDefinition *def in projectionDefinitionsHistory.favoritesList) {

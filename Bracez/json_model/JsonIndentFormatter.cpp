@@ -207,7 +207,7 @@ JsonIndentationContext JsonIndentationContext::approximateWithDocument(const jso
     file.getCoordinateRowCol(aOffset, row, col);
     
     TextCoordinate lineStartCoord = aOffset - (col-1);
-    const json::Node *startNode = file.FindNodeContaining(lineStartCoord, nullptr, true);
+    const json::Node *startNode = file.findNodeContaining(lineStartCoord, nullptr, true);
     
     std::vector<int> indentLevels;
     
@@ -219,13 +219,13 @@ JsonIndentationContext JsonIndentationContext::approximateWithDocument(const jso
     TextCoordinate colStartCoord = json::getContainerStartColumnAddr(currentContainer);
     file.getCoordinateRowCol(colStartCoord, row, col);
     indentLevels.insert(indentLevels.begin(), col-1);
-    currentContainer = currentContainer->GetParent();
+    currentContainer = currentContainer->getParent();
     
     while(currentContainer) {
         TextCoordinate currentContainerColStartCoord = json::getContainerStartColumnAddr(currentContainer);
         file.getCoordinateRowCol(currentContainerColStartCoord, row, col);
         indentLevels.insert(indentLevels.begin(), col-1);
-        currentContainer = currentContainer->GetParent();
+        currentContainer = currentContainer->getParent();
     }
 
     JsonIndentationContext ret(std::move(indentLevels), aIndentSize);

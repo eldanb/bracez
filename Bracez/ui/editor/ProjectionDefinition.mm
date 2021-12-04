@@ -118,7 +118,7 @@ std::vector<pair<std::wstring, size_t>> suggestRowSelectors(Node *parent, const 
 
 +(NSArray<ProjectionDefinition*> *)suggestPojectionsForDocument:(JsonDocument*)document {
     std::vector<pair<std::wstring, size_t>> rowSelectors =
-        suggestRowSelectors(document.jsonFile->getDom()->GetChildAt(0), L"$");
+        suggestRowSelectors(document.jsonFile->getDom()->getChildAt(0), L"$");
 
     if(rowSelectors.size()) {
         NSMutableArray<ProjectionDefinition*> *defs = [NSMutableArray arrayWithCapacity:rowSelectors.size()];
@@ -148,7 +148,7 @@ std::vector<pair<std::wstring, size_t>> suggestRowSelectors(Node *parent, const 
 -(NSArray<ProjectionFieldDefinition*> *)suggestFieldsBasedOnDocument:(JsonDocument*)document {
     if(self.rowSelector) {
         JsonPathExpression rowSelector = [self compiledRowSelector];
-        auto nodes = rowSelector.execute(document.jsonFile->getDom()->GetChildAt(0));
+        auto nodes = rowSelector.execute(document.jsonFile->getDom()->getChildAt(0));
         std::vector<std::wstring> suggestions = suggestFields(nodes);
         
         NSMutableArray<ProjectionFieldDefinition*> *ret = [NSMutableArray arrayWithCapacity:suggestions.size()];
@@ -232,7 +232,7 @@ static void walkPathsForNode(const json::Node *node, const std::wstring &pathToN
     const json::ObjectNode *objNode = dynamic_cast<const json::ObjectNode*>(node);
     if(objNode) {
         if(maxDepth > 0) {
-            std::for_each(objNode->Begin(), objNode->End(),
+            std::for_each(objNode->begin(), objNode->end(),
                           [&callback, maxDepth, &pathToNode](const json::ObjectNode::Member &member) {
                                     std::wstring navPath = JsonPathExpression::isValidIdentifier(member.name) ?
                                                                 std::wstring(L".") + member.name :
@@ -304,7 +304,7 @@ std::vector<std::wstring> suggestFields(const JsonPathResultNodeList &nodeList) 
     std::for_each(sampledNodes.begin(), sampledNodes.end(), [&valuesForFields, &maxVals](json::Node* sampledNode) {
         walkPathsForNode(sampledNode, L"@", 3, [&valuesForFields, &maxVals](const std::wstring &path, const json::Node *node) {
             std::wstring nodeStr;
-            node->CalculateJsonTextRepresentation(nodeStr);
+            node->calculateJsonTextRepresentation(nodeStr);
             std::vector<std::wstring> &valsForField = valuesForFields[path];
             valsForField.push_back(nodeStr);
             if(valsForField.size() > maxVals) {
@@ -367,7 +367,7 @@ std::vector<pair<std::wstring, size_t>> suggestRowSelectors(Node *parent, const 
     walkPathsForNode(parent, L"$", 5, [&scoredArrays] (const std::wstring &path, const json::Node *node) {
         const json::ArrayNode *array = dynamic_cast<const json::ArrayNode*>(node);
         if(array) {
-            scoredArrays.push_back(make_pair(path + L"[*]", array->GetChildCount()));
+            scoredArrays.push_back(make_pair(path + L"[*]", array->getChildCount()));
         }
     });
     

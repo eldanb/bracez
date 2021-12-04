@@ -546,7 +546,7 @@ inline void Reader::Parse(ObjectNode*& object, TokenStream& tokenStream, TextCoo
        if(nodeVal) {
            try
            {
-              ObjectNode::Member &member = object->DomAddMemberNode(tokenName.value(), nodeVal);
+              ObjectNode::Member &member = object->domAddMemberNode(tokenName.value(), nodeVal);
               member.nameRange = TextRange(tokenName.locBegin.relativeTo(lBegin),
                                            tokenName.locEnd.relativeTo(lBegin));
            }
@@ -623,7 +623,7 @@ inline void Reader::Parse(ArrayNode*& array, TokenStream& tokenStream, TextCoord
       Parse(elemVal, tokenStream, lBegin);
 
       if(elemVal) {
-          array->DomAddElementNode(elemVal);
+          array->domAddElementNode(elemVal);
       }
    }
 

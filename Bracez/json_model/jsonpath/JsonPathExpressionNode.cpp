@@ -26,17 +26,17 @@ bool JsonPathExpressionNodeEvalResult::getTruthValue() const {
     }
     
     json::NumberNode *numNode = dynamic_cast<json::NumberNode*>(node);
-    if(numNode && !numNode->GetValue()) {
+    if(numNode && !numNode->getValue()) {
         return false;
     }
 
     json::StringNode *strNode = dynamic_cast<json::StringNode*>(node);
-    if(strNode && !strNode->GetValue().size()) {
+    if(strNode && !strNode->getValue().size()) {
         return false;
     }
 
     json::BooleanNode *boolNode = dynamic_cast<json::BooleanNode*>(node);
-    if(boolNode && !boolNode->GetValue()) {
+    if(boolNode && !boolNode->getValue()) {
         return false;
     }
 
@@ -63,7 +63,7 @@ double JsonPathExpressionNodeEvalResult::getNumericValue() const {
         throw JsonPathEvalError("Invalid numeric value");
     }
 
-    return numNode->GetValue();
+    return numNode->getValue();
 }
 
 JsonPathExpressionNodeEvalResult JsonPathExpressionNodeEvalResult::booleanResult(bool r) {
@@ -188,8 +188,8 @@ void JsonPathExpressionNodeNavRecurse::stepFromNode(JsonPathExpressionNodeEvalCo
         // Add children to queue (for BFS)
         json::ContainerNode *containerNode = dynamic_cast<json::ContainerNode*>(node);
         if(containerNode) {
-            for(int childIdx=0; childIdx<containerNode->GetChildCount(); childIdx++) {
-                nodes.nodeList.push_back(containerNode->GetChildAt(childIdx));
+            for(int childIdx=0; childIdx<containerNode->getChildCount(); childIdx++) {
+                nodes.nodeList.push_back(containerNode->getChildAt(childIdx));
             }
         }
         
@@ -200,10 +200,10 @@ void JsonPathExpressionNodeNavRecurse::stepFromNode(JsonPathExpressionNodeEvalCo
             json::ObjectNode *obNode = dynamic_cast<json::ObjectNode*>(node);
             int idx = -1;
             if(obNode) {
-                idx = obNode->GetIndexOfMemberWithName(_name);
+                idx = obNode->getIndexOfMemberWithName(_name);
             }
             if(idx != -1) {
-                resultList.push_back(obNode->GetChildAt(idx));
+                resultList.push_back(obNode->getChildAt(idx));
             }
         }
     }
@@ -230,10 +230,10 @@ void JsonPathExpressionNodeNavResolveName::stepFromNode(JsonPathExpressionNodeEv
                             json::ObjectNode *obNode = dynamic_cast<json::ObjectNode*>(node);
                             int idx = -1;
                             if(obNode) {
-                                idx = obNode->GetIndexOfMemberWithName(_name);
+                                idx = obNode->getIndexOfMemberWithName(_name);
                             }
                             if(idx != -1) {
-                                resultList.push_back(obNode->GetChildAt(idx));
+                                resultList.push_back(obNode->getChildAt(idx));
                             }
                       });
         
@@ -243,10 +243,10 @@ void JsonPathExpressionNodeNavResolveName::stepFromNode(JsonPathExpressionNodeEv
                       [this, &resultList](json::Node* node) {
                             json::ObjectNode *obNode = dynamic_cast<json::ObjectNode*>(node);
                             if(obNode) {
-                                int childCount = obNode->GetChildCount();
+                                int childCount = obNode->getChildCount();
                                 for(int idx=0; idx<childCount; idx++) {
-                                    if(obNode->GetMemberNameAt(idx).substr(0, _name.length()) == _name) {
-                                        resultList.push_back(obNode->GetChildAt(idx));
+                                    if(obNode->getMemberNameAt(idx).substr(0, _name.length()) == _name) {
+                                        resultList.push_back(obNode->getChildAt(idx));
                                     }
                                 }
                             }
@@ -273,14 +273,14 @@ void JsonPathExpressionNodeNavParent::stepFromNode(JsonPathExpressionNodeEvalCon
     std::for_each(nodes.nodeList.begin(),
                   nodes.nodeList.end(),
                   [this, &resultList](json::Node* node) {
-                        if(node->GetParent()) {
-                            node = node->GetParent();
+                        if(node->getParent()) {
+                            node = node->getParent();
                             resultList.push_back(node);
                         }
         
                         if(_allAncestors) {
-                            while(node->GetParent()) {
-                                node = node->GetParent();
+                            while(node->getParent()) {
+                                node = node->getParent();
                                 resultList.push_back(node);
                             }
                         }
@@ -305,9 +305,9 @@ void JsonPathExpressionNodeNavAllChildren::stepFromNode(JsonPathExpressionNodeEv
                   [&resultList](json::Node* node) {
                         json::ContainerNode *contNode = dynamic_cast<json::ContainerNode*>(node);
                         if(contNode) {
-                            int ccount = contNode->GetChildCount();
+                            int ccount = contNode->getChildCount();
                             for(int idx=0; idx<ccount; idx++) {
-                                resultList.push_back(contNode->GetChildAt(idx));
+                                resultList.push_back(contNode->getChildAt(idx));
                             }
                         }
                   });
@@ -325,9 +325,9 @@ void JsonPathExpressionNodeContextMemberName::inspect(std::ostream &out) const {
 
 JsonPathExpressionNodeEvalResult JsonPathExpressionNodeContextMemberName::evaluate(JsonPathExpressionNodeEvalContext &context) {
     if(context.contextNode) {
-        int childIndex = context.contextNode->GetParent()->GetIndexOfChild(context.contextNode);
-        if(json::ObjectNode *onode = dynamic_cast<json::ObjectNode*>(context.contextNode->GetParent())) {
-            return JsonPathExpressionNodeEvalResult::stringResult(onode->GetMemberNameAt(childIndex));
+        int childIndex = context.contextNode->getParent()->getIndexOfChild(context.contextNode);
+        if(json::ObjectNode *onode = dynamic_cast<json::ObjectNode*>(context.contextNode->getParent())) {
+            return JsonPathExpressionNodeEvalResult::stringResult(onode->getMemberNameAt(childIndex));
         } else
         {
             return JsonPathExpressionNodeEvalResult::doubleResult(childIndex);
@@ -354,8 +354,8 @@ void JsonPathExpressionNodeNavIndexArray::stepFromNode(JsonPathExpressionNodeEva
                   nodes.nodeList.end(),
                   [this, &resultList](json::Node* node) {
                         json::ArrayNode *arrNode = dynamic_cast<json::ArrayNode*>(node);
-                        if(arrNode && _index < arrNode->GetChildCount()) {
-                            resultList.push_back(arrNode->GetChildAt(_index));
+                        if(arrNode && _index < arrNode->getChildCount()) {
+                            resultList.push_back(arrNode->getChildAt(_index));
                         }
                   });
     nodes.nodeList = std::move(resultList);
@@ -378,7 +378,7 @@ void JsonPathExpressionNodeNavSliceArray::stepFromNode(JsonPathExpressionNodeEva
                   [this, &resultList](json::Node* node) {
                         json::ArrayNode *arrNode = dynamic_cast<json::ArrayNode*>(node);
                         if(arrNode) {
-                            int childCount = arrNode->GetChildCount();
+                            int childCount = arrNode->getChildCount();
                             
                             int start = _startIndex;
                             int end = _endIndex;
@@ -387,7 +387,7 @@ void JsonPathExpressionNodeNavSliceArray::stepFromNode(JsonPathExpressionNodeEva
                             if(_endInverted) end = childCount - end;
                             
                             for(int idx=start; idx < end && idx < childCount; idx++) {
-                                resultList.push_back(arrNode->GetChildAt(idx));
+                                resultList.push_back(arrNode->getChildAt(idx));
                             }
                         }
                   });
@@ -413,12 +413,12 @@ void JsonPathExpressionNodeNavIndexArrayByList::stepFromNode(JsonPathExpressionN
                   [this, &resultList](json::Node* node) {
                         json::ArrayNode *arrNode = dynamic_cast<json::ArrayNode*>(node);
                         if(arrNode) {
-                            int arrLen = arrNode->GetChildCount();
+                            int arrLen = arrNode->getChildCount();
                             std::for_each(_indexList.begin(),
                                           _indexList.end(),
                                           [arrNode, arrLen, &resultList](int index) {
                                             if(index < arrLen) {
-                                                resultList.push_back(arrNode->GetChildAt(index));
+                                                resultList.push_back(arrNode->getChildAt(index));
                                             }
                                            });
                         }
@@ -443,10 +443,10 @@ void JsonPathExpressionNodeFilter::stepFromNode(JsonPathExpressionNodeEvalContex
                             if(_filterChildren) {
                                 json::ContainerNode *contNode = dynamic_cast<json::ContainerNode*>(node);
                                 if(contNode) {
-                                    int ccount = contNode->GetChildCount();
+                                    int ccount = contNode->getChildCount();
                                     for(int idx=0; idx<ccount; idx++) {
                                         json::Node *oldContext = context.contextNode;
-                                        context.contextNode = contNode->GetChildAt(idx);
+                                        context.contextNode = contNode->getChildAt(idx);
                                         JsonPathExpressionNodeEvalResult filterRes = _filter->evaluate(context);
                                         
                                         if(filterRes.getTruthValue()) {
@@ -498,8 +498,8 @@ void JsonPathExpressionNodeIndexByExpression::stepFromNode(JsonPathExpressionNod
                         if(arrNode) {
                             context.contextNode = arrNode;
                             int filterRes = (int)_filter->evaluate(context).getNumericValue();
-                            if(filterRes < arrNode->GetChildCount() && filterRes >= 0) {
-                                resultList.push_back(arrNode->GetChildAt(filterRes));
+                            if(filterRes < arrNode->getChildCount() && filterRes >= 0) {
+                                resultList.push_back(arrNode->getChildAt(filterRes));
                             }
                         }
                   });
@@ -570,7 +570,7 @@ JsonPathExpressionNodeJsonLiteral::JsonPathExpressionNodeJsonLiteral(std::unique
 
 void JsonPathExpressionNodeJsonLiteral::inspect(std::ostream &out) const {
     std::wstring jsonLiteralAsString;
-    _literal->CalculateJsonTextRepresentation(jsonLiteralAsString);
+    _literal->calculateJsonTextRepresentation(jsonLiteralAsString);
     
     using convert_type = std::codecvt_utf8<wchar_t>;
     std::wstring_convert<convert_type, wchar_t> converter;
@@ -638,7 +638,7 @@ namespace JsonPathExpressionNodeBinaryOperators {
                  riter = rightNodes.begin();
             liter != leftNodes.end() && riter != rightNodes.end();
             liter++, riter++) {
-            if(!(*liter)->ValueEquals(*riter)) {
+            if(!(*liter)->valueEquals(*riter)) {
                 return false;
             }
         }
@@ -656,25 +656,25 @@ namespace JsonPathExpressionNodeBinaryOperators {
     }
 
     expr_operand_value relGte(json::Node *left, json::Node *right) {
-        return expr_operand_value::booleanResult(right->ValueLt(left) || right->ValueEquals(left));
+        return expr_operand_value::booleanResult(right->valueLt(left) || right->valueEquals(left));
     }
 
     expr_operand_value relLte(json::Node *left, json::Node *right) {
-        return expr_operand_value::booleanResult(left->ValueLt(right) || left->ValueEquals(right));
+        return expr_operand_value::booleanResult(left->valueLt(right) || left->valueEquals(right));
     }
 
     expr_operand_value relGt(json::Node *left, json::Node *right) {
-        return expr_operand_value::booleanResult(right->ValueLt(left));
+        return expr_operand_value::booleanResult(right->valueLt(left));
     }
 
     expr_operand_value relLt(json::Node *left, json::Node *right) {
-        return expr_operand_value::booleanResult(left->ValueLt(right));
+        return expr_operand_value::booleanResult(left->valueLt(right));
     }
 
     inline bool relInInternal(json::Node *left, json::ArrayNode *right) {
-        return find_if(right->Begin(), right->End(), [left](unique_ptr<json::Node> &n) {
-            return n->ValueEquals(left);
-        }) != right->End();
+        return find_if(right->begin(), right->end(), [left](unique_ptr<json::Node> &n) {
+            return n->valueEquals(left);
+        }) != right->end();
     }
 
     expr_operand_value relIn(json::Node *left, json::ArrayNode *right) {
@@ -686,17 +686,17 @@ namespace JsonPathExpressionNodeBinaryOperators {
     }
     
     expr_operand_value relSubsetOf(json::ArrayNode *left, json::ArrayNode *right) {
-        bool notSubset = std::find_if_not(left->Begin(), left->End(), [right](unique_ptr<json::Node> &node) {
+        bool notSubset = std::find_if_not(left->begin(), left->end(), [right](unique_ptr<json::Node> &node) {
             return relInInternal(node.get(), right);
-        }) != left->End();
+        }) != left->end();
         
         return expr_operand_value::booleanResult(!notSubset);
     }
     
     inline bool relAnyOfInternal(json::ArrayNode *left, json::ArrayNode *right) {
-        return std::find_if(left->Begin(), left->End(), [right](unique_ptr<json::Node> &node ) {
+        return std::find_if(left->begin(), left->end(), [right](unique_ptr<json::Node> &node ) {
             return relInInternal(node.get(), right);
-        }) != left->End();
+        }) != left->end();
 
     }
     expr_operand_value relAnyOf(json::ArrayNode *left, json::ArrayNode *right) {
@@ -708,16 +708,16 @@ namespace JsonPathExpressionNodeBinaryOperators {
     }
 
     expr_operand_value div(json::NumberNode *opLeft,  json::NumberNode *opRight) {
-        return expr_operand_value::doubleResult(opLeft->GetValue() / opRight->GetValue());
+        return expr_operand_value::doubleResult(opLeft->getValue() / opRight->getValue());
     }
 
     expr_operand_value mod(json::NumberNode *opLeft,  json::NumberNode *opRight) {
-        return expr_operand_value::doubleResult((long)opLeft->GetValue() % (long)opRight->GetValue());
+        return expr_operand_value::doubleResult((long)opLeft->getValue() % (long)opRight->getValue());
     }
 
 
     expr_operand_value mul(json::NumberNode *opLeft,  json::NumberNode *opRight) {
-        return expr_operand_value::doubleResult(opLeft->GetValue() * opRight->GetValue());
+        return expr_operand_value::doubleResult(opLeft->getValue() * opRight->getValue());
     }
     
     expr_operand_value add(expr_operand_value opLeft,  expr_operand_value opRight) {
@@ -725,20 +725,20 @@ namespace JsonPathExpressionNodeBinaryOperators {
             json::NumberNode *numLeft = dynamic_cast<json::NumberNode*>(opLeft.nodeList.front());
             json::NumberNode *numRight = dynamic_cast<json::NumberNode*>(opRight.nodeList.front());
             if(numLeft && numRight) {
-                return expr_operand_value::doubleResult(numLeft->GetValue() + numRight->GetValue());
+                return expr_operand_value::doubleResult(numLeft->getValue() + numRight->getValue());
             } else
             if(json::StringNode *strLeft = dynamic_cast<json::StringNode*>(opLeft.nodeList.front())) {
-                return expr_operand_value::stringResult(strLeft->GetValue() + opRight.nodeList.front()->ToString());
+                return expr_operand_value::stringResult(strLeft->getValue() + opRight.nodeList.front()->toString());
             } else
             if(json::ArrayNode *arrLeft = dynamic_cast<json::ArrayNode*>(opLeft.nodeList.front())) {
                 json::ArrayNode *arrResult = arrLeft->clone();
                 
                 if(json::ArrayNode *arrRight = dynamic_cast<json::ArrayNode*>(opRight.nodeList.front())) {
-                    for(auto iter = arrRight->Begin(); iter != arrRight->End(); iter++) {
-                        arrResult->DomAddElementNode((*iter)->clone());
+                    for(auto iter = arrRight->begin(); iter != arrRight->end(); iter++) {
+                        arrResult->domAddElementNode((*iter)->clone());
                     }
                 } else {
-                    arrResult->DomAddElementNode(arrRight->clone());
+                    arrResult->domAddElementNode(arrRight->clone());
                 }
                 
                 expr_operand_value ret;
@@ -751,7 +751,7 @@ namespace JsonPathExpressionNodeBinaryOperators {
     }
     
     expr_operand_value subtract(json::NumberNode *opLeft,  json::NumberNode *opRight) {
-        return expr_operand_value::doubleResult(opLeft->GetValue() - opRight->GetValue());
+        return expr_operand_value::doubleResult(opLeft->getValue() - opRight->getValue());
     }
 }
 
@@ -830,10 +830,10 @@ namespace json_path_functions {
     double length(const JsonPathExpressionNodeEvalResult &input) {
         if(input.nodeList.size() == 1) {
             if(const json::ContainerNode *container = dynamic_cast<json::ContainerNode*>(input.nodeList.front())) {
-                return container->GetChildCount();
+                return container->getChildCount();
             } else
             if(const json::StringNode *stringNode = dynamic_cast<json::StringNode*>(input.nodeList.front())) {
-                return stringNode->GetValue().size();
+                return stringNode->getValue().size();
             }
         }
         
@@ -845,8 +845,8 @@ namespace json_path_functions {
             return JsonPathExpressionNodeEvalResult::nullResult();
         }
         
-        auto retElement = std::min_element(input->Begin(), input->End(), [](const std::unique_ptr<json::Node> &a, const std::unique_ptr<json::Node> &b) {
-            return a->ValueLt(b.get());
+        auto retElement = std::min_element(input->begin(), input->end(), [](const std::unique_ptr<json::Node> &a, const std::unique_ptr<json::Node> &b) {
+            return a->valueLt(b.get());
         });
         
         return JsonPathExpressionNodeEvalResult::ownedNodeResult((*retElement)->clone());
@@ -857,17 +857,17 @@ namespace json_path_functions {
             return JsonPathExpressionNodeEvalResult::nullResult();
         }
 
-        auto retElement = std::max_element(input->Begin(), input->End(), [](const std::unique_ptr<json::Node> &a, const std::unique_ptr<json::Node> &b) {
-            return a->ValueLt(b.get());
+        auto retElement = std::max_element(input->begin(), input->end(), [](const std::unique_ptr<json::Node> &a, const std::unique_ptr<json::Node> &b) {
+            return a->valueLt(b.get());
         });
         
         return JsonPathExpressionNodeEvalResult::ownedNodeResult((*retElement)->clone());
     }
 
     inline double internalSum(const json::ArrayNode *input) {
-        return std::reduce(input->Begin(), input->End(), (double)0, [](double s, const std::unique_ptr<json::Node> &n) {
+        return std::reduce(input->begin(), input->end(), (double)0, [](double s, const std::unique_ptr<json::Node> &n) {
             if(json::NumberNode *num = dynamic_cast<json::NumberNode*>(n.get())) {
-                return s + num->GetValue();
+                return s + num->getValue();
             } else {
                 return s;
             }
@@ -887,13 +887,13 @@ namespace json_path_functions {
             return JsonPathExpressionNodeEvalResult::nullResult();
         }
         
-        return JsonPathExpressionNodeEvalResult::doubleResult(internalSum(input) / (double)input->GetChildCount());
+        return JsonPathExpressionNodeEvalResult::doubleResult(internalSum(input) / (double)input->getChildCount());
     }
 
     JsonPathExpressionNodeEvalResult toarray(const JsonPathExpressionNodeEvalResult &input) {
         std::unique_ptr<json::ArrayNode> result = make_unique<json::ArrayNode>();
         std::for_each(input.nodeList.begin(), input.nodeList.end(), [&result](json::Node* node) {
-            result->DomAddElementNode(node->clone());
+            result->domAddElementNode(node->clone());
         });
         
         return JsonPathExpressionNodeEvalResult::ownedNodeResult(result.release());

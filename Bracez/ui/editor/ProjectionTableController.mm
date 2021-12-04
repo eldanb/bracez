@@ -135,7 +135,7 @@
 
 -(NSString*)formatNodeToText:(Node*)node {
     if(dynamic_cast<StringNode*>(node)) {
-        return [NSString stringWithWstring:((StringNode*)node)->GetValue()];
+        return [NSString stringWithWstring:((StringNode*)node)->getValue()];
     } else
     if(!dynamic_cast<ContainerNode*>(node)) {
         return [super formatNodeToText:node];
@@ -163,10 +163,10 @@
 
 -(NSNumber*)numberValueForNode:(Node*)node {
     if(dynamic_cast<StringNode*>(node)) {
-        return [numberFormatter numberFromString:[NSString stringWithWstring:((StringNode*)node)->GetValue()]];
+        return [numberFormatter numberFromString:[NSString stringWithWstring:((StringNode*)node)->getValue()]];
     } else
     if(dynamic_cast<NumberNode*>(node)) {
-        return [NSNumber numberWithDouble:((NumberNode*)node)->GetValue()];
+        return [NSNumber numberWithDouble:((NumberNode*)node)->getValue()];
     } else {
         return nil;
     }
@@ -206,7 +206,7 @@
 
 -(NSDate*)dateValueForNode:(Node*)node {
     if(dynamic_cast<StringNode*>(node)) {
-        NSString *stringValue = [NSString stringWithWstring:((StringNode*)node)->GetValue()];
+        NSString *stringValue = [NSString stringWithWstring:((StringNode*)node)->getValue()];
         
         NSDate *dateRet = [dateFormatter dateFromString:stringValue];
         
@@ -217,7 +217,7 @@
         return dateRet;
     } else
     if(dynamic_cast<NumberNode*>(node)) {
-        return [NSDate dateWithTimeIntervalSince1970:((NumberNode*)node)->GetValue()];
+        return [NSDate dateWithTimeIntervalSince1970:((NumberNode*)node)->getValue()];
     } else {
         return nil;
     }
@@ -432,9 +432,9 @@
 }
 
 -(void)selectNode:(JsonCocoaNode*)node {
-    json::TextRange selectedNodeRange = node.proxiedElement->GetAbsTextRange();
+    json::TextRange selectedNodeRange = node.proxiedElement->getAbsTextRange();
     auto iter = std::find_if(displayedRowNodes.begin(), displayedRowNodes.end(), [selectedNodeRange](json::Node* node) {
-        return node->GetAbsTextRange().contains(selectedNodeRange);
+        return node->getAbsTextRange().contains(selectedNodeRange);
     });
     
     if(iter != displayedRowNodes.end()) {

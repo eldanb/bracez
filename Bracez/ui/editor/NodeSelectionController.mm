@@ -110,7 +110,7 @@
             [self recordNavigationPointBeforeNavGroup:NAVGROUP_NONE];
         
             syncingNodeAndTextSel = true;
-            json::TextRange lNodeRange = [lLastNode textRange].intersectWith(document.jsonFile->getDom()->GetTextRange());
+            json::TextRange lNodeRange = [lLastNode textRange].intersectWith(document.jsonFile->getDom()->getTextRange());
             
             NSRange range = NSMakeRange(lNodeRange.start.getAddress(), lNodeRange.end - lNodeRange.start);
 
@@ -382,7 +382,7 @@
 
 - (void)projectionTableController:(ProjectionTableController *)sender didSelectNode:(Node *)node {
     if(!syncingNodeAndTextSel) {
-        json::TextRange nodeRange = node->GetAbsTextRange();
+        json::TextRange nodeRange = node->getAbsTextRange();
         [self selectTextRange:NSMakeRange(nodeRange.start, nodeRange.length())];
     }
 }
@@ -408,7 +408,7 @@
         return NO;
     }
     
-    return lNode->GetParent()->GetIndexOfChild(lNode)<lNode->GetParent()->GetChildCount()-1;
+    return lNode->getParent()->getIndexOfChild(lNode)<lNode->getParent()->getChildCount()-1;
 }
 
 

@@ -48,7 +48,7 @@ using namespace json;
 {
    NSString *lValString = [aValue description];
    
-   int lIdx = proxiedElement->GetParent()->GetIndexOfChild(proxiedElement);
+   int lIdx = proxiedElement->getParent()->getIndexOfChild(proxiedElement);
    
    Node *lNewNode;
    if([lValString isEqualToString:@"true"])
@@ -86,7 +86,7 @@ using namespace json;
       }
    }
    
-   proxiedElement->GetParent()->SetChildAt(lIdx, lNewNode);
+   proxiedElement->getParent()->setChildAt(lIdx, lNewNode);
 }
 
 -(id) nodeValue
@@ -94,13 +94,13 @@ using namespace json;
    if(!proxiedElement)
       return nil;
       
-   switch(proxiedElement->GetNodeTypeId())
+   switch(proxiedElement->getNodeTypeId())
    {
       case ntNull:
          return @"null";
 
       case ntBoolean:
-         return ((BooleanNode*)proxiedElement)->GetValue()?@"true":@"false";
+         return ((BooleanNode*)proxiedElement)->getValue()?@"true":@"false";
 
       case ntObject:
          return @"[object]";
@@ -111,7 +111,7 @@ using namespace json;
       default:
          {
             std::wstring lTxt;
-            proxiedElement->CalculateJsonTextRepresentation(lTxt);
+            proxiedElement->calculateJsonTextRepresentation(lTxt);
              return [NSString stringWithWstring:lTxt];
          }
    }
@@ -120,13 +120,13 @@ using namespace json;
 -(NSString*) longNodeValue
 {
     std::wstring lTxt;
-    proxiedElement->CalculateJsonTextRepresentation(lTxt, 255);
+    proxiedElement->calculateJsonTextRepresentation(lTxt, 255);
     return [NSString stringWithWstring:lTxt];
 }
 
 -(int)nodeType
 {
-   return proxiedElement->GetNodeTypeId();
+   return proxiedElement->getNodeTypeId();
 }
 
 -(json::Node*)proxiedElement
@@ -142,16 +142,16 @@ using namespace json;
 
 -(void) setName:(NSString*)nodeName
 {
-    json::ObjectNode *objContainer = dynamic_cast<json::ObjectNode *>(proxiedElement->GetParent());
+    json::ObjectNode *objContainer = dynamic_cast<json::ObjectNode *>(proxiedElement->getParent());
     if(objContainer) {
-        int indexInParent = objContainer->GetIndexOfChild(proxiedElement);
-        objContainer->RenameMemberAt(indexInParent, wide_utf8_converter.from_bytes(nodeName.UTF8String));
+        int indexInParent = objContainer->getIndexOfChild(proxiedElement);
+        objContainer->renameMemberAt(indexInParent, wide_utf8_converter.from_bytes(nodeName.UTF8String));
         name = nodeName;
     }
 }
 
 -(BOOL) nameEditable {
-    return dynamic_cast<json::ObjectNode *>(proxiedElement->GetParent()) != NULL;
+    return dynamic_cast<json::ObjectNode *>(proxiedElement->getParent()) != NULL;
 }
 
 -(int)countOfChildren
@@ -171,7 +171,7 @@ using namespace json;
    json::ContainerNode *lContainerNode = dynamic_cast<json::ContainerNode*>(proxiedElement);
    if(lContainerNode)
    {
-      lContainerNode->RemoveChildAt(aIdx);
+      lContainerNode->removeChildAt(aIdx);
       //[self _internalRemoveChildAtIndex:aIdx];
    }
 }
@@ -180,13 +180,13 @@ using namespace json;
           atIndex:(int)aIndex
        fromParent:(JsonCocoaNode*)aParent;
 {
-   ContainerNode *lParentNode = proxiedElement->GetParent();
-   int lIdxInParent = lParentNode->GetIndexOfChild(proxiedElement);
+   ContainerNode *lParentNode = proxiedElement->getParent();
+   int lIdxInParent = lParentNode->getIndexOfChild(proxiedElement);
    
    // Adjust underlying document: (a) detach child from current position
-   wstring lTxt = proxiedElement->GetDocumentText();
+   wstring lTxt = proxiedElement->getDocumentText();
    Node *lThis;
-   lParentNode->DetachChildAt(lIdxInParent, &lThis);
+   lParentNode->detachChildAt(lIdxInParent, &lThis);
    
    // (b) Import to new position:
    Node *lNewParent = [aNewContainer proxiedElement];
@@ -201,7 +201,7 @@ using namespace json;
    ObjectNode *lObjNode = dynamic_cast<ObjectNode*> (lNewParent);
    if(lObjNode)
    {
-      lObjNode->InsertMemberAt(aIndex, name.cStringWstring.c_str(), lThis, &lTxt);
+      lObjNode->insertMemberAt(aIndex, name.cStringWstring.c_str(), lThis, &lTxt);
    } else 
    {
       // (b.2) New container is an array?
@@ -219,7 +219,7 @@ using namespace json;
    
    [children insertObject:aChild atIndex:aIdx];
    
-   if(lContainerNode->GetNodeTypeId() == ntArray)
+   if(lContainerNode->getNodeTypeId() == ntArray)
    {
       for(int lIdx=aIdx; lIdx<[self countOfChildren]; lIdx++)
       {
@@ -239,7 +239,7 @@ using namespace json;
 
    [children removeObjectAtIndex:aIdx];
 
-   if(lContainerNode->GetNodeTypeId() == ntArray)
+   if(lContainerNode->getNodeTypeId() == ntArray)
    {
       for(int lIdx=aIdx; lIdx<[self countOfChildren]; lIdx++)
       {
@@ -282,13 +282,13 @@ using namespace json;
    
    if(proxiedElement)
    {
-      switch(proxiedElement->GetNodeTypeId())
+      switch(proxiedElement->getNodeTypeId())
       {
          case ntObject:
          {
             ObjectNode *lObject = (ObjectNode *)proxiedElement;
-            for(ObjectNode::iterator lIter = lObject->Begin();
-               lIter != lObject->End();
+            for(ObjectNode::iterator lIter = lObject->begin();
+               lIter != lObject->end();
                lIter++)
             {
                 NSString *nodeName = [NSString stringWithWstring:lIter->name];
@@ -303,8 +303,8 @@ using namespace json;
          {
             ArrayNode *lJsonArray = (ArrayNode*)proxiedElement;
             int lIdx = 0;
-            for(ArrayNode::iterator lIter = lJsonArray->Begin();
-               lIter != lJsonArray->End();
+            for(ArrayNode::iterator lIter = lJsonArray->begin();
+               lIter != lJsonArray->end();
                lIter++, lIdx++)
             {
                [lArray addObject:[JsonCocoaNode nodeForElement:lIter->get() withName:[NSString stringWithFormat:@"%d", lIdx]]];
@@ -321,7 +321,7 @@ using namespace json;
 
 -(json::TextRange)textRange
 {
-   return proxiedElement->GetAbsTextRange();
+   return proxiedElement->getAbsTextRange();
 }
 
 -(int)indexOfChildWithName:(NSString*)aName

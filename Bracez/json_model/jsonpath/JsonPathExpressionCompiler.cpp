@@ -158,7 +158,7 @@ auto string_literal = all([](std::string* result, json::Node* node) {
     if(!snode) {
         return false;
     } else {
-        *result = wide_utf8_converter.to_bytes(snode->GetValue());
+        *result = wide_utf8_converter.to_bytes(snode->getValue());
         return true;
     }
 }, parse_json());
