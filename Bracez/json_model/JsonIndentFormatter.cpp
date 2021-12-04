@@ -29,16 +29,16 @@ JsonIndentFormatter::JsonIndentFormatter(const std::wstring &text,
                                          TextCoordinate aOffsetStart,
                                          TextLength aLen,
                                          int indentSize)
-    : tokStreamAndCo(tokenStreamAtBeginningOfLine(text, jsonFile, aOffsetStart)),
-      indentationContext(JsonIndentationContext::approximateWithDocument(jsonFile, aOffsetStart, indentSize))
+: tokStreamAndCo(tokenStreamAtBeginningOfLine(text, jsonFile, aOffsetStart)),
+indentationContext(JsonIndentationContext::approximateWithDocument(jsonFile, aOffsetStart, indentSize))
 {
     TextLength textLen = (TextLength)text.length();
     startOffset = aOffsetStart;
-
+    
     if(startOffset+aLen > TextCoordinate(textLen)) {
         aLen = textLen - startOffset;
     }
-        
+    
     endOffset = startOffset + aLen;
 }
 
@@ -46,7 +46,7 @@ TextLength JsonIndentFormatter::getIndentedLength() {
     if(!output.length()) {
         reindent();
     }
-
+    
     return endOffset - startOffset;
 }
 
@@ -65,10 +65,10 @@ void JsonIndentFormatter::reindent() {
     if(peekedInputCol == 0) {
         skipInputWhitespace();
     }
-            
+    
     TextCoordinate lastIndented = startOffset;
     while(!tokStreamAndCo.tokenStream.EOS() &&
-            tokStreamAndCo.tokenStream.Peek().locBegin < endOffset) {
+          tokStreamAndCo.tokenStream.Peek().locBegin < endOffset) {
         json::Token tok = tokStreamAndCo.tokenStream.Get();
         
         switch(tok.nType) {
@@ -78,7 +78,7 @@ void JsonIndentFormatter::reindent() {
                     skipInputWhitespace();
                 }
                 break;
-            
+                
             case json::Token::TOKEN_ARRAY_BEGIN:
             case json::Token::TOKEN_OBJECT_BEGIN:
                 outputString(tok.orgText());
@@ -103,7 +103,7 @@ void JsonIndentFormatter::reindent() {
             default:
                 outputString(tok.orgText());
                 break;
-            
+                
         }
         
         lastIndented = tok.locEnd;
@@ -129,7 +129,7 @@ void JsonIndentFormatter::outputIndent() {
 void JsonIndentFormatter::copyAndEnsureNewLine() {
     while(!tokStreamAndCo.inputStream.EOS()) {
         json::Token tok = tokStreamAndCo.tokenStream.Peek();
-
+        
         if(tok.nType == json::Token::TOKEN_WHITESPACE) {
             tokStreamAndCo.tokenStream.Get();
             if(tok.isValueEquals(L"\n")) {
@@ -227,7 +227,7 @@ JsonIndentationContext JsonIndentationContext::approximateWithDocument(const jso
         indentLevels.insert(indentLevels.begin(), col-1);
         currentContainer = currentContainer->getParent();
     }
-
+    
     JsonIndentationContext ret(std::move(indentLevels), aIndentSize);
     ret.pushIndentLevel();
     return ret;
@@ -256,14 +256,14 @@ void JsonIndentationContext::setInitialIndentLevel(int level) {
 }
 
 JsonIndentationContext::JsonIndentationContext(const std::vector<int> &&indentLevels, int indentSize)
-    : indentSize(indentSize),
-      indentLevelStack(indentLevels)
+: indentSize(indentSize),
+indentLevelStack(indentLevels)
 {
     
 }
 
 JsonIndentationContext::JsonIndentationContext(int initialIndent, int indentSize)
-    : indentSize(indentSize)
+: indentSize(indentSize)
 {
     indentLevelStack.push_back(initialIndent);
 }

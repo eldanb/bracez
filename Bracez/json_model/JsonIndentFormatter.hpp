@@ -17,9 +17,9 @@ struct TokenStreamAndUnderlying {
     TokenStreamAndUnderlying(const std::wstring &text,
                              unsigned long startOffset,
                              int startRow, int startCol)
-        : inputStream(text.c_str(), text.size(), NULL, TextCoordinate(startOffset)),
-          tokenStream(inputStream, NULL, false, startRow, startCol)
-    { 
+    : inputStream(text.c_str(), text.size(), NULL, TextCoordinate(startOffset)),
+    tokenStream(inputStream, NULL, false, startRow, startCol)
+    {
     }
     
     json::InputStream inputStream;
@@ -29,16 +29,16 @@ struct TokenStreamAndUnderlying {
 class JsonIndentationContext {
 public:
     int currentIndent();
-
+    
     void pushIndentLevel();
     void popIndentLevel();
-
+    
 public:
     static JsonIndentationContext approximateWithTokenStream(json::TokenStream &aTokStream, TextCoordinate aOffset, int aIndentSize);
     
     static JsonIndentationContext approximateWithDocument(const json::JsonFile &file,
                                                           TextCoordinate aOffset, int aIndentSize);
-
+    
 private:
     JsonIndentationContext(int initialIndent, int indentSize);
     JsonIndentationContext(const std::vector<int> &&indentLevels, int indentSize);
@@ -64,7 +64,7 @@ private:
     void skipInputWhitespace();
     void outputIndent();
     void copyAndEnsureNewLine();
-
+    
     void outputString(const std::wstring &string);
     
 private:
@@ -75,7 +75,7 @@ private:
     TextCoordinate startOffset;
     TextCoordinate endOffset;
     
-    unsigned int outputCol;    
+    unsigned int outputCol;
     std::wstring output;
 };
 
