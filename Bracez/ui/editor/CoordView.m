@@ -15,7 +15,8 @@
     self = [super initWithFrame:frame];
     if (self) {
       _btnCell = [[NSButtonCell alloc] init];
-      [_btnCell setBezelStyle:NSBezelStyleSmallSquare];
+      [_btnCell setBezelStyle:NSBezelStyleShadowlessSquare];
+      [_btnCell setBordered:NO];
       [_btnCell setAlignment:NSTextAlignmentCenter];
       [_btnCell setFont:[NSFont userFontOfSize:11.0]];
       [_btnCell setWraps:NO];

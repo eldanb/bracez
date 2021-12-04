@@ -50,7 +50,8 @@
     self = [super initWithFrame:frame];
     if (self) {
       _bkCell = [[NSButtonCell alloc] init];
-      [_bkCell setBezelStyle:NSBezelStyleSmallSquare];
+      [_bkCell setBezelStyle:NSBezelStyleShadowlessSquare];
+      [_bkCell setBordered:NO];
       [_bkCell setAlignment:NSTextAlignmentLeft];
       [_bkCell setWraps:NO];
       [_bkCell setTitle:@""];

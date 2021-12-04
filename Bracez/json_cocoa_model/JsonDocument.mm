@@ -463,17 +463,21 @@ private:
         NSString *updatedRegion = [textStorage.string substringWithRange:editedRange];
         
         if(!_isSemanticModelTextChangeInProgress) {
-            _isSemanticModelUpdateInProgress = true;
+            bool shouldSlowSplice = true;
             
-            bool spliceResult =
-                file->fastSpliceTextWithWorkLimit(TextCoordinate(editedRange.location),
-                                                               editedRange.length-delta,
-                                                               updatedRegion.cStringWstring,
-                                                               MAX_LOCAL_EDIT_LEN);
+            if(!_isSemanticModelDirty) {
+                _isSemanticModelUpdateInProgress = true;
+                
+                shouldSlowSplice =
+                    !file->fastSpliceTextWithWorkLimit(TextCoordinate(editedRange.location),
+                                                       editedRange.length-delta,
+                                                       updatedRegion.cStringWstring,
+                                                       MAX_LOCAL_EDIT_LEN);
+                
+                _isSemanticModelUpdateInProgress = false;
+            }
             
-            _isSemanticModelUpdateInProgress = false;
-
-            if(!spliceResult) {
+            if(shouldSlowSplice) {
                 _isSemanticModelDirty = YES;
                 [self slowSpliceFileContentAt:TextCoordinate(editedRange.location)
                                        length:editedRange.length-delta
@@ -561,15 +565,20 @@ private:
 -(void)updateSyntaxInRange:(NSRange)editedRange {
 #ifndef USE_JSON_TEXT_STORAGE
     NSFont *lFont = [[BracezPreferences sharedPreferences] editorFont];
+    NSColor *lDefaultColor = [[BracezPreferences sharedPreferences] editorColorDefault];
     stopwatch lStopWatch("Update syntax coloring");
 
     [self.textStorage beginEditing];
     
-    if(editedRange.location == 0 && editedRange.length == self.textStorage.length) {
+    if(editedRange.location == 0 &&
+       editedRange.length == self.textStorage.length) {
         self.textStorage.font = lFont;
     }
     
-    [self.textStorage setAttributes:@{ NSFontAttributeName: lFont } range:editedRange];
+    [self.textStorage setAttributes:@{
+        NSFontAttributeName: lFont,
+        NSForegroundColorAttributeName: lDefaultColor
+    } range:editedRange];
     
     SyntaxHighlightJsonVisitor visitor(self.textStorage, editedRange);
     json::TextRange editedRangeTR(TextCoordinate(editedRange.location), TextCoordinate(editedRange.location+editedRange.length));
@@ -582,6 +591,7 @@ private:
 -(void)slowSpliceFileContentAt:(TextCoordinate)aOffsetStart length:(TextLength)aLen newText:(const std::wstring &)aNewText {
     _isSemanticModelUpdateInProgress = true;
 
+    [self willChangeValueForKey:@"documentBusy"];
     if(currentReconciliationTask.get()) {
         currentReconciliationTask->cancelExecution();
         currentReconciliationTask.reset();
@@ -590,35 +600,49 @@ private:
     // This keeps the reconciliation task alive for as long as it's running
     std::shared_ptr<JsonFileSemanticModelReconciliationTask> reconcile = file->spliceTextWithDirtySemanticModel(aOffsetStart, aLen, aNewText);
     currentReconciliationTask = reconcile;
+    [self didChangeValueForKey:@"documentBusy"];
     
     _isSemanticModelUpdateInProgress = false;
 
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+        bool taskCancelled = false;
         try {
             reconcile->executeInBackground();
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self->file->applyReconciliationTask(reconcile);
-                self->_isSemanticModelUpdateInProgress = true;
-                [self willChangeValueForKey:@"rootNode"];
-                [self willChangeValueForKey:@"problems"];
-
-                self->_cocoaNode = nil;
-                self->problemWrappers = nil;
-                
-                [self didChangeValueForKey:@"problems"];
-                [self didChangeValueForKey:@"rootNode"];
-                self->_isSemanticModelUpdateInProgress = false;
-                self->_isSemanticModelDirty = NO;
-
-                [self updateSyntaxInRange:NSMakeRange(0, self.textStorage.string.length)];
-                [self notifySemanticModelUpdatedWithReason:JsonDocumentSemanticModelUpdatedNotificationReasonReparse];
-
-            });
         } catch(const ParseCancelledException &ex) {
             NSLog(@"Parse cancelled caught");
+            taskCancelled = true;
         }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if(self->currentReconciliationTask == reconcile) {
+                if(!taskCancelled) {
+                    self->file->applyReconciliationTask(reconcile);
+                    self->_isSemanticModelUpdateInProgress = true;
+                    [self willChangeValueForKey:@"rootNode"];
+                    [self willChangeValueForKey:@"problems"];
+
+                    self->_cocoaNode = nil;
+                    self->problemWrappers = nil;
+                    
+                    [self didChangeValueForKey:@"problems"];
+                    [self didChangeValueForKey:@"rootNode"];
+                    self->_isSemanticModelUpdateInProgress = false;
+                    self->_isSemanticModelDirty = NO;
+
+                    [self updateSyntaxInRange:NSMakeRange(0, self.textStorage.string.length)];
+                    [self notifySemanticModelUpdatedWithReason:JsonDocumentSemanticModelUpdatedNotificationReasonReparse];
+                }
+                
+                [self willChangeValueForKey:@"documentBusy"];
+                self->currentReconciliationTask.reset();
+                [self didChangeValueForKey:@"documentBusy"];
+            }
+        });
     });
+}
+
+-(BOOL)documentBusy {
+    return !!currentReconciliationTask;
 }
 
 -(BOOL)isSemanticModelDirty {

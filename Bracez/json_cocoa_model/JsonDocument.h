@@ -61,4 +61,6 @@ class BookmarksListenerBridge;
 -(void)notifyErrorsChanged:(json::JsonFile*)aSender;
 -(void)notifyNodeInvalidated:(json::JsonFile*)aSender nodePath:(const json::JsonPath&)nodePath;
 -(void)notifyBookmarksUpdated;
+
+-(BOOL)documentBusy;
 @end
