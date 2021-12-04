@@ -52,10 +52,30 @@
     }
 }
 
+-(void)insertOrReplace:(NSString*)what andPositionCursorAtOffset:(int)offset {
+    NSRange orgSelRange = self.selectedRange;
+    [self.textStorage replaceCharactersInRange:self.selectedRange withString:what];
+    [self setSelectedRange:NSMakeRange(orgSelRange.location + offset, 0)];
+    [self scrollRangeToVisible:self.selectedRange];
+}
+
+-(void)handleAutoParenthesis:(NSString*)parenPair {
+    [self insertOrReplace:parenPair andPositionCursorAtOffset:1];
+}
+
 -(void)keyDown:(NSEvent *)event {
     NSString *chars = [event charactersIgnoringModifiers];
     if([chars isEqualToString:@"\r"]) {
         [self handleNewline];
+    } else
+    if([chars isEqualToString:@"["]) {
+        [self handleAutoParenthesis:@"[]"];
+    } else
+    if([chars isEqualToString:@"{"]) {
+        [self handleAutoParenthesis:@"{}"];
+    } else
+    if([chars isEqualToString:@"\""]) {
+        [self handleAutoParenthesis:@"\"\""];
     } else
     if([chars isEqualToString:@"}"] ||
        [chars isEqualToString:@"]"]) {

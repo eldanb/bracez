@@ -499,25 +499,44 @@ inline void Reader::Parse(Node*& element, TokenStream& tokenStream, TextCoordina
    }
 }
 
+static inline bool IsObjectMemberTerminator(Token::Type t) {
+    return t == Token::TOKEN_OBJECT_END || t == Token::TOKEN_NEXT_ELEMENT;
+}
 
 inline void Reader::Parse(ObjectNode*& object, TokenStream& tokenStream, TextCoordinate aBaseOfs)
 {
+    
    TextCoordinate lBegin(tokenStream.Peek().locBegin);
     
    MatchExpectedToken(Token::TOKEN_OBJECT_BEGIN, tokenStream);
 
    object = new ObjectNode();
    
-   bool bContinue = (tokenStream.EOS() == false &&
-                     tokenStream.Peek().nType != Token::TOKEN_OBJECT_END);
-   while (bContinue)
+    for(bool bContinue = (tokenStream.EOS() == false &&
+                         tokenStream.Peek().nType != Token::TOKEN_OBJECT_END);
+        bContinue;
+        bContinue = ParseSeparatorOrTerminator(tokenStream, Token::TOKEN_OBJECT_END))
    {
+       if(IsObjectMemberTerminator(tokenStream.Peek().nType)) {
+           listener->Error(tokenStream.Peek().locBegin-1, PARSER_ERROR_UNEXPECTED_TOKEN, "Expected object member name");
+           continue;
+       }
+       
       // first the member name. save the token in case we have to throw an exception
-      Token tokenName = tokenStream.Peek();
-      MatchExpectedToken(Token::TOKEN_STRING, tokenStream);
+      Token tokenName = MatchExpectedToken(Token::TOKEN_STRING, tokenStream);
 
+       if(IsObjectMemberTerminator(tokenStream.Peek().nType)) {
+           listener->Error(tokenStream.Peek().locBegin-1, PARSER_ERROR_UNEXPECTED_TOKEN, "Expected ':'");
+           continue;
+       }
+       
       // ...then the key/value separator...
       MatchExpectedToken(Token::TOKEN_MEMBER_ASSIGN, tokenStream);
+
+       if(IsObjectMemberTerminator(tokenStream.Peek().nType)) {
+           listener->Error(tokenStream.Peek().locBegin-1, PARSER_ERROR_UNEXPECTED_TOKEN, "Expected object member value");
+           continue;
+       }
 
       // ...then the value itself (can be anything).
       Node *nodeVal = NULL;
@@ -541,40 +560,51 @@ inline void Reader::Parse(ObjectNode*& object, TokenStream& tokenStream, TextCoo
            std::string sMessage = "Could not parse member value '" + wstring_to_utf8(tokenName.value()) + "'";
            listener->Error(tokenName.locBegin, PARSER_ERROR_INVALID_MEMBER, sMessage);
        }
-       
-      Token lTok;
-      while(!tokenStream.EOS() &&
-            (static_cast<void>(lTok = tokenStream.Peek()),
-             lTok.nType != Token::TOKEN_NEXT_ELEMENT && lTok.nType != Token::TOKEN_OBJECT_END))
-      {
-         listener->Error(lTok.locBegin, PARSER_ERROR_UNEXPECTED_TOKEN, "Expecting \",\" or \"}\"");
-         tokenStream.Get();
-      }
-
-      if(lTok.nType == Token::TOKEN_NEXT_ELEMENT)
-      {
-         MatchExpectedToken(lTok.nType, tokenStream);
-         bContinue = !tokenStream.EOS();
-      } else
-      {
-         bContinue = false;
-      }
-      
    }
 
    if(tokenStream.EOS())
    {
       listener->Error(tokenStream.getInputStream().GetLocation(), PARSER_ERROR_UNEXPECTED_EOS, "Unexpected end of file");
-      object->textRange = TextRange(lBegin.relativeTo(aBaseOfs), TextCoordinate::infinity);
+      object->textRange = TextRange(lBegin.relativeTo(aBaseOfs), tokenStream.getInputStream().GetLocation().relativeTo(aBaseOfs));
    } else
    {
        TextCoordinate lEndCoord = MatchExpectedToken(Token::TOKEN_OBJECT_END, tokenStream).locEnd;
        object->textRange = TextRange(lBegin.relativeTo(aBaseOfs), lEndCoord.relativeTo(aBaseOfs));
    }
-
-   
 }
 
+inline bool Reader::ParseSeparatorOrTerminator(TokenStream& tokenStream, Token::Type terminator) {
+    if(tokenStream.EOS()) {
+        return false;
+    }
+    
+    bool encounteredNext = false;
+    bool eosEncountered;
+    Token nextToken;
+    while(!(eosEncountered = tokenStream.EOS()) &&
+          ((nextToken = tokenStream.Peek()).nType == Token::TOKEN_NEXT_ELEMENT)) {
+        tokenStream.Get();
+        encounteredNext = true;
+    }
+        
+    if(nextToken.nType == terminator) {
+        if(encounteredNext) {
+            // TODO nicer error
+            ReportExpectedToken(Token::TOKEN_NEXT_ELEMENT, nextToken);
+        }
+        return false;
+    } else
+    if(eosEncountered) {
+        return false;
+    }
+    else {
+        if(!encounteredNext) {
+            ReportExpectedToken(Token::TOKEN_NEXT_ELEMENT, nextToken);
+        }
+    }
+    
+    return true;
+}
 
 inline void Reader::Parse(ArrayNode*& array, TokenStream& tokenStream, TextCoordinate aBaseOfs)
 {
@@ -583,22 +613,18 @@ inline void Reader::Parse(ArrayNode*& array, TokenStream& tokenStream, TextCoord
    MatchExpectedToken(Token::TOKEN_ARRAY_BEGIN, tokenStream);
 
    array = new ArrayNode();
-   
-   bool bContinue = (tokenStream.EOS() == false &&
+      
+   for (bool bContinue = (tokenStream.EOS() == false &&
                      tokenStream.Peek().nType != Token::TOKEN_ARRAY_END);
-   while (bContinue)
+        bContinue;
+        bContinue = ParseSeparatorOrTerminator(tokenStream, Token::TOKEN_ARRAY_END))
    {
       Node *elemVal = NULL;
       Parse(elemVal, tokenStream, lBegin);
 
-     if(elemVal) {
-         array->DomAddElementNode(elemVal);
-     }
-
-      bContinue = (tokenStream.EOS() == false &&
-                   tokenStream.Peek().nType != Token::TOKEN_ARRAY_END);
-      if (bContinue)
-         MatchExpectedToken(Token::TOKEN_NEXT_ELEMENT, tokenStream);
+      if(elemVal) {
+          array->DomAddElementNode(elemVal);
+      }
    }
 
    if(tokenStream.EOS()) {
@@ -608,8 +634,6 @@ inline void Reader::Parse(ArrayNode*& array, TokenStream& tokenStream, TextCoord
        TextCoordinate lEnd = MatchExpectedToken(Token::TOKEN_ARRAY_END, tokenStream).locEnd;
        array->textRange = TextRange(lBegin.relativeTo(aBaseOfs), lEnd.relativeTo(aBaseOfs));
    }
-
-    
 }
 
 inline void Reader::Parse(StringNode*& string, TokenStream& tokenStream, TextCoordinate aBaseOfs)
@@ -663,6 +687,24 @@ inline void Reader::Parse(NullNode*& aNull, TokenStream& tokenStream, TextCoordi
 }
 
 
+inline void Reader::ReportExpectedToken(Token::Type nExpected, const Token& token) {
+    static const char *lTypeNames[] = {
+         "'{'",
+         "'}'",
+         "'['",
+         "']'",
+         "','",
+         "':'",
+         "string",
+         "number",
+         "'true' or 'false'",
+         "'null'"
+     };
+
+     std::string sMessage = "Unexpected token: " + wstring_to_utf8(token.value()) + "; expecting " + lTypeNames[nExpected];
+     listener->Error(token.locBegin-1, PARSER_ERROR_UNEXPECTED_TOKEN, sMessage);
+}
+
 inline const Token &Reader::MatchExpectedToken(Token::Type nExpected, TokenStream& tokenStream)
 {
    static wstring lEmptyStr;
@@ -678,21 +720,7 @@ inline const Token &Reader::MatchExpectedToken(Token::Type nExpected, TokenStrea
    const Token& token = tokenStream.Peek();
    if (token.nType != nExpected)
    {
-     static const char *lTypeNames[] = { 
-          "'{'",
-          "'}'",
-          "'['",
-          "']'",
-          "','",
-          "':'",
-          "string",
-          "number",
-          "'true' or 'false'",
-          "'null'"          
-      };
-
-      std::string sMessage = "Unexpected token: " + wstring_to_utf8(token.value()) + "; expecting " + lTypeNames[nExpected];
-      listener->Error(token.locBegin-1, PARSER_ERROR_UNEXPECTED_TOKEN, sMessage);
+       ReportExpectedToken(nExpected, token);
    } else
    {   
       tokenStream.Get();

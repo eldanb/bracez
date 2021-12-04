@@ -1248,12 +1248,13 @@ bool JsonFile::attemptReparseClosure(Node *spliceContainer,
     return true;
 }
 
-bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
-                                       TextLength aLen,
-                                       const std::wstring &aNewText,
-                                       int maxParsedRegionLength) {
-    stopwatch spliceStopWatch("Fast spliceText");
-    
+void JsonFile::minimizeChangedRegion(TextCoordinate aOffsetStart,
+                                     TextLength aLen,
+                                     const std::wstring &aNewText,
+                                     TextCoordinate *outMinimizedStart,
+                                     TextLength *outMinimizedLen,
+                                     std::wstring *outMinimizedUpdatedText
+                                     ) {
     // Adjust splice range to not include non-modified regions.
     // E.g on MacOS the text system my specific a longer range
     // than actually changed.
@@ -1271,16 +1272,26 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
           aNewText[newTextLen - 1 - trimRight] == (*jsonText)[aOffsetStart + aLen - 1 - trimRight]) {
         trimRight++;
     }
-    aOffsetStart += trimLeft;
-    aLen -= (trimLeft + trimRight);
+    
+    *outMinimizedStart = aOffsetStart + trimLeft;
+    *outMinimizedLen = aLen - (trimLeft + trimRight);
+    *outMinimizedUpdatedText = aNewText.substr(trimLeft, newTextLen-trimRight-trimLeft);
+}
 
-    TextCoordinate trimmedStart = aOffsetStart;
-    TextLength trimmedLen = aLen;
-    std::wstring trimmedUpdatedText = aNewText.substr(trimLeft, newTextLen-trimRight-trimLeft);
+bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
+                                       TextLength aLen,
+                                       const std::wstring &aNewText,
+                                       int maxParsedRegionLength) {
+    stopwatch spliceStopWatch("Fast spliceText");
+    
+    TextCoordinate trimmedStart;
+    TextLength trimmedLen;
+    std::wstring trimmedUpdatedText;
+    minimizeChangedRegion(aOffsetStart, aLen, aNewText,
+                          &trimmedStart, &trimmedLen, &trimmedUpdatedText);
+
     TextLength trimmedUpdatedTextLength = trimmedUpdatedText.length();
 
-    //fast
-    
     
     // Locate integral node that contains the entire changed region
     JsonPath integralNodeJsonPath;
@@ -1288,13 +1299,6 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
     ContainerNode *spliceContainerAsContainerNode;
     TextCoordinate soughtOffset = trimmedStart;
     
-    // slowparse
-    /*if(!dynamic_cast<ContainerNode*>(spliceContainer))
-    {
-        return false;
-    }
-    return true;*/
-
     while( (spliceContainerAsContainerNode = dynamic_cast<ContainerNode*>(spliceContainer)) != NULL )
     {
         soughtOffset = soughtOffset.relativeTo(spliceContainer->GetTextRange().start);
@@ -1316,7 +1320,8 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
         integralNodeJsonPath.push_back(lNextNav);
     }
 
-
+    // Attempt reparsing growing containers until
+    // succesful or over a threshold of attempts
     TextRange absReparseRange;
     Node *reparsedNode = NULL;
     MarkerList<ParseErrorMarker> reparseErrors;
@@ -1331,8 +1336,8 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
     if(!reparsedNode) {
         return false;
     }
-    
-    
+        
+    // Fixup trees and lines
     TextCoordinate lLineChangeStart;
     TextLength lLineChangeLen, lLineChangeNewLen;
     
@@ -1353,6 +1358,8 @@ bool JsonFile::spliceTextWithWorkLimit(TextCoordinate aOffsetStart,
     
     int spliceContainerIndexInParent = spliceContainer->GetParent()->GetIndexOfChild(spliceContainer);
     spliceContainerContainer->SetChildAt(spliceContainerIndexInParent, reparsedNode, true);
+    
+    // Notify
     notify(NodeRefreshNotification(std::move(integralNodeJsonPath)));
     notify(SpliceNotification(aOffsetStart, aLen, trimmedUpdatedTextLength, lLineChangeStart, lLineChangeLen, lLineChangeNewLen));
 

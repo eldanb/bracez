@@ -529,7 +529,16 @@ private:
     TextCoordinate containerStartColAddr = getContainerStartColumnAddr(container);
     int containerStartCol, containerStartRow;
     file->getCoordinateRowCol(containerStartColAddr, containerStartRow, containerStartCol);
-    return containerStartCol-1 + [BracezPreferences sharedPreferences].indentSize;
+
+    TextCoordinate containerEnd = container->GetTextRange().end;
+    int containerEndCol, containerEndRow;
+    file->getCoordinateRowCol(containerEnd, containerEndRow, containerEndCol);
+
+    int newLineEndCol, newLineEndRow;
+    file->getCoordinateRowCol(where, newLineEndRow, newLineEndCol);
+    
+    int addedIndent = containerEndRow != newLineEndRow ? [BracezPreferences sharedPreferences].indentSize : 0;
+    return containerStartCol-1 + addedIndent;
 }
 
 -(int)suggestCloserIndentAt:(TextCoordinate)where getLineStart:(TextCoordinate*)lineStart {

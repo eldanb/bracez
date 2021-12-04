@@ -526,6 +526,14 @@ namespace json
       void updateErrorsAfterSplice(TextCoordinate aOffsetStart, TextLength aLen, TextLength aNewLen, MarkerList<ParseErrorMarker> *aNewMarkers = NULL);
 
       void notifyUpdatedNode(Node *updatedNode);
+       
+       void minimizeChangedRegion(TextCoordinate aOffsetStart,
+                                            TextLength aLen,
+                                            const std::wstring &aNewText,
+                                            TextCoordinate *outMinimizedStart,
+                                            TextLength *outMinimizedLen,
+                                  std::wstring *outMinimizedUpdatedText);
+       
       bool attemptReparseClosure(Node *spliceContainer,
                                            TextCoordinate aOffsetStart,
                                            TextLength aLen,

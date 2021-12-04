@@ -272,8 +272,9 @@ public:
    template<typename T>
    void Parse(T &element, TokenStream &tokenStream, bool allowSuffix, TextCoordinate aBaseOfs=TextCoordinate(0));
     
-   const Token &MatchExpectedToken(Token::Type nExpected, TokenStream& tokenStream);
-    
+   inline const Token &MatchExpectedToken(Token::Type nExpected, TokenStream& tokenStream);
+   inline bool ParseSeparatorOrTerminator(TokenStream& tokenStream, Token::Type terminator);
+   void ReportExpectedToken(Token::Type nExpected, const Token& token);
     
 private:
     ParseListener *listener;
