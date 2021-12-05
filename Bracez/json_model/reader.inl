@@ -8,6 +8,7 @@
 
 #include <cassert>
 #include <set>
+#include <map>
 #include <sstream>
 #include <codecvt>
 
@@ -87,10 +88,11 @@ tokenEaten(true),
 listener(aListener),
 skipWhitespace(aSkipWhitespace),
 currentRow(startRow),
-currentCol(startCol)
+currentCol(startCol),
+isEos(false)
 {
     // Prepare lookup tables
-    memset(tokenTypeLookup, Token::TOKEN_UNKNOWN, 256);
+    memset(tokenTypeLookup, Token::TOKEN_UNKNOWN, sizeof(tokenTypeLookup));
     
     
     tokenTypeLookup['\n'] = Token::TOKEN_WHITESPACE;
@@ -120,20 +122,24 @@ currentCol(startCol)
 
 inline const Token& TokenStream::Peek() {
     pumpTokenIfNeeded();
-    
     return currentToken;
 }
 
 inline const Token& TokenStream::Get() {
     assert(!EOS());
+
     pumpTokenIfNeeded();
     tokenEaten = true;
+
+    if(inputStream.EOS()) {
+        isEos = true;
+    }
     
     return currentToken;
 }
 
 inline bool TokenStream::EOS() const {
-    return tokenEaten && inputStream.EOS();
+    return isEos;
 }
 
 inline int TokenStream::Row() {
@@ -148,7 +154,6 @@ inline void TokenStream::pumpTokenIfNeeded()
 {
     if(tokenEaten)
     {
-        assert(!EOS());
         pumpToken();
         tokenEaten = false;
     }
@@ -158,31 +163,35 @@ inline void TokenStream::pumpToken()
 {
     // Mark token start
     currentToken.locBegin = inputStream.GetLocation();
-    
-    // Get current token type (good guess...)
-    wchar_t sChar = inputStream.Peek();
-    currentToken.nType = (Token::Type)tokenTypeLookup[sChar];
-    
-    switch (currentToken.nType)
-    {
-        case Token::TOKEN_NUMBER:
-            MatchNumber();
-            break;
-            
-        case Token::TOKEN_STRING:
-            MatchString();
-            break;
-            
-        case Token::TOKEN_UNKNOWN:
-            MatchBareWordToken();
-            break;
-            
-        default:   // Default case is for simple tokens
-            currentToken.orgTextStart = inputStream.CurrentPtr();
-            inputStream.Get();
-            currentToken.orgTextEnd = inputStream.CurrentPtr();
-            currentToken.assumeValueFromOrgText();
-            updateLineCol(sChar);
+ 
+    if(isEos) {
+        currentToken.nType = Token::TOKEN_EOS;
+    } else {
+        // Get current token type (good guess...)
+        wchar_t sChar = inputStream.Peek();
+        currentToken.nType = (Token::Type)tokenTypeLookup[sChar];
+        
+        switch (currentToken.nType)
+        {
+            case Token::TOKEN_NUMBER:
+                MatchNumber();
+                break;
+                
+            case Token::TOKEN_STRING:
+                MatchString();
+                break;
+                
+            case Token::TOKEN_UNKNOWN:
+                MatchBareWordToken();
+                break;
+                
+            default:   // Default case is for simple tokens
+                currentToken.orgTextStart = inputStream.CurrentPtr();
+                inputStream.Get();
+                currentToken.orgTextEnd = inputStream.CurrentPtr();
+                currentToken.assumeValueFromOrgText();
+                updateLineCol(sChar);
+        }
     }
     
     currentToken.locEnd = inputStream.GetLocation();
@@ -212,13 +221,10 @@ inline void TokenStream::Match4Hex(unsigned int& integer) {
     ss >> integer;
 }
 
-
-
 inline void TokenStream::MatchString()
 {
     std::wstring tokValue;
-    
-    
+        
     // Eat starting "\""
     currentToken.orgTextStart = inputStream.CurrentPtr();
     inputStream.Get();
@@ -423,9 +429,9 @@ template<typename T>
 inline void Reader::Parse(T &element, TokenStream &tokenStream, bool allowSuffix, TextCoordinate aBaseOfs) {
     Parse(element, tokenStream, aBaseOfs);
     
-    if (tokenStream.EOS() == false && !allowSuffix)
+    const Token& token = tokenStream.Peek();
+    if (token.nType != Token::TOKEN_EOS && !allowSuffix)
     {
-        const Token& token = tokenStream.Peek();
         std::string sMessage = "Expected End of token stream; found " + wstring_to_utf8(token.value());
         listener->Error(token.locBegin, PARSER_ERROR_EXPECTED_EOS, sMessage);
     }
@@ -433,12 +439,6 @@ inline void Reader::Parse(T &element, TokenStream &tokenStream, bool allowSuffix
 
 inline void Reader::Parse(Node*& element, TokenStream& tokenStream, TextCoordinate aBaseOfs)
 {
-    if (tokenStream.EOS()) {
-        std::string sMessage = "Unexpected end of token stream";
-        listener->Error(TextCoordinate(), PARSER_ERROR_UNEXPECTED_EOS, "Unexpected end of token stream");
-        return;
-    }
-    
     const Token& token = tokenStream.Peek();
     switch (token.nType) {
         case Token::TOKEN_OBJECT_BEGIN:
@@ -489,6 +489,10 @@ inline void Reader::Parse(Node*& element, TokenStream& tokenStream, TextCoordina
             element = null;
             break;
         }
+                        
+        case Token::TOKEN_EOS:
+            listener->Error(TextCoordinate(), PARSER_ERROR_UNEXPECTED_EOS, "Unexpected end of token stream");
+            break;
             
         default:
         {
@@ -499,8 +503,20 @@ inline void Reader::Parse(Node*& element, TokenStream& tokenStream, TextCoordina
     }
 }
 
-static inline bool IsObjectMemberTerminator(Token::Type t) {
-    return t == Token::TOKEN_OBJECT_END || t == Token::TOKEN_NEXT_ELEMENT;
+
+inline bool Reader::AssertNonObjectMemberTerminatorWithError(TokenStream &tokenStream, const char *error) {
+    
+    const Token &tok = tokenStream.Peek();
+    if(tok.nType & (Token::TOKEN_OBJECT_END | Token::TOKEN_NEXT_ELEMENT | Token::TOKEN_EOS)) {
+        listener->Error(tok.locBegin,
+                        tok.nType == Token::TOKEN_EOS ?
+                            PARSER_ERROR_UNEXPECTED_EOS :
+                            PARSER_ERROR_UNEXPECTED_TOKEN,
+                        error);
+        return false;
+    }
+    
+    return true;
 }
 
 inline void Reader::Parse(ObjectNode*& object, TokenStream& tokenStream, TextCoordinate aBaseOfs)
@@ -512,31 +528,30 @@ inline void Reader::Parse(ObjectNode*& object, TokenStream& tokenStream, TextCoo
     
     object = new ObjectNode();
     
-    for(bool bContinue = (tokenStream.EOS() == false &&
-                          tokenStream.Peek().nType != Token::TOKEN_OBJECT_END);
+    for(bool bContinue = !(tokenStream.Peek().nType &
+                           (Token::TOKEN_OBJECT_END | Token::TOKEN_EOS));
         bContinue;
         bContinue = ParseSeparatorOrTerminator(tokenStream, Token::TOKEN_OBJECT_END))
     {
-        if(IsObjectMemberTerminator(tokenStream.Peek().nType)) {
-            listener->Error(tokenStream.Peek().locBegin-1, PARSER_ERROR_UNEXPECTED_TOKEN, "Expected object member name");
+        if(!AssertNonObjectMemberTerminatorWithError(tokenStream,
+                                                     "Expected object member name"))
             continue;
-        }
         
         // first the member name. save the token in case we have to throw an exception
         Token tokenName = MatchExpectedToken(Token::TOKEN_STRING, tokenStream);
         
-        if(IsObjectMemberTerminator(tokenStream.Peek().nType)) {
-            listener->Error(tokenStream.Peek().locBegin-1, PARSER_ERROR_UNEXPECTED_TOKEN, "Expected ':'");
+        if(!AssertNonObjectMemberTerminatorWithError(tokenStream,
+                                                     "Expected ':'"))
             continue;
-        }
+
         
         // ...then the key/value separator...
         MatchExpectedToken(Token::TOKEN_MEMBER_ASSIGN, tokenStream);
         
-        if(IsObjectMemberTerminator(tokenStream.Peek().nType)) {
-            listener->Error(tokenStream.Peek().locBegin-1, PARSER_ERROR_UNEXPECTED_TOKEN, "Expected object member value");
+        if(!AssertNonObjectMemberTerminatorWithError(tokenStream,
+                                                     "Expected object member value"))
             continue;
-        }
+
         
         // ...then the value itself (can be anything).
         Node *nodeVal = NULL;
@@ -574,15 +589,10 @@ inline void Reader::Parse(ObjectNode*& object, TokenStream& tokenStream, TextCoo
 }
 
 inline bool Reader::ParseSeparatorOrTerminator(TokenStream& tokenStream, Token::Type terminator) {
-    if(tokenStream.EOS()) {
-        return false;
-    }
     
     bool encounteredNext = false;
-    bool eosEncountered;
     Token nextToken;
-    while(!(eosEncountered = tokenStream.EOS()) &&
-          ((nextToken = tokenStream.Peek()).nType == Token::TOKEN_NEXT_ELEMENT)) {
+    while((nextToken = tokenStream.Peek()).nType == Token::TOKEN_NEXT_ELEMENT) {
         tokenStream.Get();
         encounteredNext = true;
     }
@@ -594,14 +604,14 @@ inline bool Reader::ParseSeparatorOrTerminator(TokenStream& tokenStream, Token::
         }
         return false;
     } else
-        if(eosEncountered) {
-            return false;
+    if(nextToken.nType == Token::TOKEN_EOS) {
+        // TODO error message?
+        return false;
+    } else {
+        if(!encounteredNext) {
+            ReportExpectedToken(Token::TOKEN_NEXT_ELEMENT, nextToken);
         }
-        else {
-            if(!encounteredNext) {
-                ReportExpectedToken(Token::TOKEN_NEXT_ELEMENT, nextToken);
-            }
-        }
+    }
     
     return true;
 }
@@ -614,8 +624,8 @@ inline void Reader::Parse(ArrayNode*& array, TokenStream& tokenStream, TextCoord
     
     array = new ArrayNode();
     
-    for (bool bContinue = (tokenStream.EOS() == false &&
-                           tokenStream.Peek().nType != Token::TOKEN_ARRAY_END);
+        for (bool bContinue = !(tokenStream.Peek().nType &
+                                (Token::TOKEN_ARRAY_END | Token::TOKEN_EOS));
          bContinue;
          bContinue = ParseSeparatorOrTerminator(tokenStream, Token::TOKEN_ARRAY_END))
     {
@@ -688,19 +698,20 @@ inline void Reader::Parse(NullNode*& aNull, TokenStream& tokenStream, TextCoordi
 
 
 inline void Reader::ReportExpectedToken(Token::Type nExpected, const Token& token) {
-    static const char *lTypeNames[] = {
-        "'{'",
-        "'}'",
-        "'['",
-        "']'",
-        "','",
-        "':'",
-        "string",
-        "number",
-        "'true' or 'false'",
-        "'null'"
-    };
     
+    static std::map<Token::Type, const char*> lTypeNames = {
+        { Token::TOKEN_OBJECT_BEGIN, "'{'" },
+        { Token::TOKEN_OBJECT_END, "'}'" },
+        { Token::TOKEN_ARRAY_BEGIN, "'['" },
+        { Token::TOKEN_ARRAY_END, "']'" },
+        { Token::TOKEN_NEXT_ELEMENT, "','" },
+        { Token::TOKEN_MEMBER_ASSIGN, "':'" },
+        { Token::TOKEN_STRING, "string" },
+        { Token::TOKEN_NUMBER, "number" },
+        { Token::TOKEN_BOOLEAN, "'true' or 'false'" },
+        { Token::TOKEN_NULL, "'null'" }
+    };
+
     std::string sMessage = "Unexpected token: " + wstring_to_utf8(token.value()) + "; expecting " + lTypeNames[nExpected];
     listener->Error(token.locBegin-1, PARSER_ERROR_UNEXPECTED_TOKEN, sMessage);
 }
@@ -710,16 +721,16 @@ inline const Token &Reader::MatchExpectedToken(Token::Type nExpected, TokenStrea
     static wstring lEmptyStr;
     static Token lEmptyToken;
     
-    if (tokenStream.EOS())
-    {
-        std::string sMessage = "Unexpected end of token stream";
-        listener->Error(TextCoordinate(), PARSER_ERROR_UNEXPECTED_EOS, "Unexpected end of token stream");
-        return lEmptyToken;
-    }
-    
     const Token& token = tokenStream.Peek();
     if (token.nType != nExpected)
     {
+        if (tokenStream.EOS())
+        {
+            std::string sMessage = "Unexpected end of token stream";
+            listener->Error(TextCoordinate(), PARSER_ERROR_UNEXPECTED_EOS, "Unexpected end of token stream");
+            return lEmptyToken;
+        }
+        
         ReportExpectedToken(nExpected, token);
     } else
     {

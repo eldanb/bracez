@@ -64,19 +64,19 @@ struct Token
 {
     enum Type
     {
-        TOKEN_UNKNOWN,       //    invalid bareword
-        TOKEN_OBJECT_BEGIN,  //    {
-        TOKEN_OBJECT_END,    //    }
-        TOKEN_ARRAY_BEGIN,   //    [
-        TOKEN_ARRAY_END,     //    ]
-        TOKEN_NEXT_ELEMENT,  //    ,
-        TOKEN_MEMBER_ASSIGN, //    :
-        TOKEN_STRING,        //    "xxx"
-        TOKEN_NUMBER,        //    [+/-]000.000[e[+/-]000]
-        TOKEN_BOOLEAN,       //    true -or- false
-        TOKEN_NULL,          //    null
-        TOKEN_WHITESPACE,    //    spacebar, newline, tab
-        
+        TOKEN_UNKNOWN           = 0,       //    invalid bareword
+        TOKEN_OBJECT_BEGIN      = 1,       //    {
+        TOKEN_OBJECT_END        = 2,       //    }
+        TOKEN_ARRAY_BEGIN       = 4,       //    [
+        TOKEN_ARRAY_END         = 8,       //    ]
+        TOKEN_NEXT_ELEMENT      = 16,      //    ,
+        TOKEN_MEMBER_ASSIGN     = 32,      //    :
+        TOKEN_STRING            = 64,      //    "xxx"
+        TOKEN_NUMBER            = 128,     //    [+/-]000.000[e[+/-]000]
+        TOKEN_BOOLEAN           = 256,     //    true -or- false
+        TOKEN_NULL              = 512,     //    null
+        TOKEN_WHITESPACE        = 1024,    //    spacebar, newline, tab
+        TOKEN_EOS               = 2048     //    spacebar, newline, tab
     };
     
     enum CharClass {
@@ -198,6 +198,7 @@ private:
     bool skipWhitespace;
     bool tokenEaten;
     Token currentToken;
+    bool isEos;
     
     int currentCol;
     int currentRow;
@@ -206,7 +207,7 @@ private:
     InputStream &inputStream;
     ParseListener *listener;
     
-    char tokenTypeLookup[256];
+    Token::Type tokenTypeLookup[256];
     char charClassLookup[256];
 };
 
@@ -275,7 +276,7 @@ public:
     inline const Token &MatchExpectedToken(Token::Type nExpected, TokenStream& tokenStream);
     inline bool ParseSeparatorOrTerminator(TokenStream& tokenStream, Token::Type terminator);
     void ReportExpectedToken(Token::Type nExpected, const Token& token);
-    
+    inline bool AssertNonObjectMemberTerminatorWithError(TokenStream &tokenStream, const char *error);
 private:
     ParseListener *listener;
 };

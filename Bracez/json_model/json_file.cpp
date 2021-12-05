@@ -1312,7 +1312,7 @@ bool JsonFile::fastSpliceTextWithWorkLimit(TextCoordinate aOffsetStart,
         
         
         Node *nextNavNode = spliceContainerAsContainerNode->getChildAt(lNextNav);
-        if(nextNavNode->getTextRange().end < soughtOffset+aLen) {
+        if(nextNavNode->getTextRange().end < soughtOffset+trimmedLen) {
             break;
         }
         
@@ -1328,6 +1328,7 @@ bool JsonFile::fastSpliceTextWithWorkLimit(TextCoordinate aOffsetStart,
     MarkerList<ParseErrorMarker> reparseErrors;
     while(!reparsedNode && spliceContainer && spliceContainer != jsonDom->getChildAt(0) ) {
         if(!attemptReparseClosure(spliceContainer, trimmedStart, trimmedLen, maxParsedRegionLength, trimmedUpdatedText, &absReparseRange, &reparsedNode, &reparseErrors)) {
+            reparseErrors.clear();
             reparsedNode = NULL;
             spliceContainer=spliceContainer->getParent();
             integralNodeJsonPath.pop_back();
