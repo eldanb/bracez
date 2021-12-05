@@ -534,7 +534,7 @@ private:
     int containerStartCol, containerStartRow;
     file->getCoordinateRowCol(containerStartColAddr, containerStartRow, containerStartCol);
 
-    TextCoordinate containerEnd = container->getTextRange().end;
+    TextCoordinate containerEnd = container->getAbsTextRange().end;
     int containerEndCol, containerEndRow;
     file->getCoordinateRowCol(containerEnd, containerEndRow, containerEndCol);
 

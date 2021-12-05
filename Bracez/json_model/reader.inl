@@ -306,16 +306,16 @@ inline void TokenStream::MatchBareWordToken()
     {
         currentToken.nType = Token::TOKEN_BOOLEAN;
     } else
-        if(currentToken.isValueEquals(L"null"))
-        {
-            currentToken.nType = Token::TOKEN_NULL;
-        } else
-        {
-            
-            std::string sErrorMessage = "Unknown token in stream: " + wstring_to_utf8(currentToken.value());
-            if(listener)
-                listener->Error(currentToken.locBegin, PARSER_ERROR_UNEXPECTED_CHARACTER, sErrorMessage);
-        }
+    if(currentToken.isValueEquals(L"null"))
+    {
+        currentToken.nType = Token::TOKEN_NULL;
+    } else
+    {
+        
+        std::string sErrorMessage = "Unknown token in stream: " + wstring_to_utf8(currentToken.value());
+        if(listener)
+            listener->Error(currentToken.locBegin, PARSER_ERROR_UNEXPECTED_CHARACTER, sErrorMessage);
+    }
 }
 
 inline void TokenStream::MatchNumber()
