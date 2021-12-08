@@ -151,6 +151,13 @@ TextRange Node::getAbsTextRange() const
     return TextRange(textRange.start+lOfs, textRange.end+lOfs);
 }
 
+ObjectNode *Node::createDebugRepresentation() const {
+    ObjectNode *ret = new ObjectNode();
+    ret->domAddMemberNode(L"start", new NumberNode(textRange.start));
+    ret->domAddMemberNode(L"len", new NumberNode(textRange.length()));
+    
+    return ret;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -527,6 +534,22 @@ ArrayNode *ArrayNode::clone() const {
     return ret;
 }
 
+
+ObjectNode *ArrayNode::createDebugRepresentation() const {
+    ObjectNode *ret = Node::createDebugRepresentation();
+    
+    ArrayNode *items = new ArrayNode();
+    for_each(elements.begin(), elements.end(), [items](const std::unique_ptr<Node> &node) {
+        items->domAddElementNode(node->createDebugRepresentation());
+    });
+    
+    ret->domAddMemberNode(L"type", new StringNode(L"array"));
+    ret->domAddMemberNode(L"items", items);
+
+    return ret;
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ObjectNode::iterator ObjectNode::begin()
@@ -883,6 +906,30 @@ void ObjectNode::calculateJsonTextRepresentation(std::wstring &aDest, int maxLen
     aDest += L"}";
 }
 
+
+ObjectNode *ObjectNode::createDebugRepresentation() const {
+    ObjectNode *ret = Node::createDebugRepresentation();
+    
+    ArrayNode *items = new ArrayNode();
+    for_each(members.begin(), members.end(), [items](const Member &member) {
+        ObjectNode *memberDesc = new ObjectNode();
+        memberDesc->domAddMemberNode(L"name", new StringNode(member.name));
+        memberDesc->domAddMemberNode(L"nameStart", new NumberNode(member.nameRange.start));
+        memberDesc->domAddMemberNode(L"nameLen", new NumberNode(member.nameRange.length()));
+
+        memberDesc->domAddMemberNode(L"value", member.node->createDebugRepresentation());
+        
+        items->domAddElementNode(memberDesc);
+    });
+    
+    ret->domAddMemberNode(L"type", new StringNode(L"object"));
+    ret->domAddMemberNode(L"items", items);
+
+    return ret;
+}
+
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 DocumentNode::DocumentNode(JsonFile *aOwner, Node *aChild)
@@ -954,6 +1001,13 @@ void DocumentNode::detachChildAt(int aIdx, Node **aNode)
 {
 }
 
+
+
+ObjectNode *DocumentNode::createDebugRepresentation() const {
+    return rootNode->createDebugRepresentation();
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void LeafNode::accept(NodeVisitor *aVisitor) const
@@ -989,6 +1043,14 @@ bool NullNode::valueEquals(Node *other) const {
 
 bool NullNode::valueLt(Node *other) const {
     return false;
+}
+
+ObjectNode *NullNode::createDebugRepresentation() const {
+    ObjectNode *ret = Node::createDebugRepresentation();
+    
+    ret->domAddMemberNode(L"type", new StringNode(L"null"));
+
+    return ret;
 }
 
 
@@ -1047,6 +1109,9 @@ void ValueNode<bool, ntBoolean>::calculateJsonTextRepresentation(std::wstring &a
 {
     aDest = value ? L"true" : L"false";
 }
+
+
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

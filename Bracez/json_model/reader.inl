@@ -429,11 +429,9 @@ template<typename T>
 inline void Reader::Parse(T &element, TokenStream &tokenStream, bool allowSuffix, TextCoordinate aBaseOfs) {
     Parse(element, tokenStream, aBaseOfs);
     
-    const Token& token = tokenStream.Peek();
-    if (token.nType != Token::TOKEN_EOS && !allowSuffix)
+    if (!tokenStream.EOS() && !allowSuffix)
     {
-        std::string sMessage = "Expected End of token stream; found " + wstring_to_utf8(token.value());
-        listener->Error(token.locBegin, PARSER_ERROR_EXPECTED_EOS, sMessage);
+        listener->Error(tokenStream.getInputStream().GetLocation(), PARSER_ERROR_EXPECTED_EOS, "Expected End of token stream.");
     }
 }
 

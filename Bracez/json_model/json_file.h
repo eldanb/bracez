@@ -32,6 +32,7 @@ class JsonFile;
 class InputStream;
 class TokenStream;
 class ParseListener;
+class ObjectNode;
 
 struct TextRange
 {
@@ -110,6 +111,7 @@ public:
     virtual Node *clone() const = 0;
     
     virtual std::wstring toString() const = 0;
+    virtual ObjectNode *createDebugRepresentation() const;
     
 private:
     friend class Reader;
@@ -203,6 +205,8 @@ public:
     
     virtual ArrayNode *clone() const;
     
+    virtual ObjectNode *createDebugRepresentation() const;
+    
 protected:
     virtual void storeChildAt(int aIdx, Node *aNode);
     
@@ -271,6 +275,8 @@ public:
     }
     
     virtual Node *clone() const;
+    
+    virtual ObjectNode *createDebugRepresentation() const;
 protected:
     void adjustChildRangeAt(int aIdx, long aDiff);
     virtual void storeChildAt(int aIdx, Node *aNode);
@@ -309,6 +315,8 @@ public:
         return L"[Document]";
     }
     
+    virtual ObjectNode *createDebugRepresentation() const;
+    
 protected:
     virtual void storeChildAt(int aIdx, Node *aNode);
     
@@ -342,6 +350,7 @@ public:
         return L"null";
     }
     
+    virtual ObjectNode *createDebugRepresentation() const;
 protected:
     
 } ;
@@ -379,6 +388,17 @@ public:
         return new ValueNode(value);
     }
     
+    virtual ObjectNode *createDebugRepresentation() const {
+        ObjectNode *ret = Node::createDebugRepresentation();
+        
+        ret->domAddMemberNode(L"type", new ValueNode<std::wstring, ntString>(L"value"));
+        
+        std::wstring valRep;
+        calculateJsonTextRepresentation(valRep);
+        ret->domAddMemberNode(L"jsonValue", new ValueNode<std::wstring, ntString>(valRep));
+        
+        return ret;
+    }
 protected:
     
 private:
