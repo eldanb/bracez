@@ -14,7 +14,7 @@
 #include "marker_list.h"
 #include "JsonIndentFormatter.hpp"
 #include "stopwatch.h"
-
+#include "JsonDocumentEditingRecorder.hpp"
 
 //#define USE_JSON_TEXT_STORAGE 1
 
@@ -181,6 +181,7 @@ NSString *JsonDocumentSemanticModelUpdatedNotificationReasonReparse =
     NSArray *bookmarkWrappers;
         
     JsonCocoaNode *_cocoaNode;
+    JsonDocumentEditingRecorder *_jsonEditingRecorder;
 }
 
 @end
@@ -233,6 +234,8 @@ private:
         file = new JsonFile();
         file->addListener(jsonSemanticListenerBridge);
 
+        _jsonEditingRecorder = JsonDocumentEditingRecorder::createForFile(file);
+        
 #ifdef USE_JSON_TEXT_STORAGE
         [(JsonTextStorage*)self.textStorage setJsonFile:file];
 #endif
@@ -243,6 +246,10 @@ private:
 }
 
 -(void)dealloc {
+    if(_jsonEditingRecorder) {
+        delete _jsonEditingRecorder;
+    }
+    
     if(file) {
         delete file;
         file = NULL;
@@ -455,6 +462,8 @@ private:
     }
 }
 
+#define RECORD_JSON_EDITS
+
 - (void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta API_AVAILABLE(macos(10.11), ios(7.0), tvos(9.0)) {
     if(editedMask & NSTextStorageEditedCharacters)
     {
@@ -468,12 +477,23 @@ private:
             if(!_isSemanticModelDirty) {
                 _isSemanticModelUpdateInProgress = true;
                 
-                shouldSlowSplice =
-                    !file->fastSpliceTextWithWorkLimit(TextCoordinate(editedRange.location),
+                if(_jsonEditingRecorder) {
+                    _jsonEditingRecorder->prepareToRecordSpliceOnFile(file);
+                }
+
+                bool fastSpliceSuccess =
+                    file->fastSpliceTextWithWorkLimit(TextCoordinate(editedRange.location),
                                                        editedRange.length-delta,
                                                        updatedRegion.cStringWstring,
                                                        MAX_LOCAL_EDIT_LEN);
                 
+                if(fastSpliceSuccess && _jsonEditingRecorder) {
+                    _jsonEditingRecorder->recordFastSplice(file, TextCoordinate(editedRange.location),
+                                                      editedRange.length-delta,
+                                                      updatedRegion.cStringWstring);
+                }
+                
+                shouldSlowSplice = !fastSpliceSuccess;
                 _isSemanticModelUpdateInProgress = false;
             }
             
@@ -601,7 +621,11 @@ private:
     std::shared_ptr<JsonFileSemanticModelReconciliationTask> reconcile = file->spliceTextWithDirtySemanticModel(aOffsetStart, aLen, aNewText);
     currentReconciliationTask = reconcile;
     [self didChangeValueForKey:@"documentBusy"];
-    
+
+    if(_jsonEditingRecorder) {
+        _jsonEditingRecorder->recordSlowSplice(file, aOffsetStart, aLen, aNewText);
+    }
+
     _isSemanticModelUpdateInProgress = false;
 
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{

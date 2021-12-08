@@ -35,6 +35,7 @@
 		B992C0372760A373006B4CB2 /* json_path_tests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B992C01D275F9B14006B4CB2 /* json_path_tests.cpp */; };
 		B992C0382760A39D006B4CB2 /* JsonPathExpressionCompiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2A9C25F908FC00484EA3 /* JsonPathExpressionCompiler.cpp */; };
 		B992C0392760A39D006B4CB2 /* JsonPathExpressionNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9FC2A9D25F908FC00484EA3 /* JsonPathExpressionNode.cpp */; };
+		B992C03C27614A3F006B4CB2 /* JsonDocumentEditingRecorder.mm in Sources */ = {isa = PBXBuildFile; fileRef = B992C03A27614A3F006B4CB2 /* JsonDocumentEditingRecorder.mm */; };
 		B99B5A7311C6DF0000A33231 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B99B5A7211C6DF0000A33231 /* QuartzCore.framework */; };
 		B99D0DD725BC989C0006EA1F /* libjq.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B99D0DD625BC98810006EA1F /* libjq.a */; };
 		B9AADFFD253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9AADFFC253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm */; };
@@ -138,6 +139,8 @@
 		B992C02327608DBD006B4CB2 /* catch2 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = catch2; sourceTree = "<group>"; };
 		B992C02927609783006B4CB2 /* BracezTests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = BracezTests; sourceTree = BUILT_PRODUCTS_DIR; };
 		B992C02B27609783006B4CB2 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		B992C03A27614A3F006B4CB2 /* JsonDocumentEditingRecorder.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = JsonDocumentEditingRecorder.mm; path = json_cocoa_model/JsonDocumentEditingRecorder.mm; sourceTree = "<group>"; };
+		B992C03B27614A3F006B4CB2 /* JsonDocumentEditingRecorder.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = JsonDocumentEditingRecorder.hpp; path = json_cocoa_model/JsonDocumentEditingRecorder.hpp; sourceTree = "<group>"; };
 		B99B5A7211C6DF0000A33231 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		B99D0DD125BC98600006EA1F /* libjq.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjq.1.dylib; path = ../../../../../../usr/local/Cellar/jq/1.6/lib/libjq.1.dylib; sourceTree = "<group>"; };
 		B99D0DD625BC98810006EA1F /* libjq.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjq.a; path = ../../../../../../usr/local/Cellar/jq/1.6/lib/libjq.a; sourceTree = "<group>"; };
@@ -384,6 +387,8 @@
 				B94D2A0012B2C316007B9DA2 /* JsonMarker.mm */,
 				B9AADFFB253A19AD00DE2559 /* SyntaxHilightJsonVisitor.h */,
 				B9AADFFC253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm */,
+				B992C03A27614A3F006B4CB2 /* JsonDocumentEditingRecorder.mm */,
+				B992C03B27614A3F006B4CB2 /* JsonDocumentEditingRecorder.hpp */,
 			);
 			name = json_cocoa_model;
 			sourceTree = "<group>";
@@ -691,6 +696,7 @@
 				B9F8ACB626B41F9B00602302 /* FavoriteNameInputWindowConrtoller.m in Sources */,
 				B984A95525ED8A6600452256 /* JsonIndentFormatter.cpp in Sources */,
 				B9FC2B4525F90D6000484EA3 /* HistoryAndFavoritesEditor.m in Sources */,
+				B992C03C27614A3F006B4CB2 /* JsonDocumentEditingRecorder.mm in Sources */,
 				B9FC2B3B25F90D6000484EA3 /* JsonPreferencesDialogController.mm in Sources */,
 				B9FC2B3A25F90D6000484EA3 /* MarkerTableCellView.mm in Sources */,
 				B945F91C1192DDAC00DCFAAE /* json_file.cpp in Sources */,
@@ -915,6 +921,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					PARSER_COMBINATORS_STRUCTURED_PARSE_ERROR,
+					DEBUG,
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
