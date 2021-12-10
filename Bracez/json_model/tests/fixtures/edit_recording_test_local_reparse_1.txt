@@ -1,0 +1,9 @@
+{ "action": "file_content", "content": "{\n    \"quiz\": {\n        \"sport\": {\n            \"q1\": {\n                \"question\": \"Which one is correct team name in NBA?\",\n                \"options\": [\n                    \"New York Bulls\",\n                    \"Los Angeles Kings\",\n                    \"Golden State Warriros\",\n                    \"Huston Rocket\"\n                ],\n                \"answer\": \"Huston Rocket\"\n            }\n        },\n        \"maths\": {\n            \"q1\": {\n                \"question\": \"5 + 7 = ?\",\n                \"options\": [\n                    \"10\",\n                    \"11\",\n                    \"12\",\n                    \"13\"\n                ],\n                \"answer\": \"12\"\n            },\n            \"q2\": {\n                \"question\": \"12 - 8 = ?\",\n                \"options\": [\n                    \"1\",\n                    \"2\",\n                    \"3\",\n                    \"4\"\n                ],\n                \"answer\": \"4\"\n            }\n        }\n    }\n }" }
+{ "action": "splice", "start": 313, "len": 1, "new_text": ",\n" }
+{ "action": "splice", "start": 314, "len": 0, "new_text": "\n                   " }
+{ "action": "splice", "start": 334, "len": 0, "new_text": "\"\"" }
+{ "action": "splice", "start": 335, "len": 2, "new_text": "h\"\n" }
+{ "action": "splice", "start": 336, "len": 2, "new_text": "e\"\n" }
+{ "action": "splice", "start": 337, "len": 2, "new_text": "l\"\n" }
+{ "action": "splice", "start": 338, "len": 2, "new_text": "l\"\n" }
+{ "action": "splice", "start": 339, "len": 2, "new_text": "o\"\n" }

@@ -355,14 +355,35 @@ protected:
     
 } ;
 
-template<class ValueType, int NodeTypeConst>
+
+template<class T> class ValueNodeTraits {};
+
+template<>
+class ValueNodeTraits<std::wstring> {
+public:
+    static const int nodeType = ntString;
+};
+
+template<>
+class ValueNodeTraits<double> {
+public:
+    static const int nodeType = ntNumber;
+};
+
+template<>
+class ValueNodeTraits<bool> {
+public:
+    static const int nodeType = ntBoolean;
+};
+
+template<class ValueType>
 class ValueNode : public LeafNode
 {
 public:
     ValueNode(ValueType &&aData) : value(std::move(aData)) {}
     ValueNode(const ValueType &aData) : value(aData) {}
     
-    NodeTypeId getNodeTypeId() const { return (NodeTypeId)NodeTypeConst; }
+    NodeTypeId getNodeTypeId() const { return (NodeTypeId)ValueNodeTraits<ValueType>::nodeType; }
     
     const ValueType &getValue() const { return value; }
     
@@ -371,12 +392,12 @@ public:
     void calculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint = -1) const;
     
     bool valueEquals(Node *other) const {
-        ValueNode<ValueType, NodeTypeConst> *otherTyped = dynamic_cast< ValueNode<ValueType, NodeTypeConst> *>(other);
+        ValueNode<ValueType> *otherTyped = dynamic_cast< ValueNode<ValueType> *>(other);
         return otherTyped && otherTyped->getValue() == getValue();
     }
     
     bool valueLt(Node *other) const {
-        ValueNode<ValueType, NodeTypeConst> *otherTyped = dynamic_cast< ValueNode<ValueType, NodeTypeConst> *>(other);
+        ValueNode<ValueType> *otherTyped = dynamic_cast< ValueNode<ValueType> *>(other);
         return otherTyped && otherTyped->getValue() > getValue();
     }
     
@@ -391,11 +412,11 @@ public:
     virtual ObjectNode *createDebugRepresentation() const {
         ObjectNode *ret = Node::createDebugRepresentation();
         
-        ret->domAddMemberNode(L"type", new ValueNode<std::wstring, ntString>(L"value"));
+        ret->domAddMemberNode(L"type", new ValueNode<std::wstring>(L"value"));
         
         std::wstring valRep;
         calculateJsonTextRepresentation(valRep);
-        ret->domAddMemberNode(L"jsonValue", new ValueNode<std::wstring, ntString>(valRep));
+        ret->domAddMemberNode(L"jsonValue", new ValueNode<std::wstring>(valRep));
         
         return ret;
     }
@@ -415,9 +436,10 @@ private:
     
 } ;
 
-typedef ValueNode<std::wstring, ntString> StringNode;
-typedef ValueNode<double, ntNumber> NumberNode;
-typedef ValueNode<bool, ntBoolean> BooleanNode;
+
+typedef ValueNode<std::wstring> StringNode;
+typedef ValueNode<double> NumberNode;
+typedef ValueNode<bool> BooleanNode;
 
 struct JsonFileChangeListener
 {

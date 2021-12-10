@@ -126,7 +126,7 @@ inline const Token& TokenStream::Peek() {
 }
 
 inline const Token& TokenStream::Get() {
-    assert(!EOS());
+    assert(currentToken.nType != Token::TOKEN_EOS);
 
     pumpTokenIfNeeded();
     tokenEaten = true;
@@ -139,7 +139,7 @@ inline const Token& TokenStream::Get() {
 }
 
 inline bool TokenStream::EOS() const {
-    return isEos;
+    return currentToken.nType == Token::TOKEN_EOS || isEos;
 }
 
 inline int TokenStream::Row() {
@@ -205,6 +205,10 @@ inline void TokenStream::EatWhiteSpace()
         while (inputStream.EOS() == false &&
                ::isspace(inputStream.Peek()))
             updateLineCol(inputStream.Get());
+    }
+    
+    if(inputStream.EOS()) {
+        isEos = true;
     }
 }
 
@@ -422,13 +426,13 @@ unsigned long Reader::Read_i(ElementTypeT& element,
     TokenStream tokenStream(inputStream, aParseListener);
     reader.Parse(element, tokenStream, allowSuffix);
     
-    return inputStream.GetLocation();
+    return tokenStream.getInputStream().GetLocation();
 }
 
 template<typename T>
 inline void Reader::Parse(T &element, TokenStream &tokenStream, bool allowSuffix, TextCoordinate aBaseOfs) {
     Parse(element, tokenStream, aBaseOfs);
-    
+        
     if (!tokenStream.EOS() && !allowSuffix)
     {
         listener->Error(tokenStream.getInputStream().GetLocation(), PARSER_ERROR_EXPECTED_EOS, "Expected End of token stream.");
@@ -575,7 +579,7 @@ inline void Reader::Parse(ObjectNode*& object, TokenStream& tokenStream, TextCoo
         }
     }
     
-    if(tokenStream.EOS())
+    if(tokenStream.Peek().nType == Token::TOKEN_EOS)
     {
         listener->Error(tokenStream.getInputStream().GetLocation(), PARSER_ERROR_UNEXPECTED_EOS, "Unexpected end of file");
         object->textRange = TextRange(lBegin.relativeTo(aBaseOfs), tokenStream.getInputStream().GetLocation().relativeTo(aBaseOfs));
@@ -635,7 +639,7 @@ inline void Reader::Parse(ArrayNode*& array, TokenStream& tokenStream, TextCoord
         }
     }
     
-    if(tokenStream.EOS()) {
+    if(tokenStream.Peek().nType == Token::TOKEN_EOS) {
         listener->Error(TextCoordinate(0), PARSER_ERROR_UNEXPECTED_EOS, "Expecting \",\" or \"]\"");
         array->textRange = TextRange(lBegin.relativeTo(aBaseOfs), TextCoordinate::infinity);
     } else {
@@ -722,7 +726,7 @@ inline const Token &Reader::MatchExpectedToken(Token::Type nExpected, TokenStrea
     const Token& token = tokenStream.Peek();
     if (token.nType != nExpected)
     {
-        if (tokenStream.EOS())
+        if (token.nType == Token::TOKEN_EOS)
         {
             std::string sMessage = "Unexpected end of token stream";
             listener->Error(TextCoordinate(), PARSER_ERROR_UNEXPECTED_EOS, "Unexpected end of token stream");

@@ -176,12 +176,11 @@ public:
     
     const Token& Peek();
     const Token& Get();
-    
-    bool EOS() const;
-    
+        
     int Row();
     int Col();
-    
+    bool EOS() const;
+
     const InputStream &getInputStream() const { return inputStream; }
     
 private:
@@ -194,7 +193,7 @@ private:
     void MatchNumber();
     void updateLineCol(wchar_t forChar);
     bool ProcessStringEscape(std::wstring &tokValue);
-    
+
     bool skipWhitespace;
     bool tokenEaten;
     Token currentToken;

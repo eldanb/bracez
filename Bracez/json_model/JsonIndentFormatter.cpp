@@ -67,9 +67,11 @@ void JsonIndentFormatter::reindent() {
     }
     
     TextCoordinate lastIndented = startOffset;
-    while(!tokStreamAndCo.tokenStream.EOS() &&
-          tokStreamAndCo.tokenStream.Peek().locBegin < endOffset) {
-        json::Token tok = tokStreamAndCo.tokenStream.Get();
+    
+    json::Token tok;
+    while((tok = tokStreamAndCo.tokenStream.Peek()).nType != json::Token::TOKEN_EOS &&
+          tok.locBegin < endOffset) {
+        
         
         switch(tok.nType) {
             case json::Token::TOKEN_WHITESPACE:
@@ -107,12 +109,14 @@ void JsonIndentFormatter::reindent() {
         }
         
         lastIndented = tok.locEnd;
+        
+        tokStreamAndCo.tokenStream.Get();
     }
     endOffset = lastIndented;
 }
 
 void JsonIndentFormatter::skipInputWhitespace() {
-    while(!tokStreamAndCo.tokenStream.EOS() && tokStreamAndCo.tokenStream.Peek().nType == json::Token::TOKEN_WHITESPACE) {
+    while(tokStreamAndCo.tokenStream.Peek().nType == json::Token::TOKEN_WHITESPACE) {
         tokStreamAndCo.tokenStream.Get();
     }
 }

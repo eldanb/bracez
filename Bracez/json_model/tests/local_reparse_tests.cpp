@@ -8,9 +8,44 @@
 #include "json_file.h"
 #include "reader.h"
 #include "catch2/catch.hpp"
+#include <fstream>
 #include <string>
+#include <codecvt>
+#include <locale>
 
 using namespace json;
+
+static std::unique_ptr<ObjectNode> readJsonLineFromStream(istream &stream) {
+    if(stream.eof()) {
+        throw Exception("EOF encountered");
+    }
+    
+    std::string ln;
+    std::getline(stream, ln);
+    std::wstring wln = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(ln);
+    
+    ObjectNode *o = NULL;
+    if(!wln.empty()) {
+        Reader::Read(o, wln);
+    }
+    return std::unique_ptr<ObjectNode>(o);
+}
+
+template<class T>
+const T &getObjectMemberValue(ObjectNode* o, const std::wstring &memberName) {
+    int memIdx = o->getIndexOfMemberWithName(memberName);
+    if(memIdx<0) {
+        throw Exception(std::string("Missing member"));
+    }
+    
+    ValueNode<T> *node = dynamic_cast<ValueNode<T>*>(o->getChildAt(memIdx));
+    if(!node) {
+        throw Exception(std::string("Invalid member type"));
+    }
+    
+    return node->getValue();
+}
+
 
 class JsonEditTestDescription {
 public:
@@ -76,10 +111,40 @@ public:
         return ret;
     }
     
+    
+    static JsonEditTestDescription fromEditSessionRecording(std::istream &recordingSessionStream) {
+        JsonEditTestDescription ret;
+        
+        std::unique_ptr<ObjectNode> fileDesc = readJsonLineFromStream(recordingSessionStream);
+        ret.startFile = getObjectMemberValue<std::wstring>(fileDesc.get(), L"content");
+            
+        while(!recordingSessionStream.eof()) {
+            std::unique_ptr<ObjectNode> fileDesc = readJsonLineFromStream(recordingSessionStream);
+            if(!fileDesc) continue;
+            ret.editActions.push_back(EditAction(
+                       getObjectMemberValue<double>(fileDesc.get(), L"start"),
+                       getObjectMemberValue<double>(fileDesc.get(), L"len"),
+                                                 getObjectMemberValue<std::wstring>(fileDesc.get(), L"new_text")));            
+        }
+        
+        return ret;
+    }
+    
 private:
     std::wstring startFile;
     Edits editActions;
 };
+
+JsonEditTestDescription loadEditTestDescriptionFromFile(const std::string &fileName) {
+    ifstream fileStream;
+    std::string absFileName = std::string(SOURCE_ROOT_FOLDER) + "/" + fileName;
+    fileStream.open(absFileName);
+    if(!fileStream.is_open()) {
+        throw Exception("Could not fead file");
+    }
+    
+    return JsonEditTestDescription::fromEditSessionRecording(fileStream);
+}
 
 static std::wstring debugJsonForDoc(JsonFile* doc) {
     std::unique_ptr<Node> debugDesc(doc->getDom()->createDebugRepresentation());
@@ -90,8 +155,16 @@ static std::wstring debugJsonForDoc(JsonFile* doc) {
 }
 
 TEST_CASE("JSON file local reparse text") {
-    auto testedEdit = GENERATE(JsonEditTestDescription::fromInlineEditDescription(L"{ \"hello\": <<<<3====22>>>> }"));
+    auto testedEdit = GENERATE(
+                               JsonEditTestDescription::fromInlineEditDescription(L"{ \"hello\": <<<<3====22>>>> }"),
+                               
+                               loadEditTestDescriptionFromFile( "json_model/tests/fixtures/edit_recording_test_local_reparse_1.txt"),
 
+                               loadEditTestDescriptionFromFile("json_model/tests/fixtures/edit_recording_test_local_reparse_2.txt"),
+
+                               loadEditTestDescriptionFromFile("json_model/tests/fixtures/edit_recording_test_local_reparse_3.txt")
+                               );
+    
     std::unique_ptr<JsonFile> postEditDoc(new JsonFile());
     postEditDoc->setText(testedEdit.getEndFile());
     std::wstring postEditDebugJson = debugJsonForDoc(postEditDoc.get());

@@ -1059,7 +1059,7 @@ ObjectNode *NullNode::createDebugRepresentation() const {
 
 
 template<> 
-void ValueNode<std::wstring, ntString>::calculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint) const
+void ValueNode<std::wstring>::calculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint) const
 {
     wstringstream lStream;
     
@@ -1095,7 +1095,7 @@ void ValueNode<std::wstring, ntString>::calculateJsonTextRepresentation(std::wst
 
 
 template<> 
-void ValueNode<double, ntNumber>::calculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint) const
+void ValueNode<double>::calculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint) const
 {
     wstringstream lStream;
     
@@ -1105,7 +1105,7 @@ void ValueNode<double, ntNumber>::calculateJsonTextRepresentation(std::wstring &
 }
 
 template<> 
-void ValueNode<bool, ntBoolean>::calculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint) const
+void ValueNode<bool>::calculateJsonTextRepresentation(std::wstring &aDest, int maxLenHint) const
 {
     aDest = value ? L"true" : L"false";
 }

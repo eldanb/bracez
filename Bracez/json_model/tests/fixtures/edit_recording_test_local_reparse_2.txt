@@ -1,0 +1,27 @@
+{ "action": "file_content", "content": "{\n    \"quiz\": {\n        \"sport\": {\n            \"q1\": {\n                \"question\": \"Which one is correct team name in NBA?\",\n                \"options\": [\n                    \"New York Bulls\",\n                    \"Los Angeles Kings\",\n                    \"Golden State Warriros\",\n                    \"Huston Rocket\"\n                ],\n                \"answer\": \"Huston Rocket\"\n            }\n        },\n        \"maths\": {\n            \"q1\": {\n                \"question\": \"5 + 7 = ?\",\n                \"options\": [\n                    \"10\",\n                    \"11\",\n                    \"12\",\n                    \"13\"\n                ],\n                \"answer\": \"12\"\n            },\n            \"q2\": {\n                \"question\": \"12 - 8 = ?\",\n                \"options\": [\n                    \"1\",\n                    \"2\",\n                    \"3\",\n                    \"4\"\n                ],\n                \"answer\": \"4\"\n            }\n        }\n    }\n}" }
+{ "action": "splice", "start": 399, "len": 0, "new_text": "\n       " }
+{ "action": "splice", "start": 407, "len": 0, "new_text": "\"\"" }
+{ "action": "splice", "start": 408, "len": 2, "new_text": "j\"\n" }
+{ "action": "splice", "start": 409, "len": 2, "new_text": "o\"\n" }
+{ "action": "splice", "start": 410, "len": 2, "new_text": "e\"\n" }
+{ "action": "splice", "start": 412, "len": 1, "new_text": ":\n" }
+{ "action": "splice", "start": 413, "len": 1, "new_text": " \n" }
+{ "action": "splice", "start": 414, "len": 0, "new_text": "{}" }
+{ "action": "splice", "start": 416, "len": 1, "new_text": ",\n" }
+{ "action": "splice", "start": 415, "len": 0, "new_text": "\n       " }
+{ "action": "splice", "start": 423, "len": 0, "new_text": "\n       " }
+{ "action": "splice", "start": 423, "len": 1, "new_text": " \n" }
+{ "action": "splice", "start": 424, "len": 1, "new_text": " \n" }
+{ "action": "splice", "start": 425, "len": 1, "new_text": " \n" }
+{ "action": "splice", "start": 426, "len": 0, "new_text": "\"\"" }
+{ "action": "splice", "start": 427, "len": 2, "new_text": "m\"\n" }
+{ "action": "splice", "start": 428, "len": 2, "new_text": "e\"\n" }
+{ "action": "splice", "start": 429, "len": 2, "new_text": "h\"\n" }
+{ "action": "splice", "start": 431, "len": 1, "new_text": ":\n" }
+{ "action": "splice", "start": 432, "len": 1, "new_text": " \n" }
+{ "action": "splice", "start": 433, "len": 0, "new_text": "[]" }
+{ "action": "splice", "start": 434, "len": 2, "new_text": "9]\n" }
+{ "action": "splice", "start": 435, "len": 2, "new_text": ",]\n" }
+{ "action": "splice", "start": 436, "len": 2, "new_text": " ]\n" }
+{ "action": "splice", "start": 437, "len": 2, "new_text": "1]\n" }
+{ "action": "splice", "start": 438, "len": 2, "new_text": "2]\n" }
