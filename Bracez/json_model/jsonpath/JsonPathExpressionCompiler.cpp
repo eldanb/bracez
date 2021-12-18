@@ -192,7 +192,9 @@ struct construct_navigate_recurse {
         }
     }
 } constexpr construct_navigate_recurse;
-auto navigate_recurse = all(construct_navigate_recurse, qualify_token, (name_token || wildcard_token));
+auto navigate_recurse = all(construct_navigate_recurse,
+                            qualify_token,
+                            (name_token || wildcard_token));
 
 
 struct construct_navigate_to_ancestor {
@@ -480,30 +482,48 @@ auto or_expression = binary_operator(and_expression, operator_parser("||", JsonP
 
 expression_parser_handle expression = or_expression;
 
-auto json_path_compiler = first_token && strict("navigation_pipe", navigation_pipe) && strict("end_of_expression", discard(accept(is_eof)));
+auto json_path_compiler =
+        first_token &&
+        strict("navigation_pipe", navigation_pipe) &&
+        strict("end_of_expression", discard(accept(is_eof)));
+
+auto json_path_expr_compiler =
+        first_token &&
+        strict("expression", expression) &&
+        strict("end_of_expression", discard(accept(is_eof)));
 
 
-JsonPathResultNodeList JsonPathExpression::execute(json::Node *root, JsonPathExpressionOptions *options) {
+JsonPathExpressionNodeEvalResult JsonPathExpression::execute(json::Node *root, JsonPathExpressionOptions *options, json::Node *initialContext) {
     JsonPathExpressionNodeEvalContext evalContext;
     evalContext.rootNode = root;
-    evalContext.contextNode = root;
+    evalContext.contextNode = initialContext ?  initialContext : root;
     evalContext.options = options;
-    JsonPathExpressionNodeEvalResult evalResult = _rootNode->evaluate(evalContext);
-    return evalResult.nodeList;
+    return _rootNode->evaluate(evalContext);
 }
 
-JsonPathExpression JsonPathExpression::compile(const std::wstring &inputExpression) {
+JsonPathExpression JsonPathExpression::compile(const std::wstring &inputExpression,
+                                               CompiledExpressionType expressionType) {
     string_stream_range strrange(inputExpression);
     auto i = strrange.first;
     JsonPathExpressionNode *out = NULL;
 
-    json_path_compiler(i, strrange, &out);
+    switch(expressionType)
+    {
+        case CompiledExpressionType::jsonPath:
+            json_path_compiler(i, strrange, &out);
+            break;
+            
+        case CompiledExpressionType::jsonPathExpression:
+            json_path_expr_compiler(i, strrange, &out);
+            break;
+    }
     
     return JsonPathExpression(std::unique_ptr<JsonPathExpressionNode>(out));
 }
 
-JsonPathExpression JsonPathExpression::compile(const std::string &inputExpression) {
-    return compile(wide_utf8_converter.from_bytes(inputExpression));
+JsonPathExpression JsonPathExpression::compile(const std::string &inputExpression,
+                                               CompiledExpressionType expressionType) {
+    return compile(wide_utf8_converter.from_bytes(inputExpression), expressionType);
 }
 
 bool JsonPathExpression::isValidIdentifier(const std::wstring &input) {

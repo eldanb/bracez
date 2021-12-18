@@ -64,9 +64,7 @@
 -(void)setShowJsonPathPanel:(NSNumber*)aValue;
 -(NSNumber*)showJsonPathPanel;
 
-
 -(void)updateNavPaneWithModeIndex:(int)aIdx value:(BOOL)aVal;
-
 
 -(void)setVertical:(NSNumber*)aValue;
 -(NSNumber*)vertical;

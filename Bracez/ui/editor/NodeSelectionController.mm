@@ -599,6 +599,10 @@
     [textView scrollRangeToVisible:range];
 }
 
+-(NSRange)textSelection {
+    return textView.selectedRange;
+}
+
 -(BOOL)canCopyPath
 {
     return YES;

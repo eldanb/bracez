@@ -42,7 +42,11 @@ struct TextRange
     bool operator==(const TextRange &other) const {
         return start == other.start && end == other.end;
     }
-    
+
+    bool operator!=(const TextRange &other) const {
+        return !(*this == other);
+    }
+
     TextLength length() const { return end-start; }
     
     TextRange intersectWith(TextRange other) const {
@@ -552,6 +556,9 @@ public:
     
     inline unsigned long numLines() const { return lineStarts.size()+1; }
     
+    void beginDeferNotifications();
+    void endDeferNotifications();
+
     
 private:
     size_t spliceJsonTextContent(TextCoordinate aOffsetStart,
@@ -590,8 +597,6 @@ private:
     
 private:
     void notify(const priv::Notification &aNotification);
-    void beginDeferNotifications();
-    void endDeferNotifications();
     
 private:
     void deliverNotification(const priv::Notification &aNotification);

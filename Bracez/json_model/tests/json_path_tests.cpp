@@ -262,4 +262,5 @@ TEST_CASE_METHOD(BooksJsonPathTestFixture, "Subscript by expression", "[test]") 
                "\"title\": \"The Lord of the Rings\", "
                "\"isbn\": \"0-395-19395-8\", "
                "\"price\": 22.989999999999998437 } ]"));
+    
 }

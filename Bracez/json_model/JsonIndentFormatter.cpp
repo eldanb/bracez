@@ -72,6 +72,7 @@ void JsonIndentFormatter::reindent() {
     while((tok = tokStreamAndCo.tokenStream.Peek()).nType != json::Token::TOKEN_EOS &&
           tok.locBegin < endOffset) {
         
+        tokStreamAndCo.tokenStream.Get();
         
         switch(tok.nType) {
             case json::Token::TOKEN_WHITESPACE:
@@ -109,8 +110,6 @@ void JsonIndentFormatter::reindent() {
         }
         
         lastIndented = tok.locEnd;
-        
-        tokStreamAndCo.tokenStream.Get();
     }
     endOffset = lastIndented;
 }
