@@ -1,0 +1,3 @@
+[submodule "Bracez/json_model/jsonpath/Parser-Combinators"]
+	path = Bracez/json_model/jsonpath/Parser-Combinators
+	url = https://github.com/eldanb/Parser-Combinators.git
