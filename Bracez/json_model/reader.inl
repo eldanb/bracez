@@ -213,16 +213,28 @@ inline void TokenStream::EatWhiteSpace()
 }
 
 inline void TokenStream::Match4Hex(unsigned int& integer) {
-    std::wstringstream ss;
-    int i;
-    for (i = 0; (i < 4) && (inputStream.EOS() == false) && isxdigit(inputStream.Peek()); ++i)
-        ss << inputStream.Get();
-    
-    if(listener)
-        listener->Error(inputStream.GetLocation(), PARSER_ERROR_UNEXPECTED_CHARACTER, "Expected a hex digit");
-    
-    ss << std::hex;
-    ss >> integer;
+    integer = 0;
+    for (int i = 0;
+         (i < 4) && (inputStream.EOS() == false);
+         ++i) {
+        wchar_t hex_char = inputStream.Get();
+            
+        integer = integer << 4;
+        
+        if(hex_char >= L'0' && hex_char <= L'9') {
+            integer |= hex_char - '0';
+        } else
+        if(hex_char >= L'a' && hex_char <= L'f') {
+            integer |= hex_char - 'a';
+        } else
+        if(hex_char >= L'A' && hex_char <= L'F') {
+            integer |=  hex_char - 'A';
+        } else {
+            if(listener)
+                listener->Error(inputStream.GetLocation(), PARSER_ERROR_UNEXPECTED_CHARACTER, "Expected a hex digit");
+            return;
+        }
+    }
 }
 
 inline void TokenStream::MatchString()
@@ -657,14 +669,40 @@ inline void Reader::Parse(StringNode*& string, TokenStream& tokenStream, TextCoo
 }
 
 
+#define MAX_FAST_NUM_LITERAL_LEN 24
+
 inline void Reader::Parse(NumberNode*& number, TokenStream& tokenStream, TextCoordinate aBaseOfs)
 {
     const Token &tok = MatchExpectedToken(Token::TOKEN_NUMBER, tokenStream);
     TextRange lTokRange(tok.locBegin.relativeTo(aBaseOfs),
                         tok.locEnd.relativeTo(aBaseOfs));
     
+
     wchar_t *lLastConverted;
-    double dValue = wcstod(tok.valueStart, &lLastConverted);
+    double dValue;
+    
+    if(tok.valueEnd-tok.valueStart < MAX_FAST_NUM_LITERAL_LEN) {
+        const wchar_t *valueEnd;
+
+        char localToken[MAX_FAST_NUM_LITERAL_LEN+1];
+        char *tokOut;
+        
+        for(tokOut = localToken, valueEnd = tok.valueStart;
+            valueEnd != tok.valueEnd;
+            valueEnd++, tokOut++) {
+            if(*valueEnd > 127) {
+                break;
+            }
+            *tokOut = (char)(*valueEnd);
+        }
+        
+        *tokOut = 0;
+        
+        dValue = strtod(localToken, &tokOut);
+        lLastConverted = (wchar_t*)(tok.valueStart + (tokOut - localToken));
+    } else {
+        dValue = wcstod(tok.valueStart, &lLastConverted);
+    }
     
     // did we consume all characters in the token?
     if (lLastConverted != tok.valueEnd)
