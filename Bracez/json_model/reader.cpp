@@ -30,6 +30,7 @@ bool TokenStream::ProcessStringEscape(std::wstring &tokValue) {
                     inputStream.Get();
                     if(inputStream.Peek() == L'u')
                     {
+                        inputStream.Get();
                         Match4Hex(surrogate);
                         codepoint = (((codepoint & 0x3F) << 10) |
                                      ((((codepoint >> 6) & 0xF) + 1) << 16) |

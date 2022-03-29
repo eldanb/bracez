@@ -217,7 +217,7 @@ inline void TokenStream::Match4Hex(unsigned int& integer) {
     for (int i = 0;
          (i < 4) && (inputStream.EOS() == false);
          ++i) {
-        wchar_t hex_char = inputStream.Get();
+        wchar_t hex_char = inputStream.Peek();
             
         integer = integer << 4;
         
@@ -234,6 +234,8 @@ inline void TokenStream::Match4Hex(unsigned int& integer) {
                 listener->Error(inputStream.GetLocation(), PARSER_ERROR_UNEXPECTED_CHARACTER, "Expected a hex digit");
             return;
         }
+        
+        inputStream.Get();
     }
 }
 
@@ -291,6 +293,7 @@ inline void TokenStream::MatchString()
         // eat the last '"' that we just peeked
         inputStream.Get();
     } else {
+        currentToken.orgTextEnd++;        
         std::string sMessage = "Unterminated string constant.";
         if(listener)
             listener->Error(inputStream.GetLocation(), PARSER_ERROR_UNEXPECTED_EOS, sMessage);
@@ -594,7 +597,8 @@ inline void Reader::Parse(ObjectNode*& object, TokenStream& tokenStream, TextCoo
     if(tokenStream.Peek().nType == Token::TOKEN_EOS)
     {
         listener->Error(tokenStream.getInputStream().GetLocation(), PARSER_ERROR_UNEXPECTED_EOS, "Unexpected end of file");
-        object->textRange = TextRange(lBegin.relativeTo(aBaseOfs), tokenStream.getInputStream().GetLocation().relativeTo(aBaseOfs));
+        object->textRange = TextRange(lBegin.relativeTo(aBaseOfs),
+                                      tokenStream.getInputStream().GetLocation().relativeTo(aBaseOfs));
     } else
     {
         TextCoordinate lEndCoord = MatchExpectedToken(Token::TOKEN_OBJECT_END, tokenStream).locEnd;
@@ -753,7 +757,7 @@ inline void Reader::ReportExpectedToken(Token::Type nExpected, const Token& toke
     };
 
     std::string sMessage = "Unexpected token: " + wstring_to_utf8(token.value()) + "; expecting " + lTypeNames[nExpected];
-    listener->Error(token.locBegin-1, PARSER_ERROR_UNEXPECTED_TOKEN, sMessage);
+    listener->Error(token.locBegin, PARSER_ERROR_UNEXPECTED_TOKEN, sMessage);
 }
 
 inline const Token &Reader::MatchExpectedToken(Token::Type nExpected, TokenStream& tokenStream)

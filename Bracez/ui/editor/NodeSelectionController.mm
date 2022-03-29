@@ -645,11 +645,11 @@
         lRet |= 1;
     }
     
-    TextCoordinate lLineStart = document.jsonFile->getLineStart(aLine+1);
-    TextCoordinate lLineEnd = document.jsonFile->getLineEnd(aLine+1);
+    TextCoordinate lLineStart = document.jsonFile->getLineStart(aLine);
+    TextCoordinate lLineEnd = document.jsonFile->getLineEnd(aLine);
     
     
-    TextCoordinate lNextError = lLineStart-1;
+    TextCoordinate lNextError = lLineStart;
     if([document errors]->nextMarker(lNextError) &&
        lNextError<=lLineEnd)
     {

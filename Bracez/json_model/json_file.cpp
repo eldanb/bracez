@@ -962,7 +962,11 @@ const Node *DocumentNode::getChildAt(int aIdx) const
 
 void DocumentNode::storeChildAt(int aIdx, Node *aNode)
 {
-    // NOP
+    assert(aIdx == 0);
+    rootNode.reset(aNode);
+    if(rootNode.get()) {
+        rootNode->parent = this;
+    }
 }
 
 int DocumentNode::findChildEndingAfter(const TextCoordinate &aDocOffset) const
@@ -1272,6 +1276,15 @@ bool JsonFile::attemptReparseClosure(Node *spliceContainer,
         return false;
     }
     
+    // Local reparse logic assumes that errors at a location will
+    // be found again when re-parsing any region that contains these errors. This is wrong if
+    // the error is "after the end of the file" and the region we're parsing includes the end of the file.
+    // For these (rare, hopefully) cases we fallback to slow parse
+    if(absReparseRange.end == this->getDom()->textRange.end &&
+       errors.rbegin() != errors.rend() &&
+       errors.rbegin()->getCoordinate()>=this->getDom()->textRange.end) {
+        return false;
+    }
     
     // Construct updated JSON for node
     std::wstring updatedJsonRegion = this->jsonText->substr(absReparseRange.start, absReparseRange.length());
@@ -1291,17 +1304,21 @@ bool JsonFile::attemptReparseClosure(Node *spliceContainer,
         return false;
     }
     
-    // Iterate through errors and fixup addresses to match real offset.
-    // Fallback to slow parse if there are errors that indicate that the entire region
-    // is incomplete or there's further content to process (which means that we need to parse
-    // a bigger region than we expected, e.g because the change modifies node boundaries
     bool predictedChangeRegionWrong = false;
+    // Iterate through errors and fixup addresses to match real offset.
+    // Return failure to parse if there are errors that indicate that the entire region
+    // is incomplete or there's further content to process (which means that we need to parse
+    // a bigger region than we expected, e.g because the change modifies node boundaries)
     for_each(reparseErrors.begin(), reparseErrors.end(), [&predictedChangeRegionWrong, &absReparseRange](ParseErrorMarker &error) {
         error.adjustCoordinate(absReparseRange.start.getAddress());
-        if(error.getErrorCode() == PARSER_ERROR_EXPECTED_EOS || error.getErrorCode() == PARSER_ERROR_UNEXPECTED_EOS) {
+       if(error.getErrorCode() == PARSER_ERROR_EXPECTED_EOS || error.getErrorCode() == PARSER_ERROR_UNEXPECTED_EOS) {
             predictedChangeRegionWrong = true;
         }
     });
+    
+    // Verify length of updated node matches the splice; otherwise it means that
+    // update node was broken / topology changed in which case we should look
+    // at a higher level in the hierarcy.
     if(predictedChangeRegionWrong) {
         if(reparsedNode) {
             delete reparsedNode;
@@ -1391,12 +1408,14 @@ bool JsonFile::fastSpliceTextWithWorkLimit(TextCoordinate aOffsetStart,
     TextRange absReparseRange;
     Node *reparsedNode = NULL;
     MarkerList<ParseErrorMarker> reparseErrors;
-    while(!reparsedNode && spliceContainer && spliceContainer != jsonDom->getChildAt(0) ) {
+    while(!reparsedNode && spliceContainer && spliceContainer != jsonDom.get() ) {
         if(!attemptReparseClosure(spliceContainer, trimmedStart, trimmedLen, maxParsedRegionLength, trimmedUpdatedText, &absReparseRange, &reparsedNode, &reparseErrors)) {
             reparseErrors.clear();
             reparsedNode = NULL;
             spliceContainer=spliceContainer->getParent();
-            integralNodeJsonPath.pop_back();
+            if(integralNodeJsonPath.size()) {
+                integralNodeJsonPath.pop_back();
+            }
         }
     }
     
@@ -1764,7 +1783,7 @@ TextCoordinate JsonFile::getLineStart(unsigned long aRow) const {
     if(aRow <= 1) {
         return TextCoordinate(0);
     } else
-        if(aRow-2 > lineStarts.size()) {
+        if(aRow-2 >= lineStarts.size()) {
             return TextCoordinate::infinity;
         } else {
             return (TextCoordinate)lineStarts[(int)(aRow-2)];
@@ -1777,7 +1796,7 @@ TextCoordinate JsonFile::getLineFirstCharacter(unsigned long aRow) const {
 
 TextCoordinate JsonFile::getLineEnd(unsigned long aRow) const {
     if(aRow-1 < lineStarts.size()) {
-        return TextCoordinate(lineStarts[(int)(aRow-1)].getCoordinate()-1);
+        return TextCoordinate(lineStarts[(int)(aRow-1)].getCoordinate());
     } else {
         return (TextCoordinate)jsonText->length();
     }

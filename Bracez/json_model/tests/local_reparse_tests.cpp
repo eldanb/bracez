@@ -181,4 +181,31 @@ TEST_CASE("JSON file local reparse text") {
     REQUIRE(debugJsonForDoc(postEditDoc.get()) == postEditDebugJson);
 }
 
+TEST_CASE("JSON file local reparse: string unicode literal bug") {
+    // Run edits
+    std::unique_ptr<JsonFile> preEditDoc(new JsonFile());
+    preEditDoc->setText(L"{\"b\":\"\\\"\n}");
+    
+    // There's an unterminated string here. We should have an error on it
+    REQUIRE(preEditDoc->getErrors().size() == 1);
+    
+    bool fastParseResult = preEditDoc->fastSpliceTextWithWorkLimit(TextCoordinate(7), 0, L"u", 1024);
+    REQUIRE(fastParseResult == false);
+}
+    
+
+TEST_CASE("JSON file local reparse: EOS errors ") {
+    // Run edits
+    std::unique_ptr<JsonFile> preEditDoc(new JsonFile());
+    preEditDoc->setText(L"{\"d\":\"\\\"");
+    
+    // There's an unterminated string here. We should have an error on it
+    REQUIRE(preEditDoc->getErrors().size() == 1);
+    
+    bool fastParseResult = preEditDoc->fastSpliceTextWithWorkLimit(TextCoordinate(7), 0, L"n", 1024);
+    REQUIRE(fastParseResult == false);
+}
+    
+
+
 

@@ -61,10 +61,14 @@ public:
 
    iterator begin() { return markers.begin(); }
    iterator end() { return markers.end(); }
-
+   
    const_iterator begin() const { return markers.begin(); }
    const_iterator end() const { return markers.end(); }
-         
+
+   auto rbegin() const { return markers.rbegin(); }
+   auto rend() const { return markers.rend(); }
+
+    
    const MARKER_TYPE &operator[] (int aIdx) const { return markers[aIdx]; }
    
 private:

@@ -440,7 +440,7 @@ private:
         _isSemanticModelTextChangeInProgress = NO;
     }
     
-    self.bookmarks.updateBookmarksByLineSplice(aOldLineStart, aOldLineLength, aNewLineLength);
+    self.bookmarks.updateBookmarksByLineSplice(aOldLineStart+1, aOldLineLength, aNewLineLength);
 }
 
 -(void)notifyErrorsChanged:(json::JsonFile*)aSender
