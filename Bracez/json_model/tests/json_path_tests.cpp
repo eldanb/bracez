@@ -15,13 +15,6 @@
 
 using namespace json;
 
-void assertResult(json::Node* doc, const std::wstring &expression, const JsonPathResultNodeList &expectedResult) {
-    JsonPathResultNodeList result = JsonPathExpression::compile(L"$.store.*").execute(doc).nodeList;
-    if(result != expectedResult) {
-        throw JsonPathEvalError("Invalid result type");
-    }
-}
-
 class JsonPathTestFixture {
 public:
     JsonPathTestFixture(const std::wstring &docText) {
@@ -67,7 +60,7 @@ public:
                                                      "}") {}
 };
 
-static std::wstring json_path_result(json::Node *node, const std::wstring &jsonPath) {
+static std::wstring jsonPathResult(json::Node *node, const std::wstring &jsonPath) {
     JsonPathResultNodeList result = JsonPathExpression::compile(jsonPath).execute(node).nodeList;
     if(!result.empty()) {
         std::wstring ret = L"[ ";
@@ -89,7 +82,7 @@ static std::wstring json_path_result(json::Node *node, const std::wstring &jsonP
 }
 
 TEST_CASE_METHOD(BooksJsonPathTestFixture, "Wildcard navstep result", "[test]") {
-    REQUIRE(json_path_result(doc, L"$.store.*") == std::wstring(
+    REQUIRE(jsonPathResult(doc, L"$.store.*") == std::wstring(
             L"[ [ { \"category\": \"reference\", "
             "\"author\": \"Nigel Rees\", "
             "\"title\": \"Sayings of the Century\", "
@@ -109,7 +102,7 @@ TEST_CASE_METHOD(BooksJsonPathTestFixture, "Wildcard navstep result", "[test]") 
 }
 
 TEST_CASE_METHOD(BooksJsonPathTestFixture, "Wildcard subscript result", "[test]") {
-    REQUIRE(json_path_result(doc, L"$.store.book[*]") == std::wstring(
+    REQUIRE(jsonPathResult(doc, L"$.store.book[*]") == std::wstring(
             L"[ { \"category\": \"reference\", "
             "\"author\": \"Nigel Rees\", "
             "\"title\": \"Sayings of the Century\", "
@@ -125,7 +118,7 @@ TEST_CASE_METHOD(BooksJsonPathTestFixture, "Wildcard subscript result", "[test]"
             "\"isbn\": \"0-395-19395-8\", "
             "\"price\": 22.989999999999998437 } ]"));
     
-    REQUIRE(json_path_result(doc, L"$..book[*]") == std::wstring(
+    REQUIRE(jsonPathResult(doc, L"$..book[*]") == std::wstring(
             L"[ { \"category\": \"reference\", "
             "\"author\": \"Nigel Rees\", "
             "\"title\": \"Sayings of the Century\", "
@@ -143,39 +136,39 @@ TEST_CASE_METHOD(BooksJsonPathTestFixture, "Wildcard subscript result", "[test]"
 }
 
 TEST_CASE_METHOD(BooksJsonPathTestFixture, "Step from multiple", "[test]") {
-    REQUIRE(json_path_result(doc, L"$..book[*].title") == std::wstring(
+    REQUIRE(jsonPathResult(doc, L"$..book[*].title") == std::wstring(
             L"[ \"Sayings of the Century\", \"Moby Dick\", \"The Lord of the Rings\" ]"));
 }
 
 TEST_CASE_METHOD(BooksJsonPathTestFixture, "Path result", "[test]") {
-    REQUIRE(json_path_result(doc, L"$.store.bicycle.color") == std::wstring(
+    REQUIRE(jsonPathResult(doc, L"$.store.bicycle.color") == std::wstring(
             L"[ \"red\" ]"));
 }
 
 TEST_CASE_METHOD(BooksJsonPathTestFixture, "Recursive result", "[test]") {
-    CHECK(json_path_result(doc, L"$.store..price") == std::wstring(
+    CHECK(jsonPathResult(doc, L"$.store..price") == std::wstring(
             L"[ 19.949999999999999289, 8.9499999999999992895, 8.9900000000000002132, 22.989999999999998437 ]"));
-    CHECK(json_path_result(doc, L"$..price") == std::wstring(
+    CHECK(jsonPathResult(doc, L"$..price") == std::wstring(
             L"[ 19.949999999999999289, 8.9499999999999992895, 8.9900000000000002132, 22.989999999999998437 ]"));
 }
 
 TEST_CASE_METHOD(BooksJsonPathTestFixture, "Subscripting styles", "[test]") {
-    CHECK(json_path_result(doc, L"$..book[0]") == std::wstring(
+    CHECK(jsonPathResult(doc, L"$..book[0]") == std::wstring(
             L"[ { \"category\": \"reference\", "
              "\"author\": \"Nigel Rees\", "
              "\"title\": \"Sayings of the Century\", "
              "\"price\": 8.9499999999999992895 } ]"));
-    CHECK(json_path_result(doc, L"$..book[0,1].title") == std::wstring(
+    CHECK(jsonPathResult(doc, L"$..book[0,1].title") == std::wstring(
             L"[ \"Sayings of the Century\", \"Moby Dick\" ]"));
-    CHECK(json_path_result(doc, L"$..book[:2].title") == std::wstring(
+    CHECK(jsonPathResult(doc, L"$..book[:2].title") == std::wstring(
             L"[ \"Sayings of the Century\", \"Moby Dick\" ]"));
-    CHECK(json_path_result(doc, L"$..book[-1:].title") == std::wstring(
+    CHECK(jsonPathResult(doc, L"$..book[-1:].title") == std::wstring(
             L"[ \"The Lord of the Rings\" ]"));
 }
 
 TEST_CASE_METHOD(BooksJsonPathTestFixture, "Filter by expression", "[test]") {
     SECTION("Coalesce to boolean") {
-        CHECK(json_path_result(doc, L"$..book[?(@.isbn)]") == std::wstring(
+        CHECK(jsonPathResult(doc, L"$..book[?(@.isbn)]") == std::wstring(
                L"[ { \"category\": \"fiction\", "
                "\"author\": \"Herman Melville\", "
                "\"title\": \"Moby Dick\", "
@@ -187,7 +180,7 @@ TEST_CASE_METHOD(BooksJsonPathTestFixture, "Filter by expression", "[test]") {
                "\"isbn\": \"0-395-19395-8\", "
                "\"price\": 22.989999999999998437 } ]"));
 
-        CHECK(json_path_result(doc, L"$..book[?(!@.isbn)]") == std::wstring(
+        CHECK(jsonPathResult(doc, L"$..book[?(!@.isbn)]") == std::wstring(
                 L"[ { \"category\": \"reference\", "
                 "\"author\": \"Nigel Rees\", "
                 "\"title\": \"Sayings of the Century\", "
@@ -195,7 +188,7 @@ TEST_CASE_METHOD(BooksJsonPathTestFixture, "Filter by expression", "[test]") {
     }
     
     SECTION("Compound boolean") {
-        CHECK(json_path_result(doc, L"$..book[?(@.category == \"fiction\" || @.category == \"reference\")]") == std::wstring(
+        CHECK(jsonPathResult(doc, L"$..book[?(@.category == \"fiction\" || @.category == \"reference\")]") == std::wstring(
                  L"[ { \"category\": \"reference\", "
                  "\"author\": \"Nigel Rees\", "
                  "\"title\": \"Sayings of the Century\", "
@@ -213,10 +206,10 @@ TEST_CASE_METHOD(BooksJsonPathTestFixture, "Filter by expression", "[test]") {
     }
 
     SECTION("Simple expressions") {
-        CHECK(json_path_result(doc, L"$..book[?(@.author==\"J.R.R. Tolkien\")].title") == std::wstring(
+        CHECK(jsonPathResult(doc, L"$..book[?(@.author==\"J.R.R. Tolkien\")].title") == std::wstring(
                 L"[ \"The Lord of the Rings\" ]"));
 
-        CHECK(json_path_result(doc, L"$..book[?(@.price < 10)]") == std::wstring(
+        CHECK(jsonPathResult(doc, L"$..book[?(@.price < 10)]") == std::wstring(
                  L"[ { \"category\": \"reference\", "
                  "\"author\": \"Nigel Rees\", "
                  "\"title\": \"Sayings of the Century\", "
@@ -229,7 +222,7 @@ TEST_CASE_METHOD(BooksJsonPathTestFixture, "Filter by expression", "[test]") {
     }
 
     SECTION("Access root context in expression") {
-        CHECK(json_path_result(doc, L"$..book[?(@.price > $.expensive)]") == std::wstring(
+        CHECK(jsonPathResult(doc, L"$..book[?(@.price > $.expensive)]") == std::wstring(
                 L"[ { "
                     "\"category\": \"fiction\", "
                     "\"author\": \"J.R.R. Tolkien\", "
@@ -239,7 +232,7 @@ TEST_CASE_METHOD(BooksJsonPathTestFixture, "Filter by expression", "[test]") {
     }
 
     SECTION("Use 'in' operator") {
-        CHECK(json_path_result(doc, L"$..book[?(@.price in [22.99, 8.99, 22])]") == std::wstring(
+        CHECK(jsonPathResult(doc, L"$..book[?(@.price in [22.99, 8.99, 22])]") == std::wstring(
                  L"[ "
                  "{ \"category\": \"fiction\", "
                  "\"author\": \"Herman Melville\", "
@@ -255,7 +248,7 @@ TEST_CASE_METHOD(BooksJsonPathTestFixture, "Filter by expression", "[test]") {
 }
 
 TEST_CASE_METHOD(BooksJsonPathTestFixture, "Subscript by expression", "[test]") {
-    CHECK(json_path_result(doc, L"$..book[(pow(2, $.expensive-8)/2)]") == std::wstring(
+    CHECK(jsonPathResult(doc, L"$..book[(pow(2, $.expensive-8)/2)]") == std::wstring(
             L"[ "
            "{ \"category\": \"fiction\", "
                "\"author\": \"J.R.R. Tolkien\", "

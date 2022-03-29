@@ -10,6 +10,8 @@
 		1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1DDD58140DA1D0A300B32029 /* MainMenu.xib */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		B923E56227F2E921001DC0C9 /* json_indent_tests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B923E56127F2E921001DC0C9 /* json_indent_tests.cpp */; };
+		B923E56327F2EDE5001DC0C9 /* JsonIndentFormatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B984A95325ED8A6600452256 /* JsonIndentFormatter.cpp */; };
 		B9264D9812A2D7C00037AD39 /* JsonFileListenerObjCBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9264D9712A2D7C00037AD39 /* JsonFileListenerObjCBridge.mm */; };
 		B92F119126F1D26200954698 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B92F119026F1D26200954698 /* UniformTypeIdentifiers.framework */; };
 		B934AD19121C7503005B06D6 /* NSIndexPathAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = B934AD18121C7502005B06D6 /* NSIndexPathAdditions.m */; };
@@ -107,6 +109,7 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* Bracez.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bracez.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B923E56127F2E921001DC0C9 /* json_indent_tests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = json_indent_tests.cpp; sourceTree = "<group>"; };
 		B9264D9612A2D7C00037AD39 /* JsonFileListenerObjCBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsonFileListenerObjCBridge.h; path = json_cocoa_model/JsonFileListenerObjCBridge.h; sourceTree = "<group>"; };
 		B9264D9712A2D7C00037AD39 /* JsonFileListenerObjCBridge.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = JsonFileListenerObjCBridge.mm; path = json_cocoa_model/JsonFileListenerObjCBridge.mm; sourceTree = "<group>"; };
 		B92F119026F1D26200954698 /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UniformTypeIdentifiers.framework; path = System/Library/Frameworks/UniformTypeIdentifiers.framework; sourceTree = SDKROOT; };
@@ -420,6 +423,7 @@
 				B992C0422762A3C2006B4CB2 /* local_reparse_tests.cpp */,
 				B992C0432762A3C2006B4CB2 /* fixtures */,
 				B992C0472762A3C2006B4CB2 /* json_path_tests.cpp */,
+				B923E56127F2E921001DC0C9 /* json_indent_tests.cpp */,
 			);
 			name = tests;
 			path = json_model/tests;
@@ -761,8 +765,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				B992C03527609B25006B4CB2 /* TextCoordinate.cpp in Sources */,
+				B923E56227F2E921001DC0C9 /* json_indent_tests.cpp in Sources */,
 				B992C03227609B19006B4CB2 /* BookmarksList.cpp in Sources */,
 				B992C0492762A3C2006B4CB2 /* json_path_tests.cpp in Sources */,
+				B923E56327F2EDE5001DC0C9 /* JsonIndentFormatter.cpp in Sources */,
 				B992C03627609B28006B4CB2 /* reader.cpp in Sources */,
 				B992C02C27609783006B4CB2 /* main.cpp in Sources */,
 				B992C03427609B22006B4CB2 /* Exception.cpp in Sources */,
