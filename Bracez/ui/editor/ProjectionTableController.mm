@@ -56,8 +56,8 @@
 -(Node*)resolveColumnInRow:(Node*)row {
     if(_validDef) {
         auto resultList = columnExpression.execute(row);
-        if(resultList.size()) {
-            return resultList.front();
+        if(resultList.nodeList.size()) {
+            return resultList.nodeList.front();
         } else {
             return nullptr;
         }
@@ -300,7 +300,7 @@
     rowNodes.clear();
 
     if(_validDef && definition) {
-        JsonPathResultNodeList dataSourceList = self->dataSourceExpression.execute(jsonDocument.rootNode.proxiedElement);
+        JsonPathResultNodeList dataSourceList = self->dataSourceExpression.execute(jsonDocument.rootNode.proxiedElement).nodeList;
         rowNodes.reserve(dataSourceList.size());
         std::copy(std::begin(dataSourceList), std::end(dataSourceList), std::back_inserter(rowNodes));
     }

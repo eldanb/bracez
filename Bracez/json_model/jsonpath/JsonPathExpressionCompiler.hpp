@@ -11,17 +11,26 @@
 #include "JsonPathExpressionNode.hpp"
 #include "Parser-Combinators/parser_combinators.hpp"
 
+enum CompiledExpressionType {
+    jsonPath,
+    jsonPathExpression
+};
+
 struct JsonPathExpressionOptions {
     bool fuzzy;
 };
 
 class JsonPathExpression {
 public:
-    JsonPathResultNodeList execute(json::Node *root, JsonPathExpressionOptions *options = NULL);
+    JsonPathExpressionNodeEvalResult execute(json::Node *root,
+                                             JsonPathExpressionOptions *options = NULL,
+                                             json::Node *initialContext = NULL);
     
 public:
-    static JsonPathExpression compile(const std::wstring &inputExpression);
-    static JsonPathExpression compile(const std::string &inputExpression);
+    static JsonPathExpression compile(const std::wstring &inputExpression,
+                                      CompiledExpressionType expressionType = jsonPath);
+    static JsonPathExpression compile(const std::string &inputExpression,
+                                      CompiledExpressionType expressionType = jsonPath);
     static bool isValidIdentifier(const std::wstring &input);
     
     JsonPathExpression(JsonPathExpression &&expr) : _rootNode(std::move(expr._rootNode)) {}
@@ -38,7 +47,5 @@ private:
 private:
     std::unique_ptr<JsonPathExpressionNode> _rootNode;
 };
-
-void testjsonpathexpressionparser();
 
 #endif /* JsonPathExpressionCompiler_hpp */

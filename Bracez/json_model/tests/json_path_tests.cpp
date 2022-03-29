@@ -16,7 +16,7 @@
 using namespace json;
 
 void assertResult(json::Node* doc, const std::wstring &expression, const JsonPathResultNodeList &expectedResult) {
-    JsonPathResultNodeList result = JsonPathExpression::compile(L"$.store.*").execute(doc);
+    JsonPathResultNodeList result = JsonPathExpression::compile(L"$.store.*").execute(doc).nodeList;
     if(result != expectedResult) {
         throw JsonPathEvalError("Invalid result type");
     }
@@ -68,7 +68,7 @@ public:
 };
 
 static std::wstring json_path_result(json::Node *node, const std::wstring &jsonPath) {
-    JsonPathResultNodeList result = JsonPathExpression::compile(jsonPath).execute(node);
+    JsonPathResultNodeList result = JsonPathExpression::compile(jsonPath).execute(node).nodeList;
     if(!result.empty()) {
         std::wstring ret = L"[ ";
         std::for_each(result.begin(), result.end(),
@@ -262,4 +262,5 @@ TEST_CASE_METHOD(BooksJsonPathTestFixture, "Subscript by expression", "[test]") 
                "\"title\": \"The Lord of the Rings\", "
                "\"isbn\": \"0-395-19395-8\", "
                "\"price\": 22.989999999999998437 } ]"));
+    
 }

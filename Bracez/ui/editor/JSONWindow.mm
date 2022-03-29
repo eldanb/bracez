@@ -38,7 +38,6 @@ extern "C" {
     
     BOOL hasValidJqResult;
 }
-
 @end
 
 @implementation JSONWindow
@@ -486,7 +485,7 @@ static void onJqCompileError(void *ctxt, jv err) {
     size_t maxNumRows = 0;
     ProjectionDefinition *selectedDef = nil;
     for(ProjectionDefinition *def in projectionDefinitionsHistory.favoritesList) {
-        JsonPathResultNodeList ret = [def compiledRowSelector].execute(node);
+        JsonPathResultNodeList ret = [def compiledRowSelector].execute(node).nodeList;
         size_t retSize = ret.size();
         if(retSize > maxNumRows) {
             maxNumRows = retSize;

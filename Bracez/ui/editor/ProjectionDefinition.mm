@@ -148,8 +148,8 @@ std::vector<pair<std::wstring, size_t>> suggestRowSelectors(Node *parent, const 
 -(NSArray<ProjectionFieldDefinition*> *)suggestFieldsBasedOnDocument:(JsonDocument*)document {
     if(self.rowSelector) {
         JsonPathExpression rowSelector = [self compiledRowSelector];
-        auto nodes = rowSelector.execute(document.jsonFile->getDom()->getChildAt(0));
-        std::vector<std::wstring> suggestions = suggestFields(nodes);
+        auto rowsEvalResult = rowSelector.execute(document.jsonFile->getDom()->getChildAt(0));
+        std::vector<std::wstring> suggestions = suggestFields(rowsEvalResult.nodeList);
         
         NSMutableArray<ProjectionFieldDefinition*> *ret = [NSMutableArray arrayWithCapacity:suggestions.size()];
         for(auto it = suggestions.begin(); it != suggestions.end(); it++) {

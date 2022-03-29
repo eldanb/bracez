@@ -245,7 +245,14 @@ private:
     return self;
 }
 
+-(void)close {
+    [self cancelCurrentReconciliationTask];
+    [super close];
+}
+
 -(void)dealloc {
+    [self cancelCurrentReconciliationTask];
+
     if(_jsonEditingRecorder) {
         delete _jsonEditingRecorder;
     }
@@ -608,14 +615,18 @@ private:
 #endif
 }
 
--(void)slowSpliceFileContentAt:(TextCoordinate)aOffsetStart length:(TextLength)aLen newText:(const std::wstring &)aNewText {
-    _isSemanticModelUpdateInProgress = true;
-
-    [self willChangeValueForKey:@"documentBusy"];
+-(void)cancelCurrentReconciliationTask {
     if(currentReconciliationTask.get()) {
         currentReconciliationTask->cancelExecution();
         currentReconciliationTask.reset();
     }
+}
+
+-(void)slowSpliceFileContentAt:(TextCoordinate)aOffsetStart length:(TextLength)aLen newText:(const std::wstring &)aNewText {
+    _isSemanticModelUpdateInProgress = true;
+
+    [self willChangeValueForKey:@"documentBusy"];
+    [self cancelCurrentReconciliationTask];
     
     // This keeps the reconciliation task alive for as long as it's running
     std::shared_ptr<JsonFileSemanticModelReconciliationTask> reconcile = file->spliceTextWithDirtySemanticModel(aOffsetStart, aLen, aNewText);
