@@ -104,10 +104,7 @@ extern "C" {
     [textEditorScroll setRulersVisible:prefs.gutterMasterSwitch];
     [gutterView setShowLineNumbers:prefs.gutterLineNumbers];
     treeView.needsDisplay = YES;
-        
-    textEditor.font = prefs.editorFont;
-    textEditor.textColor = [NSColor textColor];
-    
+            
     jqQueryInput.font = prefs.editorFont;
     jqQueryResult.font = prefs.editorFont;
 

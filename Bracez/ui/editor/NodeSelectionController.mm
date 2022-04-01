@@ -14,6 +14,8 @@
 #include <codecvt>
 #include <locale>
 
+#define MAX_PATH_VIEW_POPUP_OPTIONS 1000
+
 @implementation NodeSelectionController 
 
 - (void)awakeFromNib
@@ -197,7 +199,28 @@
     
     // Setup menu with siblings of selection
     NSMenu *lMenu = [[NSMenu alloc] initWithTitle:@""];
-    for(int lSiblingIdx=0; lSiblingIdx < [lNode countOfChildren]; lSiblingIdx++)
+    
+    int lSiblingCount = [lNode countOfChildren];
+    int lFirstListedIndex, lLastListedIndex;
+    if(lSiblingCount < MAX_PATH_VIEW_POPUP_OPTIONS) {
+        lFirstListedIndex = 0;
+        lLastListedIndex = lSiblingCount;
+    } else
+    {
+        if(lSelIdx < MAX_PATH_VIEW_POPUP_OPTIONS / 2) {
+            lFirstListedIndex = 0;
+            lLastListedIndex = MAX_PATH_VIEW_POPUP_OPTIONS;
+        } else
+        if(lSelIdx > lSiblingCount - MAX_PATH_VIEW_POPUP_OPTIONS / 2) {
+            lFirstListedIndex = lSiblingCount - MAX_PATH_VIEW_POPUP_OPTIONS;
+            lLastListedIndex = lSiblingCount;
+        } else {
+            lFirstListedIndex = lSelIdx - MAX_PATH_VIEW_POPUP_OPTIONS / 2;
+            lLastListedIndex = lFirstListedIndex + MAX_PATH_VIEW_POPUP_OPTIONS;
+        }
+    }
+    
+    for(int lSiblingIdx=lFirstListedIndex; lSiblingIdx < lLastListedIndex; lSiblingIdx++)
     {
         JsonCocoaNode *lSibling = [lNode objectInChildrenAtIndex:lSiblingIdx];
         

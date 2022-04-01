@@ -39,7 +39,6 @@
 		B992C0482762A3C2006B4CB2 /* local_reparse_tests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B992C0422762A3C2006B4CB2 /* local_reparse_tests.cpp */; };
 		B992C0492762A3C2006B4CB2 /* json_path_tests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B992C0472762A3C2006B4CB2 /* json_path_tests.cpp */; };
 		B99B5A7311C6DF0000A33231 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B99B5A7211C6DF0000A33231 /* QuartzCore.framework */; };
-		B99D0DD725BC989C0006EA1F /* libjq.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B99D0DD625BC98810006EA1F /* libjq.a */; };
 		B9AADFFD253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9AADFFC253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm */; };
 		B9BBFDF0120D2CBE00E4E9AE /* BookmarksList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B9BBFDEE120D2CBE00E4E9AE /* BookmarksList.cpp */; };
 		B9C354D826A8A4FA007380E8 /* ProjectionDefinition.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9C354D726A8A4FA007380E8 /* ProjectionDefinition.mm */; };
@@ -148,8 +147,6 @@
 		B992C0462762A3C2006B4CB2 /* edit_recording_test_local_reparse_1.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = edit_recording_test_local_reparse_1.txt; sourceTree = "<group>"; };
 		B992C0472762A3C2006B4CB2 /* json_path_tests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = json_path_tests.cpp; sourceTree = "<group>"; };
 		B99B5A7211C6DF0000A33231 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		B99D0DD125BC98600006EA1F /* libjq.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjq.1.dylib; path = ../../../../../../usr/local/Cellar/jq/1.6/lib/libjq.1.dylib; sourceTree = "<group>"; };
-		B99D0DD625BC98810006EA1F /* libjq.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjq.a; path = ../../../../../../usr/local/Cellar/jq/1.6/lib/libjq.a; sourceTree = "<group>"; };
 		B9AADFFB253A19AD00DE2559 /* SyntaxHilightJsonVisitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SyntaxHilightJsonVisitor.h; path = json_cocoa_model/SyntaxHilightJsonVisitor.h; sourceTree = "<group>"; };
 		B9AADFFC253A19AD00DE2559 /* SyntaxHilightJsonVisitor.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = SyntaxHilightJsonVisitor.mm; path = json_cocoa_model/SyntaxHilightJsonVisitor.mm; sourceTree = "<group>"; };
 		B9BBFDEE120D2CBE00E4E9AE /* BookmarksList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BookmarksList.cpp; path = json_model/BookmarksList.cpp; sourceTree = "<group>"; };
@@ -253,7 +250,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B92F119126F1D26200954698 /* UniformTypeIdentifiers.framework in Frameworks */,
-				B99D0DD725BC989C0006EA1F /* libjq.a in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				B99B5A7311C6DF0000A33231 /* QuartzCore.framework in Frameworks */,
 			);
@@ -331,8 +327,6 @@
 			isa = PBXGroup;
 			children = (
 				B92F119026F1D26200954698 /* UniformTypeIdentifiers.framework */,
-				B99D0DD625BC98810006EA1F /* libjq.a */,
-				B99D0DD125BC98600006EA1F /* libjq.1.dylib */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
@@ -501,7 +495,6 @@
 			isa = PBXGroup;
 			children = (
 				B9FC2B4B25F90DE300484EA3 /* EditorWindow.xib */,
-				B9FC2B0425F90D6000484EA3 /* PathView.m */,
 				B9FC2B0525F90D6000484EA3 /* GuiModeControl.h */,
 				B9FC2B0F25F90D6000484EA3 /* GuiModeControl.m */,
 				B9FC2B0625F90D6000484EA3 /* JsonPathSearchController.h */,
@@ -516,6 +509,7 @@
 				B9FC2B0E25F90D6000484EA3 /* JsonTreeDataSource.h */,
 				B9FC2B1025F90D6000484EA3 /* TextEditorGutterView.mm */,
 				B9FC2B1125F90D6000484EA3 /* PathView.h */,
+				B9FC2B0425F90D6000484EA3 /* PathView.m */,
 				B9FC2B1325F90D6000484EA3 /* JsonTreeDataSource.mm */,
 				B9FC2B1525F90D6000484EA3 /* BracezTextView.h */,
 				B9FC2B0C25F90D6000484EA3 /* BracezTextView.m */,
@@ -893,6 +887,7 @@
 					/opt/homebrew/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "-ljq";
 				PRODUCT_BUNDLE_IDENTIFIER = com.zigsterz.Bracez;
 				PRODUCT_NAME = Bracez;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -919,6 +914,7 @@
 					/opt/homebrew/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				OTHER_LDFLAGS = "-ljq";
 				PRODUCT_BUNDLE_IDENTIFIER = com.zigsterz.Bracez;
 				PRODUCT_NAME = Bracez;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1011,6 +1007,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/extlib";
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = macosx;
 			};
 			name = Release;
