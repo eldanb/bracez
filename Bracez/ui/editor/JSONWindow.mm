@@ -5,6 +5,8 @@
 //  Copyright 2010 __MyCompanyName__. All rights reserved.
 //
 
+#define ENABLE_JQ_SUPPORT
+
 #import "JSONWindow.h"
 #import "TextEditorGutterView.h"
 #import "JsonTreeDataSource.h"
@@ -264,11 +266,13 @@ struct ForwardedActionInfo glbForwardedActions[]  =  {
 }
 
 static void onJqCompileError(void *ctxt, jv err) {
+#ifdef ENABLE_JQ_SUPPORT
     jv formattedError = jq_format_error(err);
     const char *errCStr = jv_string_value(formattedError);
     
     NSMutableArray<NSString*> *outArray = (__bridge NSMutableArray<NSString*>*)ctxt;
     [outArray addObject:[NSString stringWithCString:errCStr encoding:NSUTF8StringEncoding]];
+#endif
 }
 
 - (IBAction)saveJqQueryResults:(id)sender {
@@ -310,6 +314,7 @@ static void onJqCompileError(void *ctxt, jv err) {
 
 
 - (IBAction)executeJqQuery:(id)sender {
+#ifdef ENABLE_JQ_SUPPORT
     NSString *docText = self.document.textStorage.string;
     
     jv doc = jv_parse(docText.UTF8String);
@@ -368,6 +373,7 @@ static void onJqCompileError(void *ctxt, jv err) {
     }
     
     [jqQueryFavHist accumulateHistory];
+#endif
 }
 
 
