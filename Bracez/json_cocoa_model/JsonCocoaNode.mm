@@ -19,6 +19,18 @@ static std::wstring_convert<convert_type, wchar_t> wide_utf8_converter;
 
 using namespace json;
 
+static int computeChildCount(json::Node *element) {
+    if(element &&
+       (element->getNodeTypeId() == ntObject ||
+        element->getNodeTypeId() == ntArray))
+    {
+       ContainerNode *lContainer = (ContainerNode*)element;
+       return lContainer->getChildCount();
+    } else {
+        return 0;
+   }
+}
+
 @implementation JsonCocoaNode
 
 
@@ -39,6 +51,7 @@ using namespace json;
    {
       name = aName;
       proxiedElement = aProxiedElement;
+      childCount = computeChildCount(proxiedElement);
    }
    
    return self;
@@ -156,8 +169,7 @@ using namespace json;
 
 -(int)countOfChildren
 {
-   [self _prepChildren];   
-   return (int)[children count];
+    return childCount;
 }
 
 -(JsonCocoaNode*)objectInChildrenAtIndex:(int)aIdx
@@ -344,7 +356,12 @@ using namespace json;
 }
 
 -(void)reloadFromElement:(json::Node*)aProxiedElement {
-    bool childrenChanging = children != nil;
+    int newChildCount = computeChildCount(aProxiedElement);
+    
+    bool childrenChanging =
+        (children != nil) ||
+        ((self.countOfChildren == 0) != (newChildCount == 0));
+    
     if(childrenChanging) {
         [self willChangeValueForKey:@"children"];
     }
@@ -355,6 +372,7 @@ using namespace json;
     
     proxiedElement = aProxiedElement;
     children = nil;
+    childCount = computeChildCount(proxiedElement);
     
     [self didChangeValueForKey:@"nodeValue"];
     [self didChangeValueForKey:@"nodeType"];
@@ -374,3 +392,4 @@ using namespace json;
 }
 
 @end
+

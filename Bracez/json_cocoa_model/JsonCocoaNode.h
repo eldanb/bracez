@@ -15,6 +15,7 @@
    json::Node *proxiedElement;
    NSString *name;
    NSMutableArray *children;
+   int childCount;
 }
 
 +(JsonCocoaNode*) nodeForElement:(json::Node*)aProxiedElement withName:(NSString*)aName;
