@@ -324,8 +324,8 @@ inline void TokenStream::MatchBareWordToken()
         
         // We want to break the bareword if it's recognized --
         // to support a scenario of "parse json with suffix"
-        if((barewordLen == 4 && (wcscmp(barewordBuffer, L"true") || wcscmp(barewordBuffer, L"null"))) ||
-           (barewordLen == 5 && (wcscmp(barewordBuffer, L"true") || wcscmp(barewordBuffer, L"false"))))
+        if((barewordLen == 4 && (!wcscmp(barewordBuffer, L"true") || !wcscmp(barewordBuffer, L"null"))) ||
+           (barewordLen == 5 && (!wcscmp(barewordBuffer, L"false"))))
         {
             break;
         }
