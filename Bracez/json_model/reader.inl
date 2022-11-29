@@ -310,14 +310,27 @@ inline void TokenStream::MatchBareWordToken()
     
     currentToken.orgTextStart = inputStream.CurrentPtr();
     wchar_t c;
+    wchar_t barewordBuffer[8] = {0};
+    int barewordLen = 0;
     while(!inputStream.EOS() &&
           !::isspace(c=inputStream.Peek()) &&
-          c != L']' && c != L'}' && c != L',' && c != L':'  // Pretty ugly hack
-          )
+          c >= L'a' && c <= L'z' &&
+          barewordLen < sizeof(barewordBuffer)/sizeof(wchar_t))
     {
         updateLineCol(c);
         inputStream.Get();
+        
+        barewordBuffer[barewordLen++] = c;
+        
+        // We want to break the bareword if it's recognized --
+        // to support a scenario of "parse json with suffix"
+        if((barewordLen == 4 && (wcscmp(barewordBuffer, L"true") || wcscmp(barewordBuffer, L"null"))) ||
+           (barewordLen == 5 && (wcscmp(barewordBuffer, L"true") || wcscmp(barewordBuffer, L"false"))))
+        {
+            break;
+        }
     }
+    
     currentToken.orgTextEnd = inputStream.CurrentPtr();
     currentToken.assumeValueFromOrgText();
     

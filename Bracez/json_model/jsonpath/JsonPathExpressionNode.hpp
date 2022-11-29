@@ -300,16 +300,12 @@ private:
     std::list<std::unique_ptr<JsonPathExpressionNode>> _args;
 };
 
-class JsonPathEvalError : public std::exception {
+class JsonPathEvalError : public std::runtime_error {
 public:
-    JsonPathEvalError(const char *what): _what(what) {
+    JsonPathEvalError(const char *what): std::runtime_error(what) {
         
     }
-    
-    const char *what() const noexcept {
-        return _what;
-    }
-    
+        
 private:
     const char* _what;
 } ;

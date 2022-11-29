@@ -81,6 +81,12 @@ static std::wstring jsonPathResult(json::Node *node, const std::wstring &jsonPat
     }
 }
 
+TEST_CASE_METHOD(BooksJsonPathTestFixture, "Compare to null", "[test]") {
+    REQUIRE(jsonPathResult(doc, L"$..book[?(@.category!=null)].title") == std::wstring(
+            L"[ \"Sayings of the Century\", \"Moby Dick\", \"The Lord of the Rings\" ]"));
+}
+
+
 TEST_CASE_METHOD(BooksJsonPathTestFixture, "Wildcard navstep result", "[test]") {
     REQUIRE(jsonPathResult(doc, L"$.store.*") == std::wstring(
             L"[ [ { \"category\": \"reference\", "

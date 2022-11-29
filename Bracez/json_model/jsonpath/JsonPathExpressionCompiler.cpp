@@ -92,7 +92,7 @@ auto const open_children_filter_paren_token = tokenise(accept_str("?("));
 auto const open_filter_paren_token = tokenise(accept_str("??("));
 auto const close_filter_paren_token = tokenise(accept(is_char(')')));
 
-auto const open_paren_token = tokenise(accept_str("("));
+auto const open_paren_token = tokenise(accept(is_char('(')));
 auto const close_paren_token = tokenise(accept(is_char(')')));
 
 auto const start_subscript_token = tokenise(accept(is_char('[')));
@@ -441,7 +441,7 @@ auto json_literal = all([](JsonPathExpressionNode** result, json::Node* node) {
 
 auto expression_terminal =  attempt(context_member_name) ||
                             attempt(navigation_pipe) ||
-                            function_call ||
+                            attempt(function_call) ||
                             attempt(discard(open_paren_token) && reference("expression", &expression) && discard(close_paren_token)) ||
                             json_literal;
                             
