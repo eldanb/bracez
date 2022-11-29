@@ -544,4 +544,15 @@ static void onJqCompileError(void *ctxt, jv err) {
     return self->selectionController;
 }
 
+- (IBAction)exportProjectionClicked:(id)sender {
+    NSSavePanel *savePanel = [NSSavePanel savePanel];
+    savePanel.title = @"Export CSV";
+    savePanel.allowedContentTypes = @[UTTypeTabSeparatedText];
+    savePanel.allowsOtherFileTypes = YES;
+    [savePanel runModal];
+
+    [projectionTableController exportToUrl:savePanel.URL];
+}
+
+
 @end

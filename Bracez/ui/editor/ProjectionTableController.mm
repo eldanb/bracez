@@ -314,6 +314,15 @@
     return displayedRowNodes.size();
 }
 
+-(NSString*)csvRowForRow:(NSInteger)row {
+    NSMutableArray *rowValues = [NSMutableArray array];
+    for(ProjectionTableColumn *column in self.tableView.tableColumns) {
+        [rowValues addObject: [column displayTextForColumnInRow:displayedRowNodes[row]]];
+    }
+    
+    return [rowValues componentsJoinedByString:@"\t"];
+}
+
 -(NSView *)tableView:(NSTableView *)tableView
   viewForTableColumn:(NSTableColumn *)tableColumn
                  row:(NSInteger)row {
@@ -439,9 +448,11 @@
     
     if(iter != displayedRowNodes.end()) {
         size_t rowIndex = iter - displayedRowNodes.begin();
-        [self.tableView selectRowIndexes:[NSIndexSet indexSetWithIndex:rowIndex]
-                    byExtendingSelection:NO];
-        [self.tableView scrollRowToVisible:rowIndex];
+        if(![self.tableView.selectedRowIndexes containsIndex:rowIndex]) {
+            [self.tableView selectRowIndexes:[NSIndexSet indexSetWithIndex:rowIndex]
+                        byExtendingSelection:NO];
+            [self.tableView scrollRowToVisible:rowIndex];
+        }
     }
 }
 
@@ -450,6 +461,52 @@
     [self updateDisplayedRows];
     [self.tableView reloadData];
 }
+
+
+- (void)forEachCsvRowsInSelection:(NSIndexSet *)selection handler:(void (^)(NSString* row))rowHandler
+{
+    if(selection.count) {
+        [selection enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL * _Nonnull stop) {
+            rowHandler([self csvRowForRow:idx]);
+        }];
+    } else {
+        for(int idx=0; idx<displayedRowNodes.size(); idx++) {
+            rowHandler([self csvRowForRow:idx]);
+        }
+    }
+}
+
+- (void)copyToClipboardWithSelection:(nonnull NSIndexSet *)selection {
+    NSMutableArray<NSString*> *linesArray = [NSMutableArray array];
+    
+    [self forEachCsvRowsInSelection:selection handler:^(NSString *row) {
+        [linesArray addObject:row];
+    }];
+    
+    NSString *copyContent = [linesArray componentsJoinedByString:@"\n"];
+    
+    NSPasteboard *pb = [NSPasteboard generalPasteboard];
+    [pb clearContents];
+    [pb setString:copyContent
+          forType:NSPasteboardTypeTabularText];
+    [pb setString:copyContent
+          forType:NSPasteboardTypeString];
+
+}
+
+-(void)exportToUrl:(NSURL*)url {
+    NSOutputStream *outputStream = [NSOutputStream outputStreamWithURL:url append:NO];
+    [outputStream open];
+    
+    [self forEachCsvRowsInSelection:nil handler:^(NSString *row) {
+        const char *cstr = [row cStringUsingEncoding:NSUTF8StringEncoding];
+        [outputStream write:(uint8_t*)cstr maxLength:strlen(cstr)];
+        [outputStream write:(uint8_t*)"\n" maxLength:1];
+    }];
+    
+    [outputStream close];
+}
+
 
 
 @end

@@ -10,6 +10,7 @@
 		1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1DDD58140DA1D0A300B32029 /* MainMenu.xib */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		B907C34A2935FC05000E02CD /* TableViewWithCopySupport.m in Sources */ = {isa = PBXBuildFile; fileRef = B907C3492935FC05000E02CD /* TableViewWithCopySupport.m */; };
 		B923E56227F2E921001DC0C9 /* json_indent_tests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B923E56127F2E921001DC0C9 /* json_indent_tests.cpp */; };
 		B923E56327F2EDE5001DC0C9 /* JsonIndentFormatter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B984A95325ED8A6600452256 /* JsonIndentFormatter.cpp */; };
 		B9264D9812A2D7C00037AD39 /* JsonFileListenerObjCBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = B9264D9712A2D7C00037AD39 /* JsonFileListenerObjCBridge.mm */; };
@@ -108,6 +109,8 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* Bracez.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bracez.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B907C3482935FC05000E02CD /* TableViewWithCopySupport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TableViewWithCopySupport.h; sourceTree = "<group>"; };
+		B907C3492935FC05000E02CD /* TableViewWithCopySupport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TableViewWithCopySupport.m; sourceTree = "<group>"; };
 		B923E56127F2E921001DC0C9 /* json_indent_tests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = json_indent_tests.cpp; sourceTree = "<group>"; };
 		B9264D9612A2D7C00037AD39 /* JsonFileListenerObjCBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JsonFileListenerObjCBridge.h; path = json_cocoa_model/JsonFileListenerObjCBridge.h; sourceTree = "<group>"; };
 		B9264D9712A2D7C00037AD39 /* JsonFileListenerObjCBridge.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = JsonFileListenerObjCBridge.mm; path = json_cocoa_model/JsonFileListenerObjCBridge.mm; sourceTree = "<group>"; };
@@ -568,6 +571,8 @@
 				B9496DF726D8A94100BF5B11 /* SyntaxEditingField.mm */,
 				B9496DF926DA2A4100BF5B11 /* ButtonWithMenu.h */,
 				B9496DFA26DA2A4100BF5B11 /* ButtonWithMenu.m */,
+				B907C3482935FC05000E02CD /* TableViewWithCopySupport.h */,
+				B907C3492935FC05000E02CD /* TableViewWithCopySupport.m */,
 			);
 			path = common;
 			sourceTree = "<group>";
@@ -748,6 +753,7 @@
 				B9FC2B5025F90E0200484EA3 /* BracezPreferences.mm in Sources */,
 				B9496DFB26DA2A4100BF5B11 /* ButtonWithMenu.m in Sources */,
 				B9FC2B3725F90D6000484EA3 /* JsonTreeDataSource.mm in Sources */,
+				B907C34A2935FC05000E02CD /* TableViewWithCopySupport.m in Sources */,
 				B9FC2B3825F90D6000484EA3 /* JSONWindow.mm in Sources */,
 				B9FC2B4225F90D6000484EA3 /* KvoAnimation.m in Sources */,
 				B9FC2BC525F910F600484EA3 /* JsonMockupAppDelegate.mm in Sources */,

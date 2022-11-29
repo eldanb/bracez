@@ -14,7 +14,7 @@
 #include <codecvt>
 #include <locale>
 
-#define MAX_PATH_VIEW_POPUP_OPTIONS 1000
+#define MAX_PATH_VIEW_POPUP_OPTIONS 1000L
 
 @implementation NodeSelectionController 
 

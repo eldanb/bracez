@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 
 #import "JsonDocument.h"
-
+#import "TableViewWithCopySupport.h"
 #import "ProjectionDefinition.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -22,10 +22,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface ProjectionTableController : NSObject <NSTableViewDataSource, NSTableViewDelegate>
+@interface ProjectionTableController : NSObject <NSTableViewDataSource, NSTableViewDelegate, TableViewDataSourceWithCopySupport>
 
 -(void)selectNode:(JsonCocoaNode*)node;
 -(void)reloadData;
+
+-(void)exportToUrl:(NSURL*)url;
 
 -(IBAction)onSearchChange:(NSSearchField*)sender;
 
