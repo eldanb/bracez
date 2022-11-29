@@ -91,6 +91,7 @@ enum JsonReplaceMode {
 }
 
 -(JsonPathResultNodeList)refreshSearchResults {
+    // TODO refresh on cursor change
     JsonPathResultNodeList searchResultList;
     
     JsonPathExpression searchExpr =
@@ -99,8 +100,10 @@ enum JsonReplaceMode {
     
     JsonPathExpressionOptions opts;
     opts.fuzzy = self.fuzzySearch;
+    
+    Node *cursorNode = selectionController.currentSelectedNode.proxiedElement;
     searchResultList = searchExpr.execute(document.rootNode.proxiedElement,
-                                          &opts).nodeList;
+                                          &opts, NULL, cursorNode).nodeList;
 
     JSONPathQueryStatus.textColor = [NSColor labelColor];
     JSONPathQueryStatus.font = [NSFont systemFontOfSize:[NSFont smallSystemFontSize]];

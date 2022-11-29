@@ -81,6 +81,7 @@ auto const navigate_to_ancestor_token = tokenise(accept_str("^^"));
 
 auto const root_token = tokenise(accept(is_char('$')));
 auto const context_token = tokenise(accept(is_char('@')));
+auto const cursor_token = tokenise(accept(is_char('^')));
 auto const context_name_token = tokenise(accept_str("@@"));
 
 auto const comma_token = tokenise(accept(is_char(',')));
@@ -173,14 +174,26 @@ extern expression_parser_handle expression;
 
 struct construct_context_specifier {
     void operator()(JsonPathExpressionNode **result, std::string tok) const {
-        if(tok == "$") {
-            *result = new JsonPathExpressionNodeNavPipeline(false);
-        } else {
-            *result = new JsonPathExpressionNodeNavPipeline(true);
+        switch(tok[0]) {
+            case '$':
+                *result = new JsonPathExpressionNodeNavPipeline(JsonPathExpressionNodeNavPipeline::pipelineStartAtRoot);
+                break;
+
+            case '@':
+                *result = new JsonPathExpressionNodeNavPipeline(JsonPathExpressionNodeNavPipeline::pipelineStartAtContext);
+                break;
+
+            case '^':
+                *result = new JsonPathExpressionNodeNavPipeline(JsonPathExpressionNodeNavPipeline::pipelineStartAtCursor);
+                break;
+                
+            default:
+                throw JsonPathEvalError("Invalid pipeline context specifier");
+
         }
     }
 } constexpr construct_context_specifier;
-auto context_specifier = all(construct_context_specifier, root_token || context_token);
+auto context_specifier = all(construct_context_specifier, root_token || context_token || cursor_token);
 
 
 struct construct_navigate_recurse {
@@ -493,10 +506,14 @@ auto json_path_expr_compiler =
         strict("end_of_expression", discard(accept(is_eof)));
 
 
-JsonPathExpressionNodeEvalResult JsonPathExpression::execute(json::Node *root, JsonPathExpressionOptions *options, json::Node *initialContext) {
+JsonPathExpressionNodeEvalResult JsonPathExpression::execute(json::Node *root,
+                                                             JsonPathExpressionOptions *options,
+                                                             json::Node *initialContext,
+                                                             json::Node *cursorNode) {
     JsonPathExpressionNodeEvalContext evalContext;
     evalContext.rootNode = root;
-    evalContext.contextNode = initialContext ?  initialContext : root;
+    evalContext.contextNode = initialContext ? initialContext : root;
+    evalContext.cursorNode = cursorNode;
     evalContext.options = options;
     return _rootNode->evaluate(evalContext);
 }
@@ -524,6 +541,28 @@ JsonPathExpression JsonPathExpression::compile(const std::wstring &inputExpressi
 JsonPathExpression JsonPathExpression::compile(const std::string &inputExpression,
                                                CompiledExpressionType expressionType) {
     return compile(wide_utf8_converter.from_bytes(inputExpression), expressionType);
+}
+
+bool JsonPathExpression::isCursorDependent() const {
+    bool cursorDependent = false;
+    enumerateNodes([&cursorDependent](const JsonPathExpressionNode *node) {
+        const JsonPathExpressionNodeNavPipeline *pipeline = dynamic_cast<const JsonPathExpressionNodeNavPipeline *>(node);
+        if(pipeline && pipeline->getPipelineStart() == JsonPathExpressionNodeNavPipeline::pipelineStartAtCursor) {
+            cursorDependent = true;
+        }
+    });
+    
+    return cursorDependent;
+}
+
+void JsonPathExpression::enumerateNodes(const std::function<void (const JsonPathExpressionNode*)> &enumerator) const {
+    std::list<const JsonPathExpressionNode *> nodes;
+    nodes.push_back(_rootNode.get());
+    while(nodes.size()) {
+        enumerator(nodes.front());
+        nodes.front()->pushDirectDependentNodes(nodes);
+        nodes.pop_front();
+    }
 }
 
 bool JsonPathExpression::isValidIdentifier(const std::wstring &input) {

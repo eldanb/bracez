@@ -14,7 +14,7 @@
 #include <codecvt>
 #include <locale>
 
-#define MAX_PATH_VIEW_POPUP_OPTIONS 1000L
+#define MAX_PATH_VIEW_POPUP_OPTIONS 1000
 
 @implementation NodeSelectionController 
 
@@ -104,6 +104,7 @@
         [pathView setShownPath:lPathArr];
     }
     
+    [self.projectionTableDs setCursorNode:lLastNode.proxiedElement];
     [self.projectionTableDs selectNode:lLastNode];
 
     if(!syncingNodeAndTextSel)
@@ -215,7 +216,7 @@
             lFirstListedIndex = lSiblingCount - MAX_PATH_VIEW_POPUP_OPTIONS;
             lLastListedIndex = lSiblingCount;
         } else {
-            lFirstListedIndex = lSelIdx - MAX_PATH_VIEW_POPUP_OPTIONS / 2;
+            lFirstListedIndex = (int)(lSelIdx - MAX_PATH_VIEW_POPUP_OPTIONS / 2);
             lLastListedIndex = lFirstListedIndex + MAX_PATH_VIEW_POPUP_OPTIONS;
         }
     }
@@ -752,6 +753,10 @@ static void adjustNavEntries(vector<TextCoordinate> &aNavEntries, TextCoordinate
 
 - (void)notifyNodeInvalidated:(json::JsonFile *)aSender nodePath:(const json::JsonPath &)nodePath {
     
+}
+
+-(JsonCocoaNode*)currentSelectedNode {
+    return [[treeController selectedObjects] firstObject];
 }
 
 @end

@@ -31,6 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(IBAction)onSearchChange:(NSSearchField*)sender;
 
+@property json::Node *cursorNode;
+
 @property (weak) IBOutlet NSTableView *tableView;
 @property (weak) IBOutlet JsonDocument *projectedDocument;
 @property (weak) IBOutlet id<ProjectionTableControllerDelegate> delegate;

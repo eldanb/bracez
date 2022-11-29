@@ -485,10 +485,11 @@ static void onJqCompileError(void *ctxt, jv err) {
 -(void)autoSuggestProjection {
     // First try to use one of the favorite projections
     Node *node = self.document.jsonFile->getDom()->getChildAt(0);
+    Node *cursorNode = selectionController.currentSelectedNode.proxiedElement;
     size_t maxNumRows = 0;
     ProjectionDefinition *selectedDef = nil;
     for(ProjectionDefinition *def in projectionDefinitionsHistory.favoritesList) {
-        JsonPathResultNodeList ret = [def compiledRowSelector].execute(node).nodeList;
+        JsonPathResultNodeList ret = [def compiledRowSelector].execute(node, NULL, NULL, cursorNode).nodeList;
         size_t retSize = ret.size();
         if(retSize > maxNumRows) {
             maxNumRows = retSize;

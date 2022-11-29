@@ -122,8 +122,8 @@ JsonPathExpressionNodeEvalResult JsonPathExpressionNodeEvalResult::ownedNodeResu
     return ret;
 }
 
-JsonPathExpressionNodeNavPipeline::JsonPathExpressionNodeNavPipeline(bool contextBound)
-: _contextBound(contextBound)
+JsonPathExpressionNodeNavPipeline::JsonPathExpressionNodeNavPipeline(PipelineStart pipelineStart)
+: _pipelineStart(pipelineStart)
 {
 }
     
@@ -132,7 +132,11 @@ void JsonPathExpressionNodeNavPipeline::addStep(std::unique_ptr<JsonPathExpressi
 }
     
 void JsonPathExpressionNodeNavPipeline::inspect(std::ostream &out) const {
-    out << "Navigate (from " << (_contextBound ? "context" : "root") << "): [ ";
+    out << "Navigate (from " << (
+        _pipelineStart == pipelineStartAtRoot ? "root" :
+        _pipelineStart == pipelineStartAtContext ? "context" :
+        _pipelineStart == pipelineStartAtCursor ? "cursor"
+                                 : "<unknown>") << "): [ ";
     std::for_each(_nodes.begin(),
                   _nodes.end(),
                   [&out](const std::unique_ptr<JsonPathExpressionNodeNavPipelineStep> &n) {
@@ -143,12 +147,34 @@ void JsonPathExpressionNodeNavPipeline::inspect(std::ostream &out) const {
 }
 
 
+void JsonPathExpressionNodeNavPipeline::pushDirectDependentNodes(std::list<const JsonPathExpressionNode*> &output) const {
+    std::for_each(_nodes.begin(), _nodes.end(), [&output](auto &node) {
+        node->pushDirectDependentNodes(output);        
+    });
+}
+
+
 JsonPathExpressionNodeEvalResult JsonPathExpressionNodeNavPipeline::evaluate(JsonPathExpressionNodeEvalContext &context) {
     JsonPathExpressionNodeEvalResult result;
-    if(_contextBound) {
-        result.nodeList.push_back(context.contextNode);
-    } else {
-        result.nodeList.push_back(context.rootNode);
+    switch (_pipelineStart) {
+        case pipelineStartAtCursor:
+            result.nodeList.push_back(context.cursorNode);
+            break;
+            
+        case pipelineStartAtContext:
+            result.nodeList.push_back(context.contextNode);
+            break;
+
+        case pipelineStartAtRoot:
+            result.nodeList.push_back(context.rootNode);
+            break;
+
+        default:
+            break;
+    }
+    
+    if(!result.nodeList.front()) {
+        throw JsonPathEvalError("Missing node for pipeline start");
     }
     
     std::for_each(_nodes.begin(),
@@ -479,11 +505,16 @@ void JsonPathExpressionNodeFilter::inspect(std::ostream &out) const {
 }
     
 
+void JsonPathExpressionNodeFilter::pushDirectDependentNodes(std::list<const JsonPathExpressionNode*> &output) const {
+    output.push_back(_filter.get());
+}
+
 
 JsonPathExpressionNodeIndexByExpression::JsonPathExpressionNodeIndexByExpression(std::unique_ptr<JsonPathExpressionNode> &&filter)
     : _filter(std::move(filter))
 {
    
+    
 }
 
 void JsonPathExpressionNodeIndexByExpression::stepFromNode(JsonPathExpressionNodeEvalContext &context,
@@ -514,7 +545,12 @@ void JsonPathExpressionNodeIndexByExpression::inspect(std::ostream &out) const {
     _filter->inspect(out);
     out << " ]";
 }
-   
+
+void JsonPathExpressionNodeIndexByExpression::pushDirectDependentNodes(std::list<const JsonPathExpressionNode*> &output) const {
+    output.push_back(_filter.get());
+}
+
+
 JsonPathExpressionNodeBinaryOp::JsonPathExpressionNodeBinaryOp(std::unique_ptr<JsonPathExpressionNode> &&leftMost, std::list<binary_operator_and_operand> &operands)
     : _leftMost(std::move(leftMost)), _operandList(std::move(operands))
 {
@@ -544,6 +580,14 @@ JsonPathExpressionNodeEvalResult JsonPathExpressionNodeBinaryOp::evaluate(JsonPa
     return curLeftResult;
 }
 
+void JsonPathExpressionNodeBinaryOp::pushDirectDependentNodes(std::list<const JsonPathExpressionNode*> &output) const {
+    output.push_back(_leftMost.get());
+    std::for_each(_operandList.begin(), _operandList.end(), [&output]( const binary_operator_and_operand &oper_opand) {
+        output.push_back(std::get<std::unique_ptr<JsonPathExpressionNode>>(oper_opand).get());
+    });
+}
+
+
 JsonPathExpressionNodeNegateOp::JsonPathExpressionNodeNegateOp(std::unique_ptr<JsonPathExpressionNode> &&operand)
     : _operand(std::move(operand))
 {
@@ -560,6 +604,12 @@ void JsonPathExpressionNodeNegateOp::inspect(std::ostream &out) const {
 JsonPathExpressionNodeEvalResult JsonPathExpressionNodeNegateOp::evaluate(JsonPathExpressionNodeEvalContext &context) {
     return JsonPathExpressionNodeEvalResult::booleanResult(!_operand->evaluate(context).getTruthValue());
 }
+
+
+void JsonPathExpressionNodeNegateOp::pushDirectDependentNodes(std::list<const JsonPathExpressionNode*> &output) const {
+    output.push_back(_operand.get());
+}
+
 
 JsonPathExpressionNodeJsonLiteral::JsonPathExpressionNodeJsonLiteral(std::unique_ptr<json::Node> literal)
     : _literal(std::move(literal))
@@ -606,6 +656,12 @@ JsonPathExpressionNodeEvalResult JsonPathExpressionNodeFunctionInvoke::evaluate(
     });
     
     return _fn->invoke(evaledArgs);
+}
+
+void JsonPathExpressionNodeFunctionInvoke::pushDirectDependentNodes(std::list<const JsonPathExpressionNode*> &output) const {
+    std::for_each(_args.begin(), _args.end(), [&output](auto &node) {
+        output.push_back(node.get());
+    });
 }
 
 namespace JsonPathExpressionNodeBinaryOperators {

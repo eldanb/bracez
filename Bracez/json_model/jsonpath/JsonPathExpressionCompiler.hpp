@@ -24,7 +24,8 @@ class JsonPathExpression {
 public:
     JsonPathExpressionNodeEvalResult execute(json::Node *root,
                                              JsonPathExpressionOptions *options = NULL,
-                                             json::Node *initialContext = NULL);
+                                             json::Node *initialContext = NULL,
+                                             json::Node *cursorNode = NULL);
     
 public:
     static JsonPathExpression compile(const std::wstring &inputExpression,
@@ -41,8 +42,11 @@ public:
         return *this;
     }
     
+    bool isCursorDependent() const;
+    
 private:
     JsonPathExpression(std::unique_ptr<JsonPathExpressionNode> &&rootNode) : _rootNode(std::move(rootNode)) {}
+    void enumerateNodes(const std::function<void (const JsonPathExpressionNode*)> &enumerator) const;
     
 private:
     std::unique_ptr<JsonPathExpressionNode> _rootNode;

@@ -21,6 +21,7 @@ struct JsonPathExpressionOptions;
 struct JsonPathExpressionNodeEvalContext {
     json::Node *rootNode;
     json::Node *contextNode;
+    json::Node *cursorNode;
     JsonPathExpressionOptions *options;
 } ;
 
@@ -56,6 +57,7 @@ public:
     static JsonPathExpressionNodeEvalResult ownedNodeResult(json::Node *node);
 } ;
 
+class JsonPathExpressionNode;
 
 class JsonPathInspectable {
 public:
@@ -66,19 +68,24 @@ public:
     }
     
     virtual void inspect(std::ostream &out) const = 0;
+    
+    virtual void pushDirectDependentNodes(std::list<const JsonPathExpressionNode*> &output) const = 0;
 };
 
 class JsonPathExpressionNode: public JsonPathInspectable {
 public:
     virtual ~JsonPathExpressionNode() {}
-    
+
     virtual JsonPathExpressionNodeEvalResult evaluate(JsonPathExpressionNodeEvalContext &context) = 0;
+    
 } ;
 
 class JsonPathExpressionNodeNavPipelineStep: public JsonPathInspectable {
 public:
     virtual ~JsonPathExpressionNodeNavPipelineStep() {}
     virtual void stepFromNode(JsonPathExpressionNodeEvalContext &context, JsonPathExpressionNodeEvalResult &node) {} // TODO PURE
+    
+    virtual void pushDirectDependentNodes(std::list<const JsonPathExpressionNode*> &output) const {}
 };
 
 class JsonPathExpressionNodeContextMemberName: public JsonPathExpressionNode  {
@@ -89,20 +96,30 @@ public:
     virtual void inspect(std::ostream &out) const;
     virtual JsonPathExpressionNodeEvalResult evaluate(JsonPathExpressionNodeEvalContext &context);
 
+    virtual void pushDirectDependentNodes(std::list<const JsonPathExpressionNode*> &output) const {};
+    
 };
 
 class JsonPathExpressionNodeNavPipeline: public JsonPathExpressionNode  {
-    
 public:
-    JsonPathExpressionNodeNavPipeline(bool contextBound);
+    enum PipelineStart {
+      pipelineStartAtRoot,
+      pipelineStartAtContext,
+      pipelineStartAtCursor
+    };
+public:
+    JsonPathExpressionNodeNavPipeline(PipelineStart pipelineStart);
     
     void addStep(std::unique_ptr<JsonPathExpressionNodeNavPipelineStep> &&node);
         
     virtual void inspect(std::ostream &out) const;
     virtual JsonPathExpressionNodeEvalResult evaluate(JsonPathExpressionNodeEvalContext &context);
 
+    virtual void pushDirectDependentNodes(std::list<const JsonPathExpressionNode*> &output) const;
+    
+    PipelineStart getPipelineStart() const { return _pipelineStart; }
 private:
-    bool _contextBound;
+    PipelineStart _pipelineStart;
     std::list<std::unique_ptr<JsonPathExpressionNodeNavPipelineStep>> _nodes;
 };
 
@@ -113,7 +130,7 @@ public:
     
     virtual void inspect(std::ostream &out) const;
     virtual void stepFromNode(JsonPathExpressionNodeEvalContext &context, JsonPathExpressionNodeEvalResult &node);
-
+    
 private:
     std::wstring _name;
     bool _wildcard;
@@ -197,6 +214,7 @@ public:
     virtual void inspect(std::ostream &out) const;
     virtual void stepFromNode(JsonPathExpressionNodeEvalContext &context, JsonPathExpressionNodeEvalResult &node);
 
+    virtual void pushDirectDependentNodes(std::list<const JsonPathExpressionNode*> &output) const;
 private:
     bool _filterChildren;
     std::unique_ptr<JsonPathExpressionNode> _filter;
@@ -211,6 +229,7 @@ public:
     virtual void inspect(std::ostream &out) const;
     virtual void stepFromNode(JsonPathExpressionNodeEvalContext &context, JsonPathExpressionNodeEvalResult &node);
 
+    virtual void pushDirectDependentNodes(std::list<const JsonPathExpressionNode*> &output) const;
 private:
     std::unique_ptr<JsonPathExpressionNode> _filter;
 };
@@ -250,6 +269,7 @@ public:
     
     virtual void inspect(std::ostream &out) const;
     virtual JsonPathExpressionNodeEvalResult evaluate(JsonPathExpressionNodeEvalContext &context);
+    virtual void pushDirectDependentNodes(std::list<const JsonPathExpressionNode*> &output) const;
     
 private:
     std::unique_ptr<JsonPathExpressionNode> _leftMost;
@@ -263,6 +283,8 @@ public:
     
     virtual void inspect(std::ostream &out) const;
     virtual JsonPathExpressionNodeEvalResult evaluate(JsonPathExpressionNodeEvalContext &context);
+    
+    virtual void pushDirectDependentNodes(std::list<const JsonPathExpressionNode*> &output) const;
 private:
     std::unique_ptr<JsonPathExpressionNode> _operand;
 };
@@ -274,7 +296,8 @@ public:
     
     virtual void inspect(std::ostream &out) const;
     virtual JsonPathExpressionNodeEvalResult evaluate(JsonPathExpressionNodeEvalContext &context);
-
+    virtual void pushDirectDependentNodes(std::list<const JsonPathExpressionNode*> &output) const {}
+    
 private:
     std::shared_ptr<json::Node> _literal;
 };
@@ -294,7 +317,8 @@ public:
     
     virtual void inspect(std::ostream &out) const;
     virtual JsonPathExpressionNodeEvalResult evaluate(JsonPathExpressionNodeEvalContext &context);
-
+    virtual void pushDirectDependentNodes(std::list<const JsonPathExpressionNode*> &output) const;
+    
 private:
     JsonPathExpressionFunction *_fn;
     std::list<std::unique_ptr<JsonPathExpressionNode>> _args;

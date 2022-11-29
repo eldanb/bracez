@@ -92,6 +92,8 @@
 -(void)selectTextRange:(NSRange)range;
 -(NSRange)textSelection;
 
+-(JsonCocoaNode*)currentSelectedNode;
+
 @property (weak) IBOutlet ProjectionTableController *projectionTableDs;
 
 @end

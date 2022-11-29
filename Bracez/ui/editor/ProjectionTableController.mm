@@ -55,15 +55,16 @@
 
 -(Node*)resolveColumnInRow:(Node*)row {
     if(_validDef) {
-        auto resultList = columnExpression.execute(row);
-        if(resultList.nodeList.size()) {
-            return resultList.nodeList.front();
-        } else {
-            return nullptr;
+        try {
+            auto resultList = columnExpression.execute(row);
+            if(resultList.nodeList.size()) {
+                return resultList.nodeList.front();
+            }
+        } catch(const std::exception &ex) {
         }
-    } else {
-        return nullptr;
     }
+    
+    return nullptr;
 }
 
 -(NSString*)displayTextForColumnInRow:(Node*)row {
@@ -239,11 +240,13 @@
 @interface ProjectionTableController () {
     ProjectionDefinition *definition;
     JsonDocument *jsonDocument;
+    json::Node *_cursorNode;
     NSTableView *_tableView;
     
     NSString *_filterText;
     
     JsonPathExpression dataSourceExpression;
+    BOOL cursorDependent;
     std::vector<Node*> rowNodes;
 
     std::vector<Node*> displayedRowNodes;
@@ -254,7 +257,22 @@
 
 @implementation ProjectionTableController
 
--(instancetype)initWithDefinition:(ProjectionDefinition*)definition projectedDocument:(JsonDocument*)jsonFile {
+-(json::Node*)cursorNode
+{
+    return _cursorNode;
+}
+
+-(void)setCursorNode:(json::Node *)cursorNode {
+    _cursorNode = cursorNode;
+    
+    if(cursorDependent) {
+        [self reloadData];
+    }
+}
+
+-(instancetype)initWithDefinition:(ProjectionDefinition*)definition
+                projectedDocument:(JsonDocument*)jsonFile
+{
     self = [super init];
     
     if(self) {
@@ -282,6 +300,8 @@
     if(definition) {
         try {
             dataSourceExpression = [self->definition compiledRowSelector];
+            cursorDependent = dataSourceExpression.isCursorDependent();
+            
             _validDef = YES;
         } catch(const std::exception &e) {
             dataSourceExpression = JsonPathExpression();
@@ -300,7 +320,7 @@
     rowNodes.clear();
 
     if(_validDef && definition) {
-        JsonPathResultNodeList dataSourceList = self->dataSourceExpression.execute(jsonDocument.rootNode.proxiedElement).nodeList;
+        JsonPathResultNodeList dataSourceList = self->dataSourceExpression.execute(jsonDocument.rootNode.proxiedElement, NULL, NULL, _cursorNode).nodeList;
         rowNodes.reserve(dataSourceList.size());
         std::copy(std::begin(dataSourceList), std::end(dataSourceList), std::back_inserter(rowNodes));
     }
